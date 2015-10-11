@@ -29,6 +29,18 @@ function install_homebrew {
   fi
 }
 
+function install_oh_my_zsh {
+  if [ ! -n "$ZSH" ]; then
+    ZSH=$HOME/.oh-my-zsh
+  fi
+
+  if [ ! -d "$ZSH" ]; then
+    echo "Installing Homebrew"
+    (cd ~; echo -e "\n" | sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" &> /dev/null)
+    success "Done installing Oh My Zsh"
+  fi
+}
+
 function install_dotfiles {
   current_path="${PWD}"
   current_dir="${PWD##*/}"
@@ -99,6 +111,7 @@ function fail () {
 
 install_command_line_tools
 install_homebrew
+install_oh_my_zsh
 
 if [ "$1" == "--force" -o "$1" == "-f" -o "$1" == "-yes" -o "$1" == "-y" ]; then
   install_dotfiles
