@@ -98,6 +98,7 @@ function fail () {
 install_command_line_tools
 install_homebrew
 install_oh_my_zsh
+success "Completed dotfiles bootstrapping"
 
 if [ "$1" == "--force" -o "$1" == "-f" -o "$1" == "-yes" -o "$1" == "-y" ]; then
   install_dotfiles
