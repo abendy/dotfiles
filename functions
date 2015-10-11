@@ -1,0 +1,87 @@
+# All the dig info
+function digga() {
+  dig +nocmd "$1" any +multiline +noall +answer
+}
+
+# credit: http://nparikh.org/notes/zshrc.txt
+# Usage: extract <file>
+# Description: extracts archived files / mounts disk images
+# Note: .dmg/hdiutil is Mac OS X-specific.
+function extract() {
+  if [ -f $1 ]; then
+    case $1 in
+      *.tar.bz2)  tar -jxvf $1                        ;;
+      *.tar.gz)   tar -zxvf $1                        ;;
+      *.bz2)      bunzip2 $1                          ;;
+      *.dmg)      hdiutil mount $1                    ;;
+      *.gz)       gunzip $1                           ;;
+      *.tar)      tar -xvf $1                         ;;
+      *.tbz2)     tar -jxvf $1                        ;;
+      *.tgz)      tar -zxvf $1                        ;;
+      *.zip)      unzip $1                            ;;
+      *.ZIP)      unzip $1                            ;;
+      *.pax)      cat $1 | pax -r                     ;;
+      *.pax.Z)    uncompress $1 --stdout | pax -r     ;;
+      *.Z)        uncompress $1                       ;;
+      *)          echo "'$1' cannot be extracted/mounted via extract()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+# No arguments: `git status`
+# With arguments: acts like `git`
+function g() {
+  if [[ $# > 0 ]]; then
+    git $@
+  else
+    git status
+  fi
+}
+
+# Use Git’s colored diff when available
+hash git &>/dev/null
+if [ $? -eq 0 ]; then
+  function diff() {
+    git diff --no-index --color-words "$@"
+  }
+fi
+
+# Complete g like git
+compdef g=git
+
+# Create a new directory and enter it
+function mkd() {
+  mkdir -p "$@" && cd "$@"
+}
+
+# `o` with no arguments opens current directory, otherwise opens the given
+# location
+function o() {
+  if [ $# -eq 0 ]; then
+    open .
+  else
+    open "$@"
+  fi
+}
+
+# `s` with no arguments opens the current directory in Sublime Text, otherwise
+# opens the given location
+function s() {
+  if [ $# -eq 0 ]; then
+    subl .;
+  else
+    subl "$@";
+  fi;
+}
+
+# `v` with no arguments opens the current directory in Vim, otherwise opens the
+# given location
+function v() {
+  if [ $# -eq 0 ]; then
+    vim .
+  else
+    vim "$@"
+  fi
+}
