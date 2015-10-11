@@ -4,6 +4,7 @@
 
 ```sh
 $ git clone git@github.com:abendy/dotfiles.git ~/.dotfiles
-$ ~/.dotfiles/bootstrap
+$ cd dotfiles
+$ ./bootstrap
 ```
 
