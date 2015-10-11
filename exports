@@ -12,6 +12,16 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
+# nvm
+export NVM_DIR="/usr/local/opt/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" 
+
+# pyenv
+export PYENV_ROOT="/usr/local/opt/pyenv"
+
+# rbenv
+export RBENV_ROOT="/usr/local/opt/rbenv"
+
 # PATH
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
