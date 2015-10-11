@@ -4,8 +4,8 @@
 
 Also installs:
 
-* Xcode Command Line Tools
-* Homebrew
+* [Xcode Command Line Tools][xclt]
+* [Homebrew][hb]
 
 ```sh
 $ git clone git@github.com:abendy/dotfiles.git ~/.dotfiles
@@ -16,3 +16,5 @@ $ sh Caskfile
 $ brew tap homebrew/bundle && brew bundle Brewfile
 ```
 
+   [xclt]: <https://developer.apple.com/downloads>
+   [hb]: <http://brew.sh>
