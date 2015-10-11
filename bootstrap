@@ -34,67 +34,68 @@ function install_dotfiles {
   current_dir="${PWD##*/}"
   exec_path=${0%/*}
 
-  if [ ${exec_path} != "." -a ${exec_path} == "./dotfiles" ]; then
+  if [ ${exec_path} == "./dotfiles" ]; then
     cd dotfiles
-    # git pull origin master
-
-    for file in "aliases" "exports" "functions" "gitconfig" "gitmessage" "inputrc" "zshrc"; do
-      complete_file_path=${current_path}/$(basename ${exec_path})/${file}
-
-      if [ -f ${complete_file_path} ]; then
-
-        symlink=$HOME/.${file}
-        if [ ! -h ${symlink} ]; then
-          ln -sFv ${complete_file_path} ${symlink}
-        fi
-      fi
-
-    done
-    unset file
-    success "Done symlinking dotfiles to your home directory"
-
-    # source $HOME/.zshrc
-
-    if [ ! -d $HOME/bin ]; then
-      mkdir -p $HOME/bin
-    fi
-
-    for file in ${current_path}/$(basename ${exec_path})/bin/*; do
-      symlink=$HOME/bin/$(basename ${file})
-
-      if [ ! -h ${symlink} ]; then
-        ln -sFv ${file} ${symlink}
-        chmod +x ${symlink}
-      fi
-    done
-    unset file
-    success "Done symlinking custom commands to your home bin directory"
-
-    read -p "Do you want to load new shell colors? (y/n) " -n 1
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      options=( $(find ${current_path}/$(basename ${exec_path})/itermcolors -name "*.itermcolors" -maxdepth 1 -print0 | xargs -0) )
-      select opt in "${options[@]}" "None"; do 
-        if (( REPLY == 1 + ${#options[@]} )); then
-          exit
-        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-          open $opt
-          break
-        fi
-      done    
-    fi
-
-  else
+  elif [ ${exec_path} != "." ]; then
     fail "Change directories to where you cloned dotfiles"
+  fi
+
+  git pull origin master
+  echo
+
+  for file in "aliases" "exports" "functions" "gitconfig" "gitmessage" "inputrc" "zshrc"; do
+    complete_file_path=${current_path}/$(basename ${exec_path})/${file}
+
+    if [ -f ${complete_file_path} ]; then
+
+      symlink=$HOME/.${file}
+      if [ ! -h ${symlink} ]; then
+        ln -sFv ${complete_file_path} ${symlink}
+      fi
+    fi
+
+  done
+  unset file
+  success "Done symlinking dotfiles to your home directory"
+
+  # source $HOME/.zshrc
+
+  if [ ! -d $HOME/bin ]; then
+    mkdir -p $HOME/bin
+  fi
+
+  for file in ${current_path}/$(basename ${exec_path})/bin/*; do
+    symlink=$HOME/bin/$(basename ${file})
+
+    if [ ! -h ${symlink} ]; then
+      ln -sFv ${file} ${symlink}
+      chmod +x ${symlink}
+    fi
+  done
+  unset file
+  success "Done symlinking custom commands to your home bin directory"
+
+  read -p "Do you want to load new shell colors? (y/n) " -n 1
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    options=( $(find ${current_path}/$(basename ${exec_path})/itermcolors -name "*.itermcolors" -maxdepth 1 -print0 | xargs -0) )
+    select opt in "${options[@]}" "None"; do 
+      if (( REPLY == 1 + ${#options[@]} )); then
+        exit
+      elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        open $opt
+        break
+      fi
+    done    
   fi
 }
 
 function success () {
-  echo -en "[ \033[00;32mOK\033[0m ] $1\n"
+  echo -e "[ \033[00;32mOK\033[0m ] $1\n"
 }
 
 function fail () {
-  echo -en "[\033[0;31mFAIL\033[0m] $1\n"
+  echo -e "[\033[0;31mFAIL\033[0m] $1\n"
   exit
 }
 
