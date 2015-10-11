@@ -35,7 +35,7 @@ function install_oh_my_zsh {
   fi
 
   if [ ! -d "$ZSH" ]; then
-    echo "Installing Homebrew"
+    echo "Installing Oh My Zsh"
     (cd ~; echo -e "\n" | sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" &> /dev/null)
     success "Done installing Oh My Zsh"
   fi
