@@ -1,0 +1,81 @@
+# Misc. Globals
+alias -g C='| tr "\n" "\0" | pbcopy'
+alias -g G='| grep' # now you can do: ls foo G something
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+alias svi='sudo vi'
+
+# File System
+alias .....='cd ../../../..'
+alias ....='cd ../../..'
+alias ...='../..'
+alias ...='cd ../..'
+alias ..='cd ..'
+alias ~='cd ~'
+alias cb='cd -'
+# Recursively delete `.DS_Store` files
+alias cleanup='find . -type f -name '*.DS_Store' -ls -delete'
+alias cp='cp -i'
+alias df='df -h'
+alias du='du -h -d 2'
+# Empty the Trash on all mounted volumes and the main HDD
+# Also, clear Apple’s System Logs to improve shell startup speed
+alias emptytrash='sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl'
+alias gz='gzip -9n -v -S .gz'
+alias less='less -r'
+# grc overides for ls
+#   Made possible through contributions from generous benefactors like
+#   `brew install coreutils`
+if $(gls &>/dev/null)
+then
+  alias -g la='gls -AFhlp --color'
+  alias -g ll='gls -Fhlp --color'
+else
+  alias -g la='ls -AFGhlp'
+  alias -g ll='ls -FGhlp'
+fi
+alias ln='ln -v'
+alias lsd='ll | grep --color=never "^d"'
+alias lsf='ls -1 . | tr "\n" "\0" | xargs -0 -n 1 basename'
+# Intuitive map function
+alias map='xargs -n1'
+alias mv='mv -i'
+alias rm='rm -i' # nocorrect rm -i
+alias tlf='tail -f'
+
+# Homebrew
+alias bri='brew install'
+alias brl='brew list'
+alias brn='brew info'
+alias brs='brew search'
+alias upbr='brew update && brew cleanup && brew prune && brew doctor'
+
+# Network
+# Gzip-enabled `curl`
+alias gurl='curl --compressed'
+
+# OS X
+# Hide hidden files in Finder
+alias hide='defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder'
+# Clean up LaunchServices to remove duplicates in the “Open With” menu
+alias lscleanup='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder'
+# PlistBuddy alias, because sometimes `defaults` just doesn’t cut it
+alias plistbuddy='/usr/libexec/PlistBuddy'
+# Preview a file using QuickLook
+alias ql='qlmanage -p 2>/dev/null' 
+# Show hidden files in Finder
+alias show='defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder'
+
+# Sec
+# Pipe my public key to my clipboard.
+alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
+
+# Shell
+# Pretty print the path
+alias path='echo $PATH | tr -s ":" "\n"'
+# mimic vim functions
+alias :q='exit'
+# Reload the shell (i.e. invoke as a login shell)
+alias reload='exec $SHELL -l'
