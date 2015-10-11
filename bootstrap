@@ -58,8 +58,6 @@ function install_dotfiles {
   unset file
   success "Done symlinking dotfiles to your home directory"
 
-  # source $HOME/.zshrc
-
   if [ ! -d $HOME/bin ]; then
     mkdir -p $HOME/bin
   fi
@@ -111,3 +109,5 @@ else
     install_dotfiles
   fi
 fi
+
+# source $HOME/.zshrc
