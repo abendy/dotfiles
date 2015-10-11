@@ -1,0 +1,78 @@
+[alias]
+  a             = add
+  aa            = add --all
+  amend         = commit --amend -C HEAD
+  ap            = add --patch
+  ca            = !git add -A && git commit -vm
+  ci            = commit -vm
+  cl            = clone --recursive
+  co            = checkout
+                  # credit an author on the latest commit
+  credit        = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+  fa            = fetch --all
+  origins       = remote show origin
+  remotes       = remote -v show
+  s             = status
+  ss            = status -s
+  uncommit      = "!f() { git reset --soft HEAD~$1; } f"
+  undo          = !git reset --soft HEAD^
+
+  # branching
+  branches      = branch -va
+  go            = checkout -B
+
+  # merging & rebasing
+  mb            = !git checkout master && git merge @{-1}
+  ntb           = checkout --track -b
+  reb           = "!f() { git rebase -i HEAD~$1; }; f"
+  sync          = !$HOME/bin/git-fork-sync
+
+  # logging
+  count         = !git shortlog -sn
+  hist          = log --abbrev-commit --date=short --graph -n 10 --name-status --pretty=format:'%h %Cgreen%s%d %cd  %Creset[%cn]'
+  last          = diff HEAD^
+
+[apply]
+  whitespace = fix
+
+[branch]
+  autosetupmerge = true
+
+[color]
+  branch = auto
+  diff = auto
+  status = auto
+  ui = auto
+
+[core]
+  autocrlf = input
+  editor = subl -n -w
+  filemode = false
+  tabwidth = 2
+  trustctime = false
+
+[commit]
+  template = ~/.gitmessage
+
+[diff]
+  # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject
+  # instead of a/b/c/d as prefixes for patches
+  mnemonicprefix = true
+
+[fetch]
+  prune = true
+
+[merge]
+  log = true
+  verbose = true
+
+[pull]
+  ff = only
+
+[push]
+  default = simple
+
+[rerere]
+  # Remember my merges
+  # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
+  enabled = true
