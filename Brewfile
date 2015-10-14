@@ -31,11 +31,13 @@ install findutils
 install foremost
 install fpp
 install fzf
+install gawk
 install gist
 install git
 install git-extras
 # Install GNU `sed`, overwriting the built-in `sed`.
 install gnu-sed --with-default-names
+install gnu-tar
 install grc
 install grep
 install html-xml-utils
