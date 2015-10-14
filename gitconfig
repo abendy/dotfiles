@@ -1,9 +1,9 @@
 [alias]
   a             = add
   aa            = add --all
+  ac            = !git add -A && git commit -vm
   amend         = commit --amend -C HEAD
   ap            = add --patch
-  ca            = !git add -A && git commit -vm
   ci            = commit -vm
   cl            = clone --recursive
   co            = checkout
@@ -47,7 +47,7 @@
 [core]
   autocrlf = input
   editor = subl -n -w
-  filemode = false
+  filemode = true
   tabwidth = 2
   trustctime = false
 
@@ -76,3 +76,7 @@
   # Remember my merges
   # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
   enabled = true
+
+[user]
+	name = Allan Bendy
+	email = allan.bendy@gmail.com
