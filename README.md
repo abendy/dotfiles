@@ -10,12 +10,12 @@ Includes:
 
 ```sh
 $ git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
+$ brew tap homebrew/bundle
+$ brew bundle
 $ sh bootstrap
-$ git config --global user.name "<your name>"
-$ git config --global user.email "<your email>"
+$ cp localrc ~/.localrc
+$ vi ~/.localrc
 $ sh .osx
-$ sh Caskfile
-$ brew tap homebrew/bundle && brew bundle Brewfile
 ```
 
    [xclt]: <https://developer.apple.com/downloads>
