@@ -13,6 +13,9 @@ plugins=(autojump fasd gem httpie history osx pyenv sudo )
 
 source $ZSH/oh-my-zsh.sh
 
+# thefuck
+eval "$(thefuck --alias)"
+
 #grc
 source "`brew --prefix`/etc/grc.bashrc"
 
