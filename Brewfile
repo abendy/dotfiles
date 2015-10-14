@@ -1,74 +1,107 @@
-#!/usr/bin/env bash
+tap 'caskroom/cask'
+tap 'homebrew/apache'
+tap 'homebrew/bundle'
+tap 'homebrew/completions'
+tap 'homebrew/dupes'
+tap 'homebrew/php'
+tap 'homebrew/versions'
+tap 'homebrew/x11'
 
-# Install command-line tools using Homebrew.
+brew 'atool'
+brew 'autojump'
+brew 'cfv'
+brew 'coreutils'
+brew 'cronolog'
+brew 'curl', args: ['with-openssl']
+brew 'dos2unix'
+brew 'drush'
+brew 'fasd'
+brew 'findutils'
 
-# Ask for the administrator password upfront.
-sudo -v
+brew 'foremost'
 
-# Keep-alive: update existing `sudo` time stamp until the script has finished.
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+brew 'fpp'
+brew 'fzf'
+brew 'gawk'
+brew 'gist'
+brew 'git'
+brew 'git-extras'
+brew 'git-flow'
+brew 'gnu-sed', args: ['with-default-names']
+brew 'gnu-tar'
+brew 'grep', args: ['with-default-names']
+brew 'grc'
+brew 'html-xml-utils'
+brew 'httpie', args: ['HEAD']
+brew 'legit'
+brew 'moreutils'
+brew 'openssl'
+brew 'p7zip'
+brew 'pigz'
+brew 'progress'
+brew 'rename'
+brew 'rsync'
+brew 'ssh-copy-id'
+brew 'stormssh'
+brew 'the_silver_searcher'
+brew 'thefuck'
+brew 'tree'
+brew 'vagrant-completion'
+brew 'vim', args: ['override-system-vi']
+brew 'watch'
+brew 'wget', args: ['with-iri']
+brew 'ykclient'
+brew 'yubikey-personalization'
+brew 'z'
+brew 'zopfli'
+brew 'zsh'
+brew 'zsh-completions'
+brew 'zsh-history-substring-search'
+brew 'zsh-lovers'
+brew 'zsh-syntax-highlighting'
 
-# Make sure we’re using the latest Homebrew.
-update
+brew 'caskroom/cask/brew-cask'
 
-# Required for brews below
-tap homebrew/dupes
-tap homebrew/versions
-tap homebrew/completions
-
-install autojump
-install awscli
-install cfv
-# Install GNU core utilities (those that come with OS X are outdated)
-install coreutils
-install cronolog
-install curl
-install dos2unix
-install drush
-install fasd
-# Install GNU `find`, `locate`, `updatedb`, and `xargs`, `g`-prefixed
-install findutils
-install foremost
-install fpp
-install fzf
-install gist
-install git
-install git-extras
-# Install GNU `sed`, overwriting the built-in `sed`.
-install gnu-sed --with-default-names
-install grc
-install grep
-install html-xml-utils
-install httpie --HEAD
-install lynx
-# Install some other useful utilities like `sponge`
-install moreutils
-install newsbeuter
-install openssl
-install pigz
-install progress
-install rename
-install rsync
-install s3cmd
-install speedtest_cli
-install the_silver_searcher
-install ssh-copy-id
-install stormssh
-install thefuck
-install tree
-install vagrant-completion
-install watch
-# Install wget with IRI support
-install wget --with-iri
-install ykclient
-install yubikey-personalization
-install z
-install zopfli
-install zsh
-install zsh-completions
-install zsh-history-substring-search
-install zsh-syntax-highlighting
-install zsh-lovers
-
-# Remove outdated versions from the cellar
-cleanup
+cask '1password'
+cask 'alfred'
+cask 'appcleaner'
+cask 'beamer'
+cask 'betterzipql'
+cask 'caffeine'
+cask 'carbon-copy-cloner'
+cask 'crashplan'
+cask 'dropbox'
+cask 'flux'
+cask 'google-chrome'
+cask 'google-chrome-canary'
+cask 'google-drive'
+cask 'iterm2'
+cask 'jettison'
+cask 'keka'
+cask 'lunchy'
+cask 'macdown'
+cask 'mysqlworkbench'
+cask 'private-internet-access'
+cask 'qlcolorcode'
+cask 'qlmarkdown'
+cask 'qlprettypatch'
+cask 'qlstephen'
+cask 'quicklook-csv'
+cask 'quicklook-json'
+cask 'sequel-pro'
+cask 'sizeup'
+cask 'skim'
+cask 'skitch'
+cask 'skype'
+cask 'slack'
+cask 'spotify'
+cask 'spotify-notifications'
+cask 'sublime-text'
+cask 'tower'
+cask 'vagrant'
+cask 'vagrant-manager'
+cask 'virtualbox'
+cask 'virtualbox-extension-pack'
+cask 'vlc'
+cask 'yubikey-personalization-gui'
+cask 'yubiswitch'
