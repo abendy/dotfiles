@@ -1,0 +1,10 @@
+ #
+ # Local runtime configuration.
+ # This file is not symlinked from your dotfiles repo. It must be manually copied to $HOME
+ #/
+
+# github
+export HOMEBREW_GITHUB_API_TOKEN=""
+
+# ssh
+export SSH_KEY_PATH=""
