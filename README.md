@@ -10,8 +10,6 @@ Includes:
 
 ```sh
 $ git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
-$ brew tap homebrew/bundle
-$ brew bundle
 $ sh bootstrap
 $ cp localrc ~/.localrc
 $ vi ~/.localrc

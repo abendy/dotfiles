@@ -29,6 +29,16 @@ function install_homebrew {
   fi
 }
 
+function install_brews {
+  if ! hash brew &> /dev/null; then
+    echo "Installing Brews"
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    brew tap homebrew/bundle
+    brew bundle
+    success "Done installing Brews"
+  fi
+}
+
 function install_oh_my_zsh {
   if [ ! -n "$ZSH" ]; then
     ZSH=$HOME/.oh-my-zsh
@@ -99,6 +109,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 install_command_line_tools
 install_homebrew
+install_brews
 install_oh_my_zsh
 
 if [ "$1" == "--force" -o "$1" == "-f" -o "$1" == "-yes" -o "$1" == "-y" ]; then
