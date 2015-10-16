@@ -1,0 +1,259 @@
+#!/usr/bin/env bash
+
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until `.osx` has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+#/
+ # Dock
+ # ==========================================================
+ #/
+
+# Automatically hide and show the Dock
+defaults write com.apple.dock autohide -bool true
+
+# Set the icon size of Dock items to 36 pixels
+defaults write com.apple.dock tilesize -int 36
+
+# Wipe all (default) app icons from the Dock
+# This is only really useful when setting up a new Mac, or if you don’t use
+# the Dock to launch apps.
+defaults write com.apple.dock persistent-apps -array ""
+
+# Change minimize/maximize window effect
+defaults write com.apple.dock mineffect -string "scale"
+
+#/
+ # Finder, Files...
+ # ==========================================================
+ #/
+
+# Expand save panel by default
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+
+# Set home folder as the default location for new Finder windows
+defaults write com.apple.finder NewWindowTarget -string "PfLo"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}"
+
+# Avoid creating .DS_Store files on network volumes
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+
+# Finder: show all filename extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Empty Trash securely by default
+defaults write com.apple.finder EmptyTrashSecurely -bool true
+
+# Finder: allow text selection in Quick Look
+defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# Disable the warning when changing a file extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# Disable Spotlight indexing for any volume that gets mounted and has not yet been indexed before
+defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+
+# Use column view in all Finder windows by default, Arrange by Kind, Sort by Name
+defaults write com.apple.finder FXPreferredViewStyle -string "Clmv"
+defaults write com.apple.Finder FXPreferredGroupBy "Kind"
+defaults write com.apple.Finder FXArrangeGroupViewBy "Name"
+
+# Expand the following File Info panes:
+defaults write com.apple.finder FXInfoPanesExpanded -dict \
+General -bool true \
+OpenWith -bool true
+
+#/
+ # Keyboard
+ # ==========================================================
+ #/
+
+# Set a blazingly fast keyboard repeat rate
+defaults write NSGlobalDomain KeyRepeat -int 0
+
+# Set no delay until keyboard repeat
+defaults write NSGlobalDomain InitialKeyRepeat -int 12
+
+# Turn off keyboard illumination when computer is not used for 5 minutes
+defaults write com.apple.BezelServices kDimTime -int 300
+
+# Use scroll gesture with the Ctrl (^) modifier key to zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+
+# Follow the keyboard focus while zoomed in
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+#/
+ # Mail
+ # ==========================================================
+ #/
+
+# Disable inline attachments (just show the icons)
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
+
+# Disable send and reply animations in Mail.app
+defaults write com.apple.Mail DisableReplyAnimations -bool true
+defaults write com.apple.Mail DisableSendAnimations -bool true
+
+# Add the keyboard shortcut ⌘ + Enter to send an email in Mail.app
+defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" -string "@\\U21a9"
+
+# Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
+defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
+
+#/
+ # Screen
+ # ==========================================================
+ #/
+
+# Save screenshots to the Downloads directory
+defaults write com.apple.screencapture location -string "${HOME}/Downloads"
+
+# Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
+defaults write com.apple.screencapture type -string "png"
+
+# Disable shadow in screenshots
+defaults write com.apple.screencapture disable-shadow -bool true
+
+#/
+ # Scroll
+ # ==========================================================
+ #/
+
+# Enable “natural” scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Trackpad: set a fast tracking speed
+defaults write -g com.apple.trackpad.scaling -int 12
+
+#/
+ # Sounds
+ # ==========================================================
+ #/
+
+# Sound: untick 'Play User Interface Sound Effects' and 'Play Feedback When Volume Is Changed'
+defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -int 0
+defaults write com.apple.systemsound com.apple.sound.beep.volume -float 0
+
+# Disable the sound effects on boot
+sudo nvram SystemAudioVolume=" "
+
+#/
+ # Spelling
+ # ==========================================================
+ #/
+
+# Disable smart quotes as they’re annoying when typing code
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Disable smart dashes as they’re annoying when typing code
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+#/
+ # System
+ # ==========================================================
+ #/
+
+# Require password immediately after sleep or screen saver begins
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 5
+
+# Hot corners
+# Possible values:
+#  0: no-op
+#  2: Mission Control
+#  3: Show application windows
+#  4: Desktop
+#  5: Start screen saver
+#  6: Disable screen saver
+#  7: Dashboard
+# 10: Put display to sleep
+# 11: Launchpad
+# 12: Notification Center
+# Bottom left screen corner → Put display to sleep
+defaults write com.apple.dock wvous-bl-corner -int 10
+defaults write com.apple.dock wvous-bl-modifier -int 0
+
+# Disable the crash reporter
+defaults write com.apple.CrashReporter DialogType -string "none"
+
+# Never go into computer sleep mode
+systemsetup -setcomputersleep Off > /dev/null
+
+# Start screensaver after
+defaults write com.apple.screensaver loginWindowIdleTime -int 0
+
+# Disable hibernation (speeds up entering sleep mode)
+sudo pmset -a hibernatemode 0
+
+# Set standby delay to 24 hours (default is 1 hour)
+sudo pmset -a standbydelay 86400
+
+# Show remaining battery percentage
+defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+
+# Number of recent items: Applications: None
+osascript -e 'tell application "System Events" to tell appearance preferences to set recent applications limit to 0'
+
+# Number of recent items: Documents: None
+osascript -e 'tell application "System Events" to tell appearance preferences to set recent documents limit to 0'
+
+# Number of recent items: Servers: None
+osascript -e 'tell application "System Events" to tell appearance preferences to set recent servers limit to 0'
+
+# Set language and text formats
+# Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
+# `Inches`, `en_GB` with `en_US`, and `true` with `false`.
+defaults write NSGlobalDomain AppleLanguages -array "en"
+defaults write NSGlobalDomain AppleLocale -string "en_US@currency=USD"
+defaults write NSGlobalDomain AppleMeasurementUnits -string "Inches"
+defaults write NSGlobalDomain AppleMetricUnits -bool false
+
+# Allow App Downloaded From Anywhere
+sudo spctl --master-disable
+
+#/
+ # Time Machine
+ # ==========================================================
+ #/
+
+# Disable local Time Machine backups
+hash tmutil &> /dev/null && sudo tmutil disablelocal
+
+# Disable local Time Machine snapshots
+sudo tmutil disablelocal
+
+# Prevent Time Machine from prompting to use new hard drives as backup volume
+defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+#/
+ # Misc.
+ # ==========================================================
+ #/
+
+# Enable Debug Menu in the Mac App Store
+defaults write com.apple.appstore ShowDebugMenu -bool true
+
+# Automatically quit printer app once the print jobs complete
+defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+
+# Disable Swipe controls for Google Chrome
+defaults write com.google.Chrome.plist AppleEnableSwipeNavigateWithScrolls -bool FALSE
+
+# Expand print panel by default
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+
+# Enable the debug menu in Disk Utility
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+defaults write com.apple.DiskUtility advanced-image-options -bool true
+
+#/
+ # Kill affected applications
+ # ==========================================================
+ #/
+
+# Kill affected applications
+for app in Activity\ Monitor Address\ Book Calendar Contacts Dock Finder iTunes Mail Messages Safari SystemUIServer Terminal cfprefsd; do killall "${app}" > /dev/null 2>&1; done
