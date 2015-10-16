@@ -30,7 +30,7 @@ function install_homebrew {
 }
 
 function install_brews {
-  if ! hash brew &> /dev/null; then
+  if hash brew &> /dev/null; then
     echo "Installing Brews"
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
     brew tap homebrew/bundle
