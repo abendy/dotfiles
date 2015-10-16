@@ -1,7 +1,8 @@
 # Misc. Globals
 alias -g C='| tr "\n" "\0" | pbcopy'
 alias -g G='| grep' # now you can do: ls foo G something
-alias -g P=' & progress -mp $!'
+alias -g P='| percol'
+alias -g PR=' & progress -mp $!'
 
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
