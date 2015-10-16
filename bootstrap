@@ -64,7 +64,7 @@ function install_dotfiles {
   fi
 
   if [ -d "${current_path}/.git" ]; then
-    git pull origin master
+    git pull --ff-only
     echo
   fi
 
