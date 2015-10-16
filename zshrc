@@ -19,17 +19,6 @@ eval "$(thefuck --alias)"
 #grc
 source "`brew --prefix`/etc/grc.bashrc"
 
-# nvm
-source $(brew --prefix nvm)/nvm.sh
-[[ -r $NVM_DIR/bash_completion ]] && . $NVM_DIR/bash_completion
-
-# pyenv
-if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-
-# rbenv
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-
 # z
 . `brew --prefix`/etc/profile.d/z.sh
 
