@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/abendy/dotfiles.png?label=ready&title=Ready)](https://waffle.io/abendy/dotfiles)
 # dotfiles
 
 ### Install
