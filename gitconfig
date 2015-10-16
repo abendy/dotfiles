@@ -19,7 +19,10 @@
 
   # branching
   branches      = branch -va
+  create-branch = !sh -c 'git push origin HEAD:refs/heads/$1 && git fetch origin && git branch --track $1 origin/$1 && cd . && git checkout $1' -
+  delete-branch = !sh -c 'git push origin :refs/heads/$1 && git remote prune origin && git branch -D $1' -
   go            = checkout -B
+  recent-branch = for-each-ref --sort=-committerdate --format=\"%(authordate:relative)\t%(authorname)\t%(refname:short)\" refs/remotes
 
   # merging & rebasing
   mb            = !git checkout master && git merge @{-1}
@@ -78,5 +81,5 @@
   enabled = true
 
 [user]
-	name = Allan Bendy
-	email = allan.bendy@gmail.com
+  email = allan.bendy@gmail.com
+  name = Allan Bendy
