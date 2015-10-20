@@ -10,7 +10,7 @@ Includes:
 ```sh
 $ git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
 $ sh bootstrap
-$ sh .osx
+$ sh osx
 ```
 
 You can create a `~/.localrc` file for additional local runtime configuration. This repo provides a template: `cp localrc ~/.localrc`.
