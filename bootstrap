@@ -31,10 +31,16 @@ function install_homebrew {
 
 function install_brews {
   if hash brew &> /dev/null; then
-    echo "Installing Brews"
-    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-    brew tap homebrew/bundle
-    brew bundle
+    echo "Installing $1 Brews"
+
+    if [ $1 == "ZSH" ]; then
+      brew install zsh-completions zsh-history-substring-search zsh-syntax-highlighting &> /dev/null
+    else
+      export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+      brew tap homebrew/bundle
+      brew bundle
+    fi
+
     success "Done installing Brews"
   fi
 }
