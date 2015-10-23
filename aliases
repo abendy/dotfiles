@@ -18,7 +18,7 @@ alias ..='cd ..'
 alias ~='cd ~'
 alias cb='cd -'
 # Recursively delete `.DS_Store` files
-alias cleanup='find . -type f -name '*.DS_Store' -ls -delete'
+alias cleanup='find . -type f -name "*.DS_Store" -ls -delete'
 alias cp='cp -i'
 alias df='df -h'
 alias du='du -h -d 2'
