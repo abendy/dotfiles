@@ -14,13 +14,19 @@ plugins=(autojump fasd gem httpie history osx pyenv sudo )
 source $ZSH/oh-my-zsh.sh
 
 # thefuck
-eval "$(thefuck --alias)"
+if hash fuck &> /dev/null; then
+  eval "$(thefuck --alias)"
+fi
 
 #grc
-source "`brew --prefix`/etc/grc.bashrc"
+if hash grc &> /dev/null; then
+  source "`brew --prefix`/etc/grc.bashrc"
+fi
 
 # z
+if hash z &> /dev/null; then
 . `brew --prefix`/etc/profile.d/z.sh
+fi
 
 # zsh-completions
 fpath=(/usr/local/share/zsh-completions $fpath)
