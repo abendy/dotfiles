@@ -30,17 +30,23 @@ defaults write com.apple.dock mineffect -string "scale"
  # ==========================================================
  #/
 
-# Expand save panel by default
-defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+# Expand Save Panel by Default
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true && \
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
 
 # Set home folder as the default location for new Finder windows
 defaults write com.apple.finder NewWindowTarget -string "PfLo"
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}"
 
-# Avoid creating .DS_Store files on network volumes
+# Disable Creation of Metadata Files on Network Volumes
+# Avoids creation of .DS_Store and AppleDouble files.
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
-# Finder: show all filename extensions
+# Disable Creation of Metadata Files on USB Volumes
+# Avoids creation of .DS_Store and AppleDouble files.
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+# Show All File Extensions
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 # Empty Trash securely by default
@@ -65,13 +71,20 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 General -bool true \
 OpenWith -bool true
 
+# Disable Sudden Motion Sensor
+# Leaving this turned on is useless when you're using SSDs.
+sudo pmset -a sms 0
+
+# Set Sidebar Icon Size to 'small'
+defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1
+
 #/
  # Keyboard
  # ==========================================================
  #/
 
 # Set a blazingly fast keyboard repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 0
+defaults write NSGlobalDomain KeyRepeat -int 0.02
 
 # Set no delay until keyboard repeat
 defaults write NSGlobalDomain InitialKeyRepeat -int 12
@@ -243,8 +256,9 @@ defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 # Disable Swipe controls for Google Chrome
 defaults write com.google.Chrome.plist AppleEnableSwipeNavigateWithScrolls -bool FALSE
 
-# Expand print panel by default
-defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+# Expand Print Panel by Default
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true && \
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 
 # Enable the debug menu in Disk Utility
 defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
