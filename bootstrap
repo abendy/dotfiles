@@ -93,11 +93,11 @@ function install_dotfiles {
 }
 
 function success () {
-  echo -e "[ \033[00;32mOK\033[0m ] $1\n"
+  echo "[ \033[00;32mOK\033[0m ] $1\n"
 }
 
 function fail () {
-  echo -e "[\033[0;31mFAIL\033[0m] $1\n"
+  echo "[\033[0;31mFAIL\033[0m] $1\n"
   exit
 }
 
