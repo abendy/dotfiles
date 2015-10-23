@@ -26,9 +26,13 @@ export RBENV_ROOT="/usr/local/opt/rbenv"
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 export PATH="$HOME/.composer/vendor/bin:$PATH"
-#export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+# if [ -d "$(brew --prefix)/coreutils" ]; then
+#   export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+# fi
 export PATH="$RBENV_ROOT/shims:$PATH"
 export PATH="$PYENV_ROOT/shims:$PATH"
-export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH"
+if [ -d "$(brew --prefix)/homebrew/php/php55" ]; then
+  export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH"
+fi
 export PATH="$HOME/bin:$PATH"
 export PATH=".git/safe/../../bin:$PATH"
