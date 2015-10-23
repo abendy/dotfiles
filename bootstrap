@@ -64,7 +64,7 @@ function install_dotfiles {
   fi
 
   if [ -d "${current_path}/.git" ]; then
-    git pull --ff-only
+    git pull --ff-only &> /dev/null
     echo
   fi
 
@@ -72,7 +72,7 @@ function install_dotfiles {
     complete_file_path=${current_path}/${file}
 
     if [ -f ${complete_file_path} ]; then
-      ln -sFv ${complete_file_path} $HOME/.${file}
+      ln -sF ${complete_file_path} $HOME/.${file}
     fi
   done
   unset file
@@ -84,7 +84,7 @@ function install_dotfiles {
 
   for file in ${current_path}/bin/*; do
     symlink=$HOME/bin/$(basename ${file})
-    ln -sFv ${file} ${symlink}
+    ln -sF ${file} ${symlink}
     chmod +x ${symlink}
   done
   unset file
