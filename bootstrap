@@ -35,6 +35,8 @@ function install_brews {
 
     if [ $1 == "ZSH" ]; then
       brew install zsh-completions zsh-history-substring-search zsh-syntax-highlighting &> /dev/null
+      brew tap caskroom/cask &> /dev/null
+      brew install brew-cask &> /dev/null
     else
       export HOMEBREW_CASK_OPTS="--appdir=/Applications"
       brew tap homebrew/bundle
