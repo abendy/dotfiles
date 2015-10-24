@@ -48,7 +48,7 @@ function install_brews {
 }
 
 function install_oh_my_zsh {
-  if [ ! -n "$ZSH" ]; then
+  if [ -z "$ZSH" ]; then
     ZSH=$HOME/.oh-my-zsh
   fi
 
