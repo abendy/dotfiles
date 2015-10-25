@@ -50,6 +50,7 @@
 [core]
   autocrlf = input
   editor = subl -n -w
+  excludesfile = ~/.gitignore
   filemode = true
   tabwidth = 2
   trustctime = false
