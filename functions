@@ -1,3 +1,10 @@
+# Change file extensions recursively in current directory
+function change-extension() {
+  foreach f (**/*.$1)
+    mv $f $f:r.$2
+  end
+}
+
 # All the dig info
 function digga() {
   dig +nocmd "$1" any +multiline +noall +answer
