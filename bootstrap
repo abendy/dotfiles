@@ -76,7 +76,7 @@ function install_dotfiles {
     echo
   fi
 
-  for file in "aliases" "exports" "functions" "gitconfig" "gitmessage" "inputrc" "zshrc"; do
+  for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc"; do
     complete_file_path=${current_path}/${file}
 
     if [ -f ${complete_file_path} ]; then
