@@ -65,6 +65,9 @@
 [fetch]
   prune = true
 
+[log]
+  date = iso
+
 [merge]
   log = true
   verbose = true
