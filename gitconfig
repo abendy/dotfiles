@@ -66,6 +66,9 @@
 [fetch]
   prune = true
 
+[github]
+  user = abendy
+
 [log]
   date = iso
 
