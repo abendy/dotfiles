@@ -34,7 +34,19 @@ function install_brews {
     echo "Installing $1 Brews"
 
     if [ $1 == "ZSH" ]; then
-      brew install zsh-completions zsh-history-substring-search zsh-syntax-highlighting &> /dev/null
+
+      if [ -z "$(brew --prefix zsh-completions &> /dev/null)" ]; then
+        brew install zsh-completions &> /dev/null
+      fi
+
+      if [ -z "$(brew --prefix zsh-history-substring-search &> /dev/null)" ]; then
+        brew install zsh-history-substring-search &> /dev/null
+      fi
+
+      if [ -z "$(brew --prefix zsh-syntax-highlighting &> /dev/null)" ]; then
+        brew install zsh-syntax-highlighting &> /dev/null
+      fi
+
       brew tap caskroom/cask &> /dev/null
       brew install brew-cask &> /dev/null
     else
