@@ -6,6 +6,7 @@ alias -g C='| tr "\n" "\0" | pbcopy'
 alias -g G='| grep' # now you can do: ls foo G something
 alias -g P='| percol'
 alias -g PR=' & progress -mp $!'
+alias -g T='| tig'
 
 # Enable aliases to be sudo’ed
 alias sudo='sudo '

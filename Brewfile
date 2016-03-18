@@ -42,6 +42,7 @@ brew 'ssh-copy-id'
 brew 'stormssh'
 brew 'the_silver_searcher'
 brew 'thefuck'
+brew 'tig'
 brew 'tree'
 brew 'vagrant-completion'
 brew 'vim', args: ['override-system-vi']
