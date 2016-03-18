@@ -5,19 +5,19 @@ function install_command_line_tools {
     return
   fi
 
-  echo "To install the OS X Command Line Tools, click on the install button on the dialogue that appears."
+  echo "To install the OS X Command Line Tools, click on the install button on the dialogue that appears"
   echo -en "\tPress enter to continue... "
   read
 
   xcode-select --install
 
-  echo -en "\tPress enter when the installation is complete."
+  echo -en "\tPress enter when the installation is complete"
   read
 
   if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables &> /dev/null; then
-    success "Done installing OS X Command Line Tools."
+    success "Done installing OS X Command Line Tools"
   else
-    fail "Command line tools not found."
+    fail "Command line tools not found"
   fi
 }
 
@@ -85,8 +85,8 @@ function install_dotfiles {
 
   if [ -d "${current_path}/.git" ]; then
     echo "Updating the repository..."
-    success "Done."
     git pull -Xtheirs &> /dev/null
+    success "Done"
   fi
 
   for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc"; do
