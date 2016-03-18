@@ -13,11 +13,11 @@ echo "\n"
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   git checkout master &> /dev/null
 
-  if [ "$(git branch --list $1 | wc -l | tr -d ' ')" -eq 1 ]; then
+  if [ "$(git branch --list $1 | wc -l)" -eq 1 ]; then
     git branch -D $1
   fi
 
-  if [ "$(git ls-remote --exit-code . origin/$1 | wc -l | tr -d ' ')" -eq 1 ]; then
+  if [ "$(git ls-remote . origin/$1 | wc -l)" -eq 1 ]; then
     git push origin :$1
   fi
 fi
