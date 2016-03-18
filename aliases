@@ -1,4 +1,7 @@
 # Misc. Globals
+alias -g .....='cd ........'
+alias -g ....='cd ......'
+alias -g ...='....'
 alias -g C='| tr "\n" "\0" | pbcopy'
 alias -g G='| grep' # now you can do: ls foo G something
 alias -g P='| percol'
@@ -12,7 +15,6 @@ alias svi='sudo vi'
 # File System
 alias .....='cd ../../../..'
 alias ....='cd ../../..'
-alias ...='../..'
 alias ...='cd ../..'
 alias ..='cd ..'
 alias ~='cd ~'
@@ -30,8 +32,7 @@ alias less='less -r'
 # grc overides for ls
 #   Made possible through contributions from generous benefactors like
 #   `brew install coreutils`
-if $(gls &>/dev/null)
-then
+if $(gls &> /dev/null); then
   alias -g la='gls -AFhlp --color'
   alias -g ll='gls -Fhlp --color'
 else
