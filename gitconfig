@@ -68,6 +68,9 @@
 [fetch]
   prune = true
 
+[ghi]
+  token = !security find-internet-password -a  -s github.com -l 'ghi token' -w
+
 [github]
   user = abendy
 
