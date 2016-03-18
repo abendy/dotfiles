@@ -1,4 +1,7 @@
 # Misc. Globals
+alias -g .....='cd ........'
+alias -g ....='cd ......'
+alias -g ...='....'
 alias -g C='| tr "\n" "\0" | pbcopy'
 alias -g G='| grep' # now you can do: ls foo G something
 alias -g P='| percol'
@@ -12,7 +15,6 @@ alias svi='sudo vi'
 # File System
 alias .....='cd ../../../..'
 alias ....='cd ../../..'
-alias ...='../..'
 alias ...='cd ../..'
 alias ..='cd ..'
 alias ~='cd ~'
