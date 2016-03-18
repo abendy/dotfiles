@@ -83,7 +83,7 @@ function install_dotfiles {
     cd "$HOME/.dotfiles"
   fi
 
-  if [ `git branch --list master `]; then
+  if [ "git branch --list master" ]; then
     echo "Updating the repository..."
     git fetch origin &> /dev/null
     git reset --hard origin/master &> /dev/null
