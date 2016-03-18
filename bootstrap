@@ -85,8 +85,8 @@ function install_dotfiles {
 
   if [ -d "${current_path}/.git" ]; then
     echo "Updating the repository..."
-    git pull --ff-only &> /dev/null
     success "Done."
+    git pull -Xtheirs &> /dev/null
   fi
 
   for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc"; do
