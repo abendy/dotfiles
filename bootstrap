@@ -83,7 +83,7 @@ function install_dotfiles {
     cd "$HOME/.dotfiles"
   fi
 
-  if [ -d "${current_path}/.git" ]; then
+  if [ `git branch --list master `]; then
     echo "Updating the repository..."
     git pull -Xtheirs &> /dev/null
     success "Done"
