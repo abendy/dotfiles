@@ -15,6 +15,13 @@ sh osx
 
 You can create a `~/.localrc` file for additional local runtime configuration. This repo provides a template: `cp localrc ~/.localrc`.
 
+To update to the latest version:
+
+```sh
+cd ~/.dotfiles
+sh bootstrap
+```
+
    [xclt]: <https://developer.apple.com/downloads>
    [hb]: <http://brew.sh>
    [casks]: <http://caskroom.io>
