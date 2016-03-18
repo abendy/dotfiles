@@ -30,8 +30,7 @@ alias less='less -r'
 # grc overides for ls
 #   Made possible through contributions from generous benefactors like
 #   `brew install coreutils`
-if $(gls &>/dev/null)
-then
+if $(gls &> /dev/null); then
   alias -g la='gls -AFhlp --color'
   alias -g ll='gls -Fhlp --color'
 else
