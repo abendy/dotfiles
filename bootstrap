@@ -85,7 +85,8 @@ function install_dotfiles {
 
   if [ `git branch --list master `]; then
     echo "Updating the repository..."
-    git pull -Xtheirs &> /dev/null
+    git fetch origin &> /dev/null
+    git reset --hard origin/master &> /dev/null
     success "Done"
   fi
 
