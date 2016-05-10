@@ -12,16 +12,6 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# nvm
-export NVM_DIR="/usr/local/opt/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" 
-
-# pyenv
-export PYENV_ROOT="/usr/local/opt/pyenv"
-
-# rbenv
-export RBENV_ROOT="/usr/local/opt/rbenv"
-
 # PATH
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
@@ -29,8 +19,6 @@ export PATH="$HOME/.composer/vendor/bin:$PATH"
 # if [ -n "$(brew --prefix coreutils &> /dev/null)" ]; then
 #   export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
 # fi
-export PATH="$RBENV_ROOT/shims:$PATH"
-export PATH="$PYENV_ROOT/shims:$PATH"
 if [ -n "$(brew --prefix homebrew/php/php55 &> /dev/null)" ]; then
   export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH"
 fi
