@@ -11,13 +11,19 @@
 read -p "This will nuke the branch $1. Are you sure? (y/n) " -n 1
 echo "\n"
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  git checkout master &> /dev/null
+	current_branch=$(echo $(git rev-parse --abbrev-ref HEAD) | tr -d '\n' | tr -d ' ')
+
+	if [ $1 == $current_branch ]; then
+	  git checkout master &> /dev/null
+	fi
 
   if [ "$(git branch --list $1 | wc -l)" -eq 1 ]; then
-    git branch -D $1
+    git branch -D -- $1
   fi
 
   if [ "$(git ls-remote . origin/$1 | wc -l)" -eq 1 ]; then
-    git push origin :$1
+    git push origin -- :$1
   fi
+
+  # git checkout $current_branch &> /dev/null
 fi
