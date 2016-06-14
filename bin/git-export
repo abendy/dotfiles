@@ -1,3 +1,5 @@
 #!/bin/sh
 
+set -e
+
 git archive -v --format=tar.gz --output=../$1.tar.gz master .
