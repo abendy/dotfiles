@@ -2,10 +2,11 @@
 #
 # Copy the current branch name to the clipboard.
 
+function success () {
+  echo "[ \033[00;32mOK\033[0m ] $1\n"
+}
+
 echo $(git rev-parse --abbrev-ref HEAD) | tr -d '\n' | tr -d ' ' | pbcopy
 
 success "Current branch copied to the clipboard"
 
-function success () {
-  echo "[ \033[00;32mOK\033[0m ] $1\n"
-}
