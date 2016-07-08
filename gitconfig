@@ -36,6 +36,7 @@
   count         = !git shortlog -sn
   hist          = log --abbrev-commit --date=short --graph -n 10 --name-status --pretty=format:'%h %Cgreen%s%d %cd  %Creset[%cn]'
   last          = diff HEAD^
+  ll            = log --pretty=oneline
   streak        = !git-cal
 
 [apply]
