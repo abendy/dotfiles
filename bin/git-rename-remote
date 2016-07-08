@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+# Copy the current branch name to the clipboard.
+
+function success () {
+  echo "[ \033[00;32mOK\033[0m ] $1\n"
+}
+
+remotes=( $(git remote show -n) )
+
+select remote in "${remotes[@]}"; do 
+  if (( REPLY < 0 || REPLY == 1 + ${#remotes[@]} )); then
+    exit
+  elif (( REPLY > 0 && REPLY <= ${#remotes[@]} )); then
+  	remote=${remote}
+  break
+  fi
+done 
+
+repo_url=$(git remote show -n $remote | awk '/Fetch/{print $3}')
+pattern="(.+)\:(.+)\/(.+)"
+
+parts+=( [1]=$(echo $repo_url | sed -Ee "s/$pattern/\1/") )
+parts+=( [2]=$(echo $repo_url | sed -Ee "s/$pattern/\2/") )
+parts+=( [3]=$(echo $repo_url | sed -Ee "s/$pattern/\3/") )
+
+select i in "${parts[@]}"; do 
+  if (( REPLY == 1 )); then
+  	read -s -p "Enter new host: " host
+
+  	git remote set-url $remote $(echo $repo_url | sed -Ee "s/$pattern/$host\:\2\/\3/")
+
+  	break
+  elif (( REPLY == 2 )); then
+	read -s -p "Enter new host account: " account
+
+  	git remote set-url $remote $(echo $repo_url | sed -Ee "s/$pattern/\1\:$account\/\3/")
+
+  	break
+  elif (( REPLY == 3 )); then
+	read -s -p "Enter new repository: " repository
+
+  	git remote set-url $remote $(echo $repo_url | sed -Ee "s/$pattern/\1\:\2\/$repository/")
+
+  	break
+  fi
+done 
+
+echo "\n"
+
+new_url=$(git remote show -n $remote | awk '/Fetch/{print $3}')
+success "Updated Repository URL: $new_url"
