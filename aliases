@@ -60,6 +60,9 @@ alias upbr='brew update && brew cleanup && brew prune && brew doctor'
 alias dlimg='wget -r -l 1 -A jpeg,jpg,bmp,gif,png'
 # Gzip-enabled `curl`
 alias gurl='curl --compressed'
+alias localip='ipconfig getifaddr en0'
+alias myip='echo $(wget http://ipinfo.io/ip -qO -) | tr -d "\n" | pbcopy; pbpaste'
+alias ports='sudo lsof -iTCP -sTCP:LISTEN -P'
 
 # OS X
 # Hide hidden files in Finder
