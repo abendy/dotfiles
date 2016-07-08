@@ -23,6 +23,7 @@ brew 'gawk'
 brew 'ghi'
 brew 'gist'
 brew 'git'
+brew 'git-cal'
 brew 'git-extras'
 brew 'git-flow'
 brew 'gnu-sed', args: ['with-default-names']
