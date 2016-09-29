@@ -94,6 +94,7 @@ function install_dotfiles {
     complete_file_path=${current_path}/${file}
 
     if [ -f ${complete_file_path} ]; then
+      rm -f $HOME/.${file}
       cp -f ${complete_file_path} $HOME/.${file}
     fi
   done
@@ -106,6 +107,7 @@ function install_dotfiles {
 
   for file in ${current_path}/bin/*; do
     binlink=$HOME/bin/$(basename ${file})
+    rm -f ${binlink}
     cp -f ${file} ${binlink}
     chmod +x ${binlink}
   done
