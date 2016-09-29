@@ -1,6 +1,7 @@
 [alias]
   a             = add
   aa            = add --all
+  ai            = add -i
   ac            = !git add -A && git commit -vm
   amend         = commit --amend -C HEAD
   ap            = add --patch
@@ -10,6 +11,7 @@
                   # credit an author on the latest commit
   credit        = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
   fa            = fetch --all
+  hard          = reset --hard
   origins       = remote show origin
   remotes       = remote -v show
   s             = status
