@@ -94,23 +94,23 @@ function install_dotfiles {
     complete_file_path=${current_path}/${file}
 
     if [ -f ${complete_file_path} ]; then
-      ln -sF ${complete_file_path} $HOME/.${file}
+      cp -f ${complete_file_path} $HOME/.${file}
     fi
   done
   unset file
-  success "Done symlinking dotfiles to your home directory"
+  success "Done copying dotfiles to your home directory"
 
   if [ ! -d $HOME/bin ]; then
     mkdir -p $HOME/bin
   fi
 
   for file in ${current_path}/bin/*; do
-    symlink=$HOME/bin/$(basename ${file})
-    ln -sF ${file} ${symlink}
-    chmod +x ${symlink}
+    binlink=$HOME/bin/$(basename ${file})
+    cp -f ${file} ${binlink}
+    chmod +x ${binlink}
   done
   unset file
-  success "Done symlinking custom commands to your home bin directory"
+  success "Done copying custom commands to your home bin directory"
   success "Completed dotfiles bootstrapping"
 }
 
@@ -147,7 +147,7 @@ else
 
   install_oh_my_zsh
 
-  read -p "Ready to install dotfiles. This will overwrite any matching existing files in your home directory with symlinks. Are you sure? (y/n) " -n 1
+  read -p "Ready to install dotfiles. This will overwrite any matching existing files in your home directory. Are you sure? (y/n) " -n 1
   echo "\n"
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     install_dotfiles
