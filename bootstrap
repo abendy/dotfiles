@@ -33,22 +33,35 @@ function install_brews {
   if hash brew &> /dev/null; then
     echo "Installing $1 Brews"
 
+    brew update &> /dev/null
+
     if [ $1 == "ZSH" ]; then
 
       if [ -z "$(brew --prefix zsh-completions &> /dev/null)" ]; then
         brew install zsh-completions &> /dev/null
+      else
+        brew upgrade zsh-completions &> /dev/null
       fi
 
       if [ -z "$(brew --prefix zsh-history-substring-search &> /dev/null)" ]; then
         brew install zsh-history-substring-search &> /dev/null
+      else
+        brew upgrade zsh-history-substring-search &> /dev/null
       fi
 
       if [ -z "$(brew --prefix zsh-syntax-highlighting &> /dev/null)" ]; then
         brew install zsh-syntax-highlighting &> /dev/null
+      else
+        brew upgrade zsh-syntax-highlighting &> /dev/null
       fi
 
-      brew tap caskroom/cask &> /dev/null
-      brew install brew-cask &> /dev/null
+      if [ -z "$(brew cask &> /dev/null)" ]; then
+        brew tap caskroom/cask &> /dev/null
+        brew install brew-cask &> /dev/null
+      else
+        brew upgrade brew-cask &> /dev/null
+      fi
+
     else
       export HOMEBREW_CASK_OPTS="--appdir=/Applications"
       brew tap homebrew/bundle
