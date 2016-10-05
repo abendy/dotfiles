@@ -23,6 +23,17 @@ if hash grc &> /dev/null; then
   source "`brew --prefix`/etc/grc.bashrc"
 fi
 
+# pyenv
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+export PYENV_ROOT="/usr/local/opt/pyenv"
+export PATH="$PYENV_ROOT/shims:$PATH"
+
+# rbenv
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+export RBENV_ROOT="/usr/local/opt/rbenv"
+export PATH="$RBENV_ROOT/shims:$PATH"
+
 # z
 if hash z &> /dev/null; then
 . `brew --prefix`/etc/profile.d/z.sh
