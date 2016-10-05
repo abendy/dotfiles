@@ -23,6 +23,10 @@ if hash grc &> /dev/null; then
   source "`brew --prefix`/etc/grc.bashrc"
 fi
 
+# nvm
+export NVM_DIR="$HOME/.nvm"
+. "$(brew --prefix nvm)/nvm.sh"
+
 # pyenv
 if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
