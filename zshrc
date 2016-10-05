@@ -24,7 +24,6 @@ if hash grc &> /dev/null; then
 fi
 
 # nvm
-export NVM_DIR="$HOME/.nvm"
 . "$(brew --prefix nvm)/nvm.sh"
 
 # pyenv
