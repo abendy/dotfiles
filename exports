@@ -12,9 +12,6 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# nvm/Node
-export NVM_DIR="$HOME/.nvm"
-
 # PATH
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
