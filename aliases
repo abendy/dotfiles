@@ -81,6 +81,8 @@ alias show='defaults write com.apple.finder AppleShowAllFiles -bool true && kill
 alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
 
 # Shell
+# History
+alias his='history'
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
 # mimic vim functions
