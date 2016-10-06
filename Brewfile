@@ -34,7 +34,6 @@ brew 'html-xml-utils'
 brew 'httpie', args: ['HEAD']
 brew 'hub'
 brew 'moreutils'
-brew 'nvm'
 brew 'openssl'
 brew 'p7zip'
 brew 'pigz'
