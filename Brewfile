@@ -33,6 +33,7 @@ brew 'grc'
 brew 'html-xml-utils'
 brew 'httpie', args: ['HEAD']
 brew 'hub'
+brew 'jq'
 brew 'moreutils'
 brew 'openssl'
 brew 'p7zip'
