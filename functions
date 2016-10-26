@@ -75,7 +75,7 @@ function mkd() {
 
 # `o` with no arguments opens current directory, otherwise opens the given
 # location
-function op() {
+function o() {
   if [ $# -eq 0 ]; then
     open .
   else
