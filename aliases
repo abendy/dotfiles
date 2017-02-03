@@ -11,8 +11,6 @@ alias -g T='| tig'
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
 
-alias svi='sudo vi'
-
 # File System
 alias .....='cd ../../../..'
 alias ....='cd ../../..'
