@@ -2,7 +2,7 @@
   a             = add
   aa            = add --all
   ai            = add -i
-  ac            = !git add -A && git commit -mqv
+  ac            = !git add -A && git commit -qvm
   amend         = commit --amend -C HEAD
   ap            = add --patch
   ci            = commit -vm
