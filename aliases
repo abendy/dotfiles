@@ -41,6 +41,7 @@ fi
 alias ln='ln -v'
 alias lsd='ll | grep --color=never "^d"'
 alias lsf='ls -1 . | tr "\n" "\0" | xargs -0 -n 1 basename'
+alias lsh='ls -a | grep --color=never "^\.[^\.]"'
 # Intuitive map function
 alias map='xargs -n1'
 alias mv='mv -i'
