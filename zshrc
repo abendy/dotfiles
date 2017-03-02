@@ -23,6 +23,11 @@ if hash grc &> /dev/null; then
   source "`brew --prefix`/etc/grc.bashrc"
 fi
 
+# iterm2 shell integration
+if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
+  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+fi
+
 # pyenv
 if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
