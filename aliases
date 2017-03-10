@@ -21,6 +21,7 @@ alias cb='cd -'
 # Recursively delete `.DS_Store` files
 alias cleands='find . -type f -name "*.DS_Store" -ls -delete'
 alias cp='cp -i'
+alias curdir='basename "$PWD"'
 alias df='df -h'
 alias du='du -h -d 2'
 # Empty the Trash on all mounted volumes and the main HDD
