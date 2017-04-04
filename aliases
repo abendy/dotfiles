@@ -23,6 +23,7 @@ alias cleands='find . -type f -name "*.DS_Store" -ls -delete'
 alias cp='cp -i'
 alias curdir='basename "$PWD"'
 alias df='df -h'
+alias diff='icdiff --line-numbers --whole-file'
 alias du='du -h -d 2'
 # Empty the Trash on all mounted volumes and the main HDD
 # Also, clear Apple’s System Logs to improve shell startup speed

@@ -35,6 +35,7 @@ brew 'grc'
 brew 'html-xml-utils'
 brew 'httpie', args: ['HEAD']
 brew 'hub'
+brew 'icdiff'
 brew 'jq'
 brew 'less'
 brew 'mas'
