@@ -108,8 +108,8 @@ function install_dotfiles {
     success "Done"
   fi
 
-  git_user_name="git config --get user.name | tr -d '\n' | pbcopy"
-  git_user_email="git config --get user.email | tr -d '\n' | pbcopy"
+  git_user_name="echo $(git config --get user.name | tr -d '\n')"
+  git_user_email="echo $(git config --get user.email | tr -d '\n')"
 
   for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc"; do
     complete_file_path=${current_path}/${file}
