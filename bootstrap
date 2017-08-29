@@ -141,8 +141,8 @@ function install_dotfiles {
   read -p "Are these your git user details? (y/n) " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
-    git config --global user.name ${git_user_name}
-    git config --global user.email ${git_user_email}
+    git config --global user.name "${git_user_name}"
+    git config --global user.email "${git_user_email}"
     success "Saved"
   else
     echo "Setup your git user details"
