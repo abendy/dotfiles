@@ -14,9 +14,9 @@ function digga() {
 # opens the given location
 function e() {
   if [ $# -eq 0 ]; then
-    subl .;
+    code .;
   else
-    subl "$@";
+    code "$@";
   fi;
 }
 
