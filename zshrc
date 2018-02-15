@@ -51,7 +51,7 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # zsh-history-substring-search
 # must be behind `zsh-syntax-highlighting`
 # https://github.com/zsh-users/zsh-history-substring-search
-source /usr/local/Cellar/zsh-history-substring-search/1.0.0/zsh-history-substring-search.zsh
+source /usr/local/opt/zsh-history-substring-search/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 
 # Load the shell dotfiles, and then some:
 for file in ~/.{aliases,exports,functions,inputrc,localrc}; do
