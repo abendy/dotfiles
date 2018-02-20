@@ -2,7 +2,7 @@
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='/usr/local/bin/subl -w'
+  export EDITOR='/usr/local/bin/code'
 fi
 
 # Link Homebrew casks in `/Applications` rather than `~/Applications`
