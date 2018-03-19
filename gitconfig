@@ -56,10 +56,10 @@
 
 [core]
   autocrlf = input
-  editor = subl -n -w
+  editor = code
   excludesfile = ~/.gitignore
   filemode = true
-  tabwidth = 2
+  tabwidth = 4
   trustctime = false
 
 [commit]
