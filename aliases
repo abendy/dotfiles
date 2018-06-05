@@ -1,4 +1,5 @@
-# Misc. Globals
+## Misc. Globals
+
 alias -g .....='cd ........'
 alias -g ....='cd ......'
 alias -g ...='....'
@@ -7,11 +8,11 @@ alias -g G='| grep' # now you can do: ls foo G something
 alias -g P='| percol'
 alias -g PR=' & progress -mp $!'
 alias -g T='| tig'
-
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
 
-# File System
+## File System
+
 alias .....='cd ../../../..'
 alias ....='cd ../../..'
 alias ...='cd ../..'
@@ -51,14 +52,12 @@ alias mv='mv -i'
 alias rm='rm -i' # nocorrect rm -i
 alias tlf='tail -f'
 
-# Homebrew
-alias bri='brew install'
-alias brl='brew list'
-alias brn='brew info'
-alias brs='brew search'
-alias upbr='brew update && brew cleanup && brew prune && brew doctor'
+## Homebrew
 
-# Network
+alias upbrew='brew update && brew cleanup && brew prune && brew doctor'
+
+## Network
+
 alias dlimg='wget -r -l 1 -A jpeg,jpg,bmp,gif,png'
 # Gzip-enabled `curl`
 alias gurl='curl --compressed'
@@ -66,7 +65,8 @@ alias localip='ipconfig getifaddr en0'
 alias myip='echo $(wget http://ipinfo.io/ip -qO -) | tr -d "\n" | pbcopy; pbpaste'
 alias ports='sudo lsof -iTCP -sTCP:LISTEN -P'
 
-# OS X
+## OS X
+
 # Hide hidden files in Finder
 alias hide='defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder'
 # Clean up LaunchServices to remove duplicates in the “Open With” menu
@@ -78,16 +78,16 @@ alias ql='qlmanage -p 2>/dev/null'
 # Show hidden files in Finder
 alias show='defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder'
 
-# Sec
+## Security
+
 # Pipe my public key to my clipboard.
 alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
 
-# Shell
+## Shell
+
 # History
 alias his='history'
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
-# mimic vim functions
-alias :q='exit'
 # Reload the shell (i.e. invoke as a login shell)
 alias reload='exec $SHELL -l'
