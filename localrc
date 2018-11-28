@@ -1,7 +1,9 @@
- #
- # Local runtime configuration.
- # This file is not symlinked from your dotfiles repo. It must be manually copied to $HOME
- #/
+#!/usr/bin/env zsh
+
+#
+# Local runtime configuration.
+# This file is not symlinked from your dotfiles repo. It must be manually copied to $HOME
+#/
 
 # github
 export HOMEBREW_GITHUB_API_TOKEN=""

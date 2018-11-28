@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 function install_command_line_tools {
   if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables &> /dev/null; then

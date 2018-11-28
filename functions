@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 # Change file extensions recursively in current directory
 function change-extension() {
   foreach f (**/*.$1)
