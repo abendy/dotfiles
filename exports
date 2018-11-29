@@ -35,5 +35,9 @@ if [ -n "$(brew --prefix php@7.1 &> /dev/null)" ]; then
   export PATH="$(brew --prefix php@7.1)/bin:$PATH"
   export PATH="$(brew --prefix php@7.1)/sbin:$PATH"
 fi
+if [ -n "$(brew --prefix php@7.2 &> /dev/null)" ]; then
+  export PATH="$(brew --prefix php@7.2)/bin:$PATH"
+  export PATH="$(brew --prefix php@7.2)/sbin:$PATH"
+fi
 export PATH="$HOME/bin:$PATH"
 export PATH=".git/safe/../../bin:$PATH"
