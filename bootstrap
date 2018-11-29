@@ -146,10 +146,10 @@ function install_dotfiles {
   else
     echo "Setup your git user details"
 
-    read -s -p "Enter your git name: " git_user_name
+    read -p "Enter your git name: " git_user_name
     git config --global user.name "${git_user_name}"
 
-    read -s -p "Enter your git email: " git_user_email
+    read -p "Enter your git email: " git_user_email
     git config --global user.email "${git_user_email}"
 
     success "Saved"
