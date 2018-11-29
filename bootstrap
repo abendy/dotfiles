@@ -92,6 +92,8 @@ function install_oh_my_zsh {
 function install_dotfiles {
   current_path="${PWD}"
   current_dir="${PWD##*/}"
+  git_user_name="$(git config --get user.name | tr -d '\n')"
+  git_user_email="$(git config --get user.email | tr -d '\n')"
 
   if [ ! -d "$HOME/.dotfiles" ]; then
     fail "Clone dotfiles to ~/.dotfiles and re-run bootstrap"
@@ -132,11 +134,6 @@ function install_dotfiles {
   unset file
   success "Done copying custom commands to your home bin directory"
   success "Completed dotfiles bootstrapping"
-}
-
-function config_git_user_email {
-  git_user_name="$(git config --get user.name | tr -d '\n')"
-  git_user_email="$(git config --get user.email | tr -d '\n')"
 
   echo ${git_user_name} \<${git_user_email}\>
   echo
@@ -147,10 +144,10 @@ function config_git_user_email {
   else
     echo "Setup your git user details"
 
-    read -p "Enter your git username" "${git_user_name}"
+    read -p "Enter your git name: " $git_user_name
     git config --global user.name "${git_user_name}"
 
-    read -p "Enter your git email" "${git_user_email}"
+    read -p "Enter your git email: " $git_user_email
     git config --global user.email "${git_user_email}"
 
     success "Saved"
@@ -194,7 +191,6 @@ else
   echo "\n"
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     install_dotfiles
-    config_git_user_email
   fi
 fi
 
