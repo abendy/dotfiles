@@ -29,46 +29,54 @@ function install_homebrew {
   fi
 }
 
+function is_brew_installed {
+  for i in $(brew list -1); do 
+    if [ "$i" = "$1" ]; then 
+      echo 1; 
+    fi; 
+  done
+}
+
 function install_brews {
   if hash brew &> /dev/null; then
-    echo "Installing $1 Brews"
 
+    echo "Updating the Brew repository..."
     brew update &> /dev/null
 
     if [ $1 == "ZSH" ]; then
-
-      if [ -z "$(brew --prefix zsh-completions &> /dev/null)" ]; then
+      if [ -z "$(is_brew_installed zsh-completions)" ]; then
+        echo "Installing zsh-completions"
         brew install zsh-completions &> /dev/null
       else
+        echo "Upgrading zsh-completions"
         brew upgrade zsh-completions &> /dev/null
       fi
 
-      if [ -z "$(brew --prefix zsh-history-substring-search &> /dev/null)" ]; then
+      if [ -z "$(is_brew_installed zsh-history-substring-search)" ]; then
+        echo "Installing zsh-history-substring-search"
         brew install zsh-history-substring-search &> /dev/null
       else
+        echo "Upgrading zsh-history-substring-search"
         brew upgrade zsh-history-substring-search &> /dev/null
       fi
 
-      if [ -z "$(brew --prefix zsh-syntax-highlighting &> /dev/null)" ]; then
+      if [ -z "$(is_brew_installed zsh-syntax-highlighting)" ]; then
+        echo "Installing zsh-syntax-highlighting"
         brew install zsh-syntax-highlighting &> /dev/null
       else
+        echo "Upgrading zsh-syntax-highlighting"
         brew upgrade zsh-syntax-highlighting &> /dev/null
       fi
 
-      if [ -z "$(brew cask &> /dev/null)" ]; then
-        brew tap caskroom/cask &> /dev/null
-        brew install brew-cask &> /dev/null
-      else
-        brew upgrade brew-cask &> /dev/null
-      fi
-
     else
+      echo "Installing all Brews"
+
       export HOMEBREW_CASK_OPTS="--appdir=/Applications"
       brew tap homebrew/bundle
       brew bundle
     fi
 
-    success "Done installing Brews"
+    success "Done installing Brews and Casks"
   fi
 }
 
