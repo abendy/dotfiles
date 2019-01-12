@@ -111,13 +111,6 @@ function install_dotfiles {
     cd "$HOME/.dotfiles"
   fi
 
-  if [ "git branch --list master" ]; then
-    echo "Updating the repository..."
-    git fetch origin &> /dev/null
-    git reset --hard origin/master &> /dev/null
-    success "Done"
-  fi
-
   for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc"; do
     complete_file_path=${current_path}/${file}
 
@@ -181,6 +174,13 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 install_command_line_tools
 install_homebrew
+
+if [ "git branch --list master" ]; then
+  echo "Updating the repository..."
+  git fetch origin &> /dev/null
+  git reset --hard origin/master &> /dev/null
+  success "Done"
+fi
 
 if [ "$1" == "--force" -o "$1" == "-f" -o "$1" == "-yes" -o "$1" == "-y" ]; then
   install_brews
