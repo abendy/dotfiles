@@ -9,8 +9,8 @@ Includes:
 
 ```sh
 git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
-sh bootstrap
-sh osx
+./bootstrap
+./osx
 ```
 
 You can create a `~/.localrc` file for additional local runtime configuration. This repo provides a template: `cp localrc ~/.localrc`.
@@ -19,7 +19,7 @@ To update to the latest version:
 
 ```sh
 cd ~/.dotfiles
-sh bootstrap
+./bootstrap
 ```
 
    [xclt]: <https://developer.apple.com/downloads>
