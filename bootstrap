@@ -24,7 +24,7 @@ function install_command_line_tools {
 function install_homebrew {
   if ! hash brew &> /dev/null; then
     echo "Installing Homebrew"
-    (cd ~; echo -e "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &> /dev/null)
+    (cd ~; echo -en "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &> /dev/null)
     success "Done installing Homebrew"
   fi
 }
@@ -86,7 +86,7 @@ function install_oh_my_zsh {
   fi
 
   if [ ! -d "$ZSH" ]; then
-    echo "Installing Oh My Zsh\n"
+    echo -en "Installing Oh My Zsh\n"
 
     sh -c "$(cd ~)" &> /dev/null
     sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" &> /dev/null
@@ -190,7 +190,7 @@ if [ "git branch --list master" ]; then
 fi
 
 read -p "Ready to install brews. This will install ALL brews and casks in the Brewfile. Are you sure? (y/n) " -n 1 -r
-echo "\n"
+echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   install_brews
 else
@@ -200,7 +200,7 @@ fi
 install_oh_my_zsh
 
 read -p "Ready to install dotfiles. This will overwrite any matching existing files in your home directory. Are you sure? (y/n) " -n 1 -r
-echo "\n"
+echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   install_dotfiles
 fi
