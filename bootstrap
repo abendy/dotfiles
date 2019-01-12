@@ -182,7 +182,8 @@ if [ "git branch --list master" ]; then
 
   if [ -n "$(git log HEAD..origin/master)" ]; then
     echo Hell yeah, running self-update process...
-    git reset --hard origin/master &> /dev/null && ./$(basename $0) && exit
+    git reset --hard origin/master &> /dev/null
+    ./$(basename $0) && exit
   fi
 
   success "Done"
