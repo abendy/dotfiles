@@ -182,32 +182,26 @@ if [ "git branch --list master" ]; then
 
   if [ -n "$(git log HEAD..origin/master)" ]; then
     echo Hell yeah, running self-update process...
-    git reset --hard origin/master &> /dev/null && ./$(basename $0) $1 && exit
+    git reset --hard origin/master &> /dev/null && ./$(basename $0) && exit
   fi
 
   success "Done"
 fi
 
-if [ "$1" == "--force" -o "$1" == "-f" -o "$1" == "-yes" -o "$1" == "-y" ]; then
+read -p "Ready to install brews. This will install ALL brews and casks in the Brewfile. Are you sure? (y/n) " -n 1
+echo "\n"
+if [[ $REPLY =~ ^[Yy]$ ]]; then
   install_brews
-  install_oh_my_zsh
-  install_dotfiles
 else
-  read -p "Ready to install brews. This will install ALL brews and casks in the Brewfile. Are you sure? (y/n) " -n 1
-  echo "\n"
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    install_brews
-  else
-    install_brews ZSH
-  fi
+  install_brews ZSH
+fi
 
-  install_oh_my_zsh
+install_oh_my_zsh
 
-  read -p "Ready to install dotfiles. This will overwrite any matching existing files in your home directory. Are you sure? (y/n) " -n 1
-  echo "\n"
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    install_dotfiles
-  fi
+read -p "Ready to install dotfiles. This will overwrite any matching existing files in your home directory. Are you sure? (y/n) " -n 1
+echo "\n"
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  install_dotfiles
 fi
 
 env zsh
