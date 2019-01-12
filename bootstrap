@@ -55,13 +55,6 @@ function install_brews {
         brew upgrade zsh-syntax-highlighting &> /dev/null
       fi
 
-      if [ -z "$(brew cask &> /dev/null)" ]; then
-        brew tap caskroom/cask &> /dev/null
-        brew install brew-cask &> /dev/null
-      else
-        brew upgrade brew-cask &> /dev/null
-      fi
-
     else
       export HOMEBREW_CASK_OPTS="--appdir=/Applications"
       brew tap homebrew/bundle
