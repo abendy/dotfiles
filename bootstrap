@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 function install_command_line_tools {
   if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables &> /dev/null; then
@@ -158,11 +158,11 @@ function install_dotfiles {
 }
 
 function success () {
-  echo "[ \033[00;32mOK\033[0m ] $1\n"
+  echo -e "[ \033[00;32mOK\033[0m ] $1\n"
 }
 
 function fail () {
-  echo "[\033[0;31mFAIL\033[0m] $1\n"
+  echo -e "[\033[0;31mFAIL\033[0m] $1\n"
   exit
 }
 
