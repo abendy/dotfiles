@@ -175,21 +175,18 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 install_command_line_tools
 install_homebrew
 
-if [ -n "$(git branch --list master &> /dev/null)" ]; then
-  echo "Updating the repository..."
+if [ "git branch --list master" ]; then
+  echo "Pulling from GitHub..."
 
   git fetch origin &> /dev/null
 
-  if [ -n "$(git log  HEAD..origin/master &> /dev/null)" ]; then
-
-    if [ "$2" -ne "no-self-update" ]; then
-      echo Hell yeah, running Self-update process...
-      ./$0 $1 no-self-update
-    fi
-
+  if [ -n "$(git log HEAD..origin/master)" ]; then
+    echo Hell yeah, running Self-update process...
+    git reset --hard origin/master &> /dev/null
+    # ./sh $(basename $0) && exit
+    ./$0 $1 no-self-update && exit
   fi
 
-  git reset --hard origin/master &> /dev/null
   success "Done"
 fi
 
