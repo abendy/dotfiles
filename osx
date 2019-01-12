@@ -1,10 +1,28 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 # Ask for the administrator password upfront
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+#/
+ # Desktop
+ # ==========================================================
+ #/
+
+# "Show these items on the desktop"
+# External hard drives
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
+
+# Hard drives
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+
+# Removable media
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
+
+# Connected servers
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
 
 #/
  # Dock
@@ -36,7 +54,7 @@ defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
 
 # Set home folder as the default location for new Finder windows
 defaults write com.apple.finder NewWindowTarget -string "PfLo"
-defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}"
+defaults write com.apple.finder NewWindowTargetPath -string "file://$HOME"
 
 # Disable Creation of Metadata Files on Network Volumes
 # Avoids creation of .DS_Store and AppleDouble files.
@@ -123,7 +141,7 @@ defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
  #/
 
 # Save screenshots to the Downloads directory
-defaults write com.apple.screencapture location -string "${HOME}/Downloads"
+defaults write com.apple.screencapture location -string "$HOME/Downloads"
 
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
@@ -228,6 +246,9 @@ defaults write NSGlobalDomain AppleMetricUnits -bool false
 # Allow App Downloaded From Anywhere
 sudo spctl --master-disable
 
+# Disable "close windows when quitting an app"
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
+
 #/
  # Time Machine
  # ==========================================================
@@ -270,4 +291,4 @@ defaults write com.apple.DiskUtility advanced-image-options -bool true
  #/
 
 # Kill affected applications
-for app in Activity\ Monitor Address\ Book Calendar Contacts Dock Finder iTunes Mail Messages Safari SystemUIServer Terminal cfprefsd; do killall "${app}" > /dev/null 2>&1; done
+for app in Activity\ Monitor Address\ Book Calendar Contacts Dock Finder iTunes Mail Messages Safari SystemUIServer Terminal cfprefsd; do killall -HUP "${app}" > /dev/null 2>&1; done
