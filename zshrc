@@ -36,8 +36,8 @@ if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # z
-if hash z &> /dev/null; then
-. `brew --prefix`/etc/profile.d/z.sh
+if [ -d "$(brew --prefix)/opt/z" ]; then
+  . `brew --prefix`/etc/profile.d/z.sh
 fi
 
 # zsh-autosuggestions
