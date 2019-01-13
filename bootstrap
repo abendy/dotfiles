@@ -44,6 +44,22 @@ function install_brews {
     brew update &> /dev/null
 
     if [ $1 == "ZSH" ]; then
+      if [ -z "$(is_brew_installed zsh)" ]; then
+        echo "Installing zsh"
+        brew install zsh &> /dev/null
+      else
+        echo "Upgrading zsh"
+        brew upgrade zsh &> /dev/null
+      fi
+
+      if [ -z "$(is_brew_installed zsh-autosuggestions)" ]; then
+        echo "Installing zsh-autosuggestions"
+        brew install zsh-autosuggestions &> /dev/null
+      else
+        echo "Upgrading zsh-autosuggestions"
+        brew upgrade zsh-autosuggestions &> /dev/null
+      fi
+
       if [ -z "$(is_brew_installed zsh-completions)" ]; then
         echo "Installing zsh-completions"
         brew install zsh-completions &> /dev/null
@@ -58,6 +74,14 @@ function install_brews {
       else
         echo "Upgrading zsh-history-substring-search"
         brew upgrade zsh-history-substring-search &> /dev/null
+      fi
+
+      if [ -z "$(is_brew_installed zsh-lovers)" ]; then
+        echo "Installing zsh-lovers"
+        brew install zsh-lovers &> /dev/null
+      else
+        echo "Upgrading zsh-lovers"
+        brew upgrade zsh-lovers &> /dev/null
       fi
 
       if [ -z "$(is_brew_installed zsh-syntax-highlighting)" ]; then
