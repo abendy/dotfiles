@@ -40,6 +40,9 @@ if hash z &> /dev/null; then
 . `brew --prefix`/etc/profile.d/z.sh
 fi
 
+# zsh-autosuggestions
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 # zsh-completions
 fpath=(/usr/local/share/zsh-completions $fpath)
 fpath=(/usr/local/share/zsh/site-functions $fpath)
