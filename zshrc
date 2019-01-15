@@ -13,6 +13,9 @@ plugins=(composer vagrant)
 
 source $ZSH/oh-my-zsh.sh
 
+# autojump
+[ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
+
 # thefuck
 if hash fuck &> /dev/null; then
   eval "$(thefuck --alias)"
