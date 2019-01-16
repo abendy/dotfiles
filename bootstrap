@@ -43,54 +43,22 @@ function install_brews {
     echo "Updating the Brew repository..."
     brew update &> /dev/null
 
+    brews_installed=0;
+
     if [ $1 == "ZSH" ]; then
-      if [ -z "$(is_brew_installed zsh)" ]; then
-        echo "Installing zsh"
-        brew install zsh &> /dev/null
-      else
-        echo "Upgrading zsh"
-        brew upgrade zsh &> /dev/null
-      fi
 
-      if [ -z "$(is_brew_installed zsh-autosuggestions)" ]; then
-        echo "Installing zsh-autosuggestions"
-        brew install zsh-autosuggestions &> /dev/null
-      else
-        echo "Upgrading zsh-autosuggestions"
-        brew upgrade zsh-autosuggestions &> /dev/null
-      fi
-
-      if [ -z "$(is_brew_installed zsh-completions)" ]; then
-        echo "Installing zsh-completions"
-        brew install zsh-completions &> /dev/null
-      else
-        echo "Upgrading zsh-completions"
-        brew upgrade zsh-completions &> /dev/null
-      fi
-
-      if [ -z "$(is_brew_installed zsh-history-substring-search)" ]; then
-        echo "Installing zsh-history-substring-search"
-        brew install zsh-history-substring-search &> /dev/null
-      else
-        echo "Upgrading zsh-history-substring-search"
-        brew upgrade zsh-history-substring-search &> /dev/null
-      fi
-
-      if [ -z "$(is_brew_installed zsh-lovers)" ]; then
-        echo "Installing zsh-lovers"
-        brew install zsh-lovers &> /dev/null
-      else
-        echo "Upgrading zsh-lovers"
-        brew upgrade zsh-lovers &> /dev/null
-      fi
-
-      if [ -z "$(is_brew_installed zsh-syntax-highlighting)" ]; then
-        echo "Installing zsh-syntax-highlighting"
-        brew install zsh-syntax-highlighting &> /dev/null
-      else
-        echo "Upgrading zsh-syntax-highlighting"
-        brew upgrade zsh-syntax-highlighting &> /dev/null
-      fi
+      for brew in {zsh,zsh-autosuggestions,zsh-completions,zsh-history-substring-search,zsh-lovers,zsh-syntax-highlighting}; do
+        if [ -z "$(is_brew_installed $brew)" ]; then
+          echo "Installing $brew"
+          brew install zsh &> /dev/null
+          ((brews_installed++))
+        elif [ -n "$(brew outdated $brew)" ]; then
+          echo "Upgrading $brew"
+          brew upgrade zsh &> /dev/null
+          ((brews_installed++))
+        fi
+      done
+      unset brew
 
     else
       echo "Installing all Brews"
@@ -98,9 +66,15 @@ function install_brews {
       export HOMEBREW_CASK_OPTS="--appdir=/Applications"
       brew tap homebrew/bundle
       brew bundle
+      ((brews_installed++))
     fi
 
-    success "Done installing Brews and Casks"
+    if [ $brews_installed -gt 0 ]; then
+      success "Done installing Brews and Casks"
+    else
+      success "Nothing to install or update"
+    fi
+
   fi
 }
 
