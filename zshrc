@@ -32,8 +32,12 @@ if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
 fi
 
 # pyenv
-if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+if which pyenv-virtualenv-init > /dev/null; then
+  eval "$(pyenv virtualenv-init -)"
+fi
 
 # rbenv
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
