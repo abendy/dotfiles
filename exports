@@ -32,6 +32,7 @@ export LDFLAGS="-L$(brew --prefix openssl)/lib $LDFLAGS"
 
 # Node
 export PATH="$HOME/.ndenv/shims:$PATH"
+export PATH="$HOME/.ndenv/bin:$PATH"
 
 # Python
 export PATH="$HOME/.local/bin:$PATH"

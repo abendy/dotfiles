@@ -31,6 +31,9 @@ if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 fi
 
+# ndenv
+eval "$(ndenv init -)"
+
 # pyenv
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
