@@ -8,6 +8,10 @@ function success () {
 
 git init
 git commit -m 'root' --allow-empty
-git go develop
+git checkout -b develop
+
+if [ ! -f ".gitignore" ]; then 
+  touch .gitignore
+fi
 
 success "New git repository complete"
