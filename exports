@@ -14,13 +14,16 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# PATH
 # System
 export PATH="/usr/local/sbin:/usr/sbin:/sbin"
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 
 # OpenSSL
 export PATH="/usr/local/opt/openssl/bin:$PATH"
+
+# fixes python build issue https://github.com/pyenv/pyenv/issues/993
+export CFLAGS="-I$(brew --prefix openssl)/include $CFLAGS"
+export LDFLAGS="-L$(brew --prefix openssl)/lib $LDFLAGS"
 
 # GNU coreutils
 # if [ -n "$(brew --prefix coreutils &> /dev/null)" ]; then

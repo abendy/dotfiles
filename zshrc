@@ -21,7 +21,7 @@ if hash fuck &> /dev/null; then
   eval "$(thefuck --alias)"
 fi
 
-#grc
+# grc
 if hash grc &> /dev/null; then
   source "`brew --prefix`/etc/grc.bashrc"
 fi
