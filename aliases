@@ -24,7 +24,7 @@ alias cb='cd -'
 # Recursively delete `.DS_Store` files
 alias cleands='find . -type f -name "*.DS_Store" -ls -delete'
 alias cp='cp -i'
-alias curdir='basename "$PWD"'
+alias curdir='echo $(basename "$PWD" | tr -d "\n\r")'
 alias df='df -h'
 alias diff='icdiff --line-numbers --whole-file'
 alias du='du -h -d 2'
