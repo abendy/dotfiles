@@ -203,4 +203,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   install_dotfiles
 fi
 
-env zsh
+echo "Invoke ZSH"
+exec zsh
+success "Done"
