@@ -38,7 +38,7 @@ export PATH="$HOME/.ndenv/bin:$PATH"
 export PATH="$HOME/Library/Python/2.7/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.pyenv/shims:$PATH"
-export PATH="/usr/local/opt/pyenv-virtualenv/shims:$PATH"
+export PATH="$(brew --prefix pyenv-virtualenv)/shims:$PATH"
 
 # Ruby
 export PATH="$HOME/.rbenv/shims:$PATH"
