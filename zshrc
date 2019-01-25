@@ -19,9 +19,6 @@ for file in ~/.{aliases,exports,functions,inputrc,localrc}; do
 done
 unset file
 
-# autojump
-[ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
-
 # thefuck
 if hash fuck &> /dev/null; then
   eval "$(thefuck --alias)"
@@ -35,30 +32,6 @@ fi
 # iterm2 shell integration
 if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-fi
-
-# ndenv
-eval "$(ndenv init -)"
-
-# pipenv
-if which pipenv &> /dev/null; then
-  eval "$(pipenv --completion)"
-fi
-
-# pyenv
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
-if which pyenv-virtualenv-init > /dev/null; then
-  eval "$(pyenv virtualenv-init -)"
-fi
-
-# rbenv
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-
-# z
-if [ -d "$(brew --prefix)/opt/z" ]; then
-  . `brew --prefix`/etc/profile.d/z.sh
 fi
 
 # zsh-autosuggestions

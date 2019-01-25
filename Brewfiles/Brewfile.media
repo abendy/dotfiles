@@ -7,3 +7,4 @@ cask "soundflower"
 cask "spotify-notifications"
 cask "spotify"
 cask "vlc"
+mas "Helium", id: 1054607607
