@@ -1,4 +1,5 @@
 brew "dnsmasq"
+brew "gnupg"
 brew "httpie", args: ["HEAD"]
 brew "ssh-copy-id"
 brew "stormssh"
