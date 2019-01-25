@@ -20,7 +20,6 @@ brew "thefuck"
 brew "tomanthony/brews/itermocil"
 brew "vim", args: ["override-system-vi"]
 brew "wget", args: ["with-iri"]
-brew "zsh-autosuggestions"
 brew "zsh-completions"
 brew "zsh-history-substring-search"
 brew "zsh-syntax-highlighting"
