@@ -46,10 +46,6 @@ alias mv='mv -i'
 alias rm='rm -i' # nocorrect rm -i
 alias tlf='tail -f'
 
-## Homebrew
-
-alias upbrew='brew update && brew cleanup && brew prune && brew doctor'
-
 ## Network
 
 alias dlimg='wget -r -l 1 -A jpeg,jpg,bmp,gif,png'
@@ -83,5 +79,3 @@ alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
 alias his='history'
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
-# Reload the shell (i.e. invoke as a login shell)
-alias reload='exec $SHELL -l'
