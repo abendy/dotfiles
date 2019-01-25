@@ -1,0 +1,8 @@
+brew "docker-compose"
+brew "docker-machine-completion"
+brew "docker-machine", restart_service: true
+brew "docker"
+cask "docker-toolbox"
+cask "docker"
+cask "kite"
+cask "kitematic"
