@@ -25,9 +25,10 @@ if hash fuck &> /dev/null; then
 fi
 
 # grc
-if hash grc &> /dev/null; then
-  source "`brew --prefix`/etc/grc.bashrc"
-fi
+# !! manually using `colourify`
+# if hash grc &> /dev/null; then
+#   source "`brew --prefix`/etc/grc.bashrc"
+# fi
 
 # iterm2 shell integration
 if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
