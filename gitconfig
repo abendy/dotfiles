@@ -52,13 +52,28 @@
   branch = auto
   diff = auto
   status = auto
-  ui = auto
+  ui = true
+
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22
+
+[color "diff"]
+  commit = yellow bold
+  frag = magenta bold
+  meta = yellow
+  new = green bold
+  old = red bold
+  whitespace = red reverse
 
 [core]
   autocrlf = input
   editor = code
   excludesfile = ~/.gitignore
   filemode = true
+  pager = diff-so-fancy | less --tabs=4 -RFX
   tabwidth = 4
   trustctime = false
 
