@@ -1,0 +1,6 @@
+brew "blackfireio/blackfire/blackfire-agent"
+brew "blackfireio/blackfire/blackfire-php73"
+brew "composer"
+brew "php"
+brew "phplint"
+brew "phpunit"

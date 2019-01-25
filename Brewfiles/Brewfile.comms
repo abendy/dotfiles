@@ -1,0 +1,3 @@
+cask "skype-for-business"
+cask "skype"
+cask "slack"
