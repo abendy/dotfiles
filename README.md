@@ -20,19 +20,19 @@ You can create a `~/.localrc` file for additional local runtime configuration. T
 Check if all dependencies are installed in a Brewfile.
 
 ```sh
-brew bundle check --verbose --file=Brewfiles/<file>
+brew bundle check --verbose --file=Brewfiles/<Brewfile>
 ```
 
 Install or upgrade all dependencies in a Brewfile.
 
 ```sh
-brew bundle install --verbose --file=Brewfiles/<file>
+brew bundle install --verbose --file=Brewfiles/<Brewfile>
 ```
 
 List all dependencies present in a Brewfile, optionally limiting by types. You can do this if you do not want to install all dependencies, then copy a dependency and install it manually.
 
 ```sh
-brew bundle list [--all|--brews|--casks|--taps|--mas] --file=Brewfiles/
+brew bundle list [--all|--brews|--casks|--taps|--mas] --file=Brewfiles/<Brewfile>
 ```
 
 
