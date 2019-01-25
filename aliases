@@ -26,24 +26,16 @@ alias cleands='find . -type f -name "*.DS_Store" -ls -delete'
 alias cp='cp -i'
 alias curdir='echo $(basename "$PWD" | tr -d "\n\r")'
 alias df='df -h'
-alias diff='icdiff --line-numbers --whole-file'
+alias diff='icdiff --highlight --line-numbers --show-all-spaces --whole-file'
 alias du='du -h -d 2'
 # Empty the Trash on all mounted volumes and the main HDD
 # Also, clear Apple’s System Logs to improve shell startup speed
 alias emptytrash='sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl'
 alias find='find -L'
 alias gz='gzip -9n -v -S .gz'
+alias -g la='colourify ls -AFhl'
 alias less='less -r'
-# grc overides for ls
-#   Made possible through contributions from generous benefactors like
-#   `brew install coreutils`
-if $(gls &> /dev/null); then
-  alias -g la='gls -AFhlp --color'
-  alias -g ll='gls -Fhlp --color'
-else
-  alias -g la='ls -AFGhlp'
-  alias -g ll='ls -FGhlp'
-fi
+alias -g ll='colourify ls -Fhl'
 alias ln='ln -v'
 alias lsd='ll | grep --color=never "^d"'
 alias lsf='ls -1 . | tr "\n" "\0" | xargs -0 -n 1 basename'
@@ -53,10 +45,6 @@ alias map='xargs -n1'
 alias mv='mv -i'
 alias rm='rm -i' # nocorrect rm -i
 alias tlf='tail -f'
-
-## Homebrew
-
-alias upbrew='brew update && brew cleanup && brew prune && brew doctor'
 
 ## Network
 
@@ -91,5 +79,3 @@ alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
 alias his='history'
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
-# Reload the shell (i.e. invoke as a login shell)
-alias reload='exec $SHELL -l'
