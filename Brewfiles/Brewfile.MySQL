@@ -1,0 +1,5 @@
+brew "mycli"
+brew "mysql"
+brew "mysqltuner"
+cask "mysqlworkbench"
+cask "sequel-pro"

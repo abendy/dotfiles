@@ -1,0 +1,10 @@
+brew "youtube-dl"
+cask "beamer"
+cask "handbrake"
+cask "iina"
+cask "soundcast"
+cask "soundflower"
+cask "spotify-notifications"
+cask "spotify"
+cask "vlc"
+mas "Helium", id: 1054607607

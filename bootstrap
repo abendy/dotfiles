@@ -47,7 +47,7 @@ function install_brews {
 
     if [ $1 == "ZSH" ]; then
 
-      for brew in {zsh,zsh-autosuggestions,zsh-completions,zsh-history-substring-search,zsh-lovers,zsh-syntax-highlighting}; do
+      for brew in {zsh,zsh-completions,zsh-history-substring-search,zsh-syntax-highlighting}; do
         if [ -z "$(is_brew_installed $brew)" ]; then
           echo "Installing $brew"
           brew install zsh &> /dev/null
@@ -204,5 +204,4 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 echo "Invoke ZSH"
-exec zsh
-success "Done"
+exec zsh && success "Done"
