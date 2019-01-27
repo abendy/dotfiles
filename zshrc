@@ -14,7 +14,7 @@ plugins=(composer vagrant)
 source $ZSH/oh-my-zsh.sh
 
 # Load the shell dotfiles, and then some:
-for file in ~/.{aliases,exports,functions,inputrc,localrc}; do
+for file in ~/.{exports,aliases,functions,localrc}; do
   [ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
 unset file
@@ -47,4 +47,3 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # must be behind `zsh-syntax-highlighting`
 # https://github.com/zsh-users/zsh-history-substring-search
 source /usr/local/opt/zsh-history-substring-search/share/zsh-history-substring-search/zsh-history-substring-search.zsh
-
