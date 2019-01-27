@@ -48,12 +48,17 @@ function g() {
   if [[ $# > 0 ]]; then
     git $@
   else
-    git status
+    if hash tig &> /dev/null; then
+      tig status
+    elif
+      git status
+    fi
   fi
 }
 
 # Complete g like git
 compdef g=git
+compdef tig=git
 
 # Create a new directory and enter it
 function mkd() {
