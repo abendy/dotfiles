@@ -30,3 +30,6 @@ fi
 
 # User (inc. bins supplied by this repo)
 export PATH="$HOME/bin:$PATH"
+
+# Exports PATH for in-project git repositories e.g. `./bin`
+export PATH=".git/safe/../../bin:$PATH"
