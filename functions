@@ -1,12 +1,5 @@
 #!/usr/bin/env zsh
 
-# Change file extensions recursively in current directory
-function change-extension() {
-  foreach f (**/*.$1)
-    mv $f $f:r.$2
-  end
-}
-
 # All the dig info
 function digga() {
   dig +nocmd "$1" any +multiline +noall +answer
@@ -58,14 +51,6 @@ function g() {
     git status
   fi
 }
-
-# Use Git’s colored diff when available
-hash git &>/dev/null
-if [ $? -eq 0 ]; then
-  function diff() {
-    git diff --no-index --color-words "$@"
-  }
-fi
 
 # Complete g like git
 compdef g=git
