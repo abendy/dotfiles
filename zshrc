@@ -9,7 +9,12 @@ ZSH_THEME="sunaku"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(composer vagrant)
+plugins=(
+  dircycle    # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#dircycle
+  dirpersist  # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#dirpersist
+  sudo        # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#sudo
+  vscode      # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#vscode
+)
 
 source $ZSH/oh-my-zsh.sh
 
