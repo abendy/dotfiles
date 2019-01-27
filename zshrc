@@ -13,22 +13,15 @@ plugins=(composer vagrant)
 
 source $ZSH/oh-my-zsh.sh
 
-# Load the shell dotfiles, and then some:
-for file in ~/.{exports,aliases,functions,localrc}; do
-  [ -r "$file" ] && [ -f "$file" ] && source "$file"
-done
-unset file
-
 # thefuck
 if hash fuck &> /dev/null; then
   eval "$(thefuck --alias)"
 fi
 
 # grc
-# !! manually using `colourify`
-# if hash grc &> /dev/null; then
-#   source "`brew --prefix`/etc/grc.bashrc"
-# fi
+if hash grc &> /dev/null; then
+  source "`brew --prefix`/etc/grc.bashrc"
+fi
 
 # iterm2 shell integration
 if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
@@ -47,3 +40,9 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # must be behind `zsh-syntax-highlighting`
 # https://github.com/zsh-users/zsh-history-substring-search
 source /usr/local/opt/zsh-history-substring-search/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+
+# Load the shell dotfiles, and then some:
+for file in ~/.{exports,aliases,functions,localrc}; do
+  [ -r "$file" ] && [ -f "$file" ] && source "$file"
+done
+unset file

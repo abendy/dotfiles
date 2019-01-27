@@ -17,6 +17,7 @@ alias .....='cd ../../../..'
 alias ....='cd ../../..'
 alias ...='cd ../..'
 alias ..='cd ..'
+alias cat='bat'
 # Recursively delete `.DS_Store` files
 alias cleands='find . -type f -name "*.DS_Store" -ls -delete'
 alias cp='cp -i'

@@ -64,8 +64,7 @@ function install_brews {
       echo "Installing all Brews"
 
       export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-      brew tap homebrew/bundle
-      brew bundle
+      brew bundle install --verbose --file=Brewfile
       ((brews_installed++))
     fi
 
@@ -203,5 +202,5 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   install_dotfiles
 fi
 
-echo "Invoke ZSH"
-exec zsh && success "Done"
+echo "Reloading shell..."
+exec zsh
