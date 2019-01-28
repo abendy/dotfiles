@@ -31,7 +31,7 @@ function install_homebrew {
 
 function is_brew_installed {
   for i in $(brew list -1); do 
-    if [ "$i" = "$1" ]; then 
+    if [[ "$i" == "$1" ]]; then 
       echo 1; 
     fi; 
   done
@@ -45,26 +45,27 @@ function install_brews {
 
     brews_installed=0;
 
-    if [ $1 == "ZSH" ]; then
-
+    if [[ $1 == "ZSH" ]]; then
       for brew in {zsh,zsh-completions,zsh-history-substring-search,zsh-syntax-highlighting}; do
         if [ -z "$(is_brew_installed $brew)" ]; then
           echo "Installing $brew"
-          brew install zsh &> /dev/null
-          ((brews_installed++))
+
+          brew install $brew &> /dev/null
         elif [ -n "$(brew outdated $brew)" ]; then
           echo "Upgrading $brew"
-          brew upgrade zsh &> /dev/null
-          ((brews_installed++))
+
+          brew upgrade $brew &> /dev/null
         fi
+
+        ((brews_installed++))
       done
       unset brew
 
     else
       echo "Installing all Brews"
 
-      export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-      brew bundle install --verbose --file=Brewfile
+      brew bundle install --verbose --file=Brewfile &> dotfiles.log
+
       ((brews_installed++))
     fi
 
