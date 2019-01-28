@@ -9,24 +9,24 @@ ZSH_THEME="sunaku"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
 plugins=(
-  brew        # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#brew
-  copyfile    # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#copyfile
-  dircycle    # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#dircycle
-  # dirhistory  # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#dirhistory
-  dirpersist  # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#dirpersist
-  docker      # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#docker
-  extract     # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#extract
-  gitfast     # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#gitfast
-  history     # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#history
-  npm         # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#npm
-  pip         # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#pip
-  pyenv       # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#pyenv
-  pylint      # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#pylint
-  python      # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#python
-  sudo        # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#sudo
+  brew        # `brews`
+  copyfile    # `copyfile <file>`
+  dircycle    # Cycle directory history with Ctrl+Shift+Left/Right
+  dirpersist
+  docker
+  extract     # `extract`
+  gitfast
+  history     # `h`
+  npm
+  pip
+  pyenv
+  pylint
+  python
+  sudo        # ESC x2 for sudo!
   vscode      # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#vscode
-  yarn        # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#yarn
+  yarn
 )
 
 source $ZSH/oh-my-zsh.sh
