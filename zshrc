@@ -12,6 +12,7 @@ ZSH_THEME="sunaku"
 plugins=(
   dircycle    # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#dircycle
   dirpersist  # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#dirpersist
+  history     # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#history
   sudo        # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#sudo
   vscode      # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#vscode
 )

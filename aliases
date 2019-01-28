@@ -64,7 +64,5 @@ alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
 
 ## Shell
 
-# History
-alias his='history'
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
