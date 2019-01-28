@@ -5,7 +5,7 @@
 alias -g .....='cd ........'
 alias -g ....='cd ......'
 alias -g ...='cd....'
-alias -g C='| tr "\n" "\0" | pbcopy'
+alias -g C='| tr "\n\r" "\0" | pbcopy'
 alias -g G='| grep' # now you can do: ls foo G something
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
@@ -41,7 +41,7 @@ alias rm='rm -i' # nocorrect rm -i
 ## Network
 
 alias localip='ipconfig getifaddr en0'
-alias myip='echo $(wget http://ipinfo.io/ip -qO - | tr -d "\n")'
+alias myip='echo $(wget http://ipinfo.io/ip -qO - | tr -d "\n\r")'
 alias ports='sudo lsof -iTCP -sTCP:LISTEN -P'
 
 ## OS X
@@ -57,14 +57,7 @@ alias ql='qlmanage -p 2>/dev/null'
 # Show hidden files in Finder
 alias show='defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder'
 
-## Security
-
-# Pipe my public key to my clipboard.
-alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
-
 ## Shell
 
-# History
-alias his='history'
 # Pretty print the path
-alias path='echo $PATH | tr -s ":" "\n"'
+alias path='echo $PATH | tr -s ":" "\n\r"'
