@@ -57,11 +57,6 @@ alias ql='qlmanage -p 2>/dev/null'
 # Show hidden files in Finder
 alias show='defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder'
 
-## Security
-
-# Pipe my public key to my clipboard.
-alias pubkey='more ~/.ssh/id_rsa.pub | pbcopy'
-
 ## Shell
 
 # Pretty print the path
