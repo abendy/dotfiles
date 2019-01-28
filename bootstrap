@@ -94,7 +94,7 @@ function install_oh_my_zsh {
   else
     echo "Upgrading Oh My Zsh"
 
-    env ZSH=$ZSH sh $ZSH/tools/upgrade.sh
+    env ZSH=$ZSH sh $ZSH/tools/upgrade.sh &> /dev/null
 
     success "Done upgrading Oh My Zsh"
   fi
