@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# alt + l/r
+# alt + l/r (back/forward one word)
 bindkey -e
 bindkey '^[^[[D' backward-word
 bindkey '^[^[[C' forward-word
