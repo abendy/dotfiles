@@ -44,6 +44,7 @@ function e() {
 
 # No arguments: `git status`
 # With arguments: acts like `git`
+unalias g
 function g() {
   if [[ $# > 0 ]]; then
     git $@
