@@ -1,6 +1,5 @@
 brew "bash"
 brew "bat"
-brew "brew-cask-completion"
 brew "coreutils"
 brew "curl", args: ["with-openssl"]
 brew "diff-so-fancy"
