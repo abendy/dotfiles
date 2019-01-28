@@ -19,28 +19,28 @@ function e() {
 # Usage: extract <file>
 # Description: extracts archived files / mounts disk images
 # Note: .dmg/hdiutil is Mac OS X-specific.
-function extract() {
-  if [ -f $1 ]; then
-    case $1 in
-      *.tar.bz2)  tar -jxvf $1                        ;;
-      *.tar.gz)   tar -zxvf $1                        ;;
-      *.bz2)      bunzip2 $1                          ;;
-      *.dmg)      hdiutil mount $1                    ;;
-      *.gz)       gunzip $1                           ;;
-      *.tar)      tar -xvf $1                         ;;
-      *.tbz2)     tar -jxvf $1                        ;;
-      *.tgz)      tar -zxvf $1                        ;;
-      *.zip)      unzip $1                            ;;
-      *.ZIP)      unzip $1                            ;;
-      *.pax)      cat $1 | pax -r                     ;;
-      *.pax.Z)    uncompress $1 --stdout | pax -r     ;;
-      *.Z)        uncompress $1                       ;;
-      *)          echo "'$1' cannot be extracted/mounted via extract()" ;;
-    esac
-  else
-    echo "'$1' is not a valid file"
-  fi
-}
+# function extract() {
+#   if [ -f $1 ]; then
+#     case $1 in
+#       *.tar.bz2)  tar -jxvf $1                        ;;
+#       *.tar.gz)   tar -zxvf $1                        ;;
+#       *.bz2)      bunzip2 $1                          ;;
+#       *.dmg)      hdiutil mount $1                    ;;
+#       *.gz)       gunzip $1                           ;;
+#       *.tar)      tar -xvf $1                         ;;
+#       *.tbz2)     tar -jxvf $1                        ;;
+#       *.tgz)      tar -zxvf $1                        ;;
+#       *.zip)      unzip $1                            ;;
+#       *.ZIP)      unzip $1                            ;;
+#       *.pax)      cat $1 | pax -r                     ;;
+#       *.pax.Z)    uncompress $1 --stdout | pax -r     ;;
+#       *.Z)        uncompress $1                       ;;
+#       *)          echo "'$1' cannot be extracted/mounted via extract()" ;;
+#     esac
+#   else
+#     echo "'$1' is not a valid file"
+#   fi
+# }
 
 # No arguments: `git status`
 # With arguments: acts like `git`
@@ -74,6 +74,20 @@ function o() {
     open "$@"
   fi
 }
+
+# Use percol to browser shell history
+if which percol &> /dev/null; then
+  function percol_select_history() {
+    local tac
+    exists gtac && tac="gtac" || { exists tac && tac="tac" || { tac="tail -r" } }
+    BUFFER=$(fc -l -n 1 | eval $tac | percol --query "$LBUFFER" --match-method regex)
+    CURSOR=$#BUFFER         # move cursor
+    zle -R -c               # refresh
+  }
+
+  zle -N percol_select_history
+  bindkey '^R' percol_select_history
+fi
 
 # Create a .tar.gz archive, using `zopfli`, `pigz` or `gzip` for compression
 function targz() {
