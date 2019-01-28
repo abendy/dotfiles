@@ -1,1 +1,3 @@
 brew "ndenv"
+brew "nodenv"
+brew "nvm"
