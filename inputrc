@@ -1,22 +1,37 @@
 #!/usr/bin/env zsh
 
-# alt + l/r (back/forward one word)
+#   alt + left   : move to next word (below)
+#   alt + right  : move to previous word (below)
+
+#   ctrl + w     : delete word backward
+#   ctrl + r     : reverse search
+#   ctrl + y     : insert last deleted word
+#   ctrl + u     : clear line
+#   ctrl + i     : insert TAB
+#   ctrl + a     : move to beginning of line
+#   ctrl + s     : forward search
+#   ctrl + k     : delete from character to end of line
+#   ctrl + x     : insert last command result (below)
+#   ctrl + c     : cancel
+#   ctrl + n     : clear line
+#   ctrl + space : tig status (below)
+
+#   fn + left    : move to beginning of line
+#   fn + right   : move to end of line
+
 bindkey -e
+
+# alt + left/right : back/forward one word
 bindkey '^[^[[D' backward-word
 bindkey '^[^[[C' forward-word
 
-#TODO (delete whole line)
-
-#TODO (delete before the cursor)
-
-#TODO (delete after the cursor)
-
-
-
-# Use Ctrl-x,Ctrl-l to get the output of the last command
+# ctrl + x : insert last command result
 zmodload -i zsh/parameter
 insert-last-command-output() {
   LBUFFER+="$(eval $history[$((HISTCMD-1))])"
 }
 zle -N insert-last-command-output
-bindkey "^X^L" insert-last-command-output
+bindkey '^x' insert-last-command-output
+
+# ctrl + space : tig status
+bindkey -s '^ ' 'tig status^M'
