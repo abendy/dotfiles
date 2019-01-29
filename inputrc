@@ -9,14 +9,13 @@
 #   ctrl + u     : clear line
 #   ctrl + i     : insert TAB
 #   ctrl + a     : move to beginning of line
-#   ctrl + s     : forward search
 #   ctrl + g     : browse z history with fzf
 #   ctrl + h     : browse zsh history with percol
 #   ctrl + k     : delete from character to end of line
 #   ctrl + x     : insert last command result (below)
 #   ctrl + c     : cancel
 #   ctrl + n     : clear line
-#   ctrl + space : tig status (below)
+#   ctrl + space : git status (below)
 
 #   fn + left    : move to beginning of line
 #   fn + right   : move to end of line
@@ -47,5 +46,5 @@ insert-last-command-output() {
 zle -N insert-last-command-output
 bindkey '^X' insert-last-command-output
 
-# ctrl + space : tig status
-bindkey -s '^ ' 'tig status^M'
+# ctrl + space : git status
+bindkey -s '^ ' 'git status^M'
