@@ -36,6 +36,12 @@ if hash fuck &> /dev/null; then
   eval "$(thefuck --alias)"
 fi
 
+# fzf
+[ -f $HOME/.fzf.zsh ] && source ~/.fzf.zsh
+
+# fzf-z
+[ -f $HOME/.dotfiles/zsh/fzf-z.plugin.zsh ] && source $HOME/.dotfiles/zsh/fzf-z.plugin.zsh
+
 # grc
 if hash grc &> /dev/null; then
   source "`brew --prefix`/etc/grc.bashrc"
@@ -44,6 +50,11 @@ fi
 # iterm2 shell integration
 if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+fi
+
+# z
+if [ -d "$(brew --prefix)/opt/z" ]; then
+  . `brew --prefix`/etc/profile.d/z.sh
 fi
 
 # zsh-completions
