@@ -4,16 +4,16 @@
 #   alt + right  : move to previous word (below)
 
 #   ctrl + w     : delete word backward
-#   ctrl + r     : reverse search
+#   ctrl + r     : reverse search with fzf
 #   ctrl + t     : search current directory with fzf and use path on the command line
 #   ctrl + y     : insert last deleted word
 #   ctrl + u     : clear line
 #   ctrl + i     : insert TAB
 #   ctrl + a     : move to beginning of line
-#   ctrl + g     : browse z history with fzf
-#   ctrl + h     : browse zsh history with percol
+#   ctrl + h     : reverse search with percol
 #   ctrl + k     : delete from character to end of line
 #   ctrl + x     : insert last command result (below)
+#   ctrl + z     : browse z history with fzf
 #   ctrl + c     : cancel
 #   ctrl + n     : clear line
 #   ctrl + space : git status (below)
