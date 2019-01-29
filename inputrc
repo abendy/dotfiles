@@ -47,5 +47,5 @@ insert-last-command-output() {
 zle -N insert-last-command-output
 bindkey '^X' insert-last-command-output
 
-# ctrl + space : git status
-bindkey -s '^ ' 'git status^M'
+# ctrl + space : tig status
+bindkey -s '^ ' 'tig status^M'

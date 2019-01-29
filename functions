@@ -49,11 +49,7 @@ function g() {
   if [[ $# > 0 ]]; then
     git $@
   else
-    if hash tig &> /dev/null; then
-      tig status
-    else
-      git status
-    fi
+    git status
   fi
 }
 
