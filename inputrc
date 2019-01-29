@@ -12,10 +12,10 @@
 #   ctrl + a     : move to beginning of line
 #   ctrl + h     : reverse search with percol
 #   ctrl + k     : delete from character to end of line
+#   ctrl + l     : clear screen
 #   ctrl + x     : insert last command result (below)
 #   ctrl + z     : browse z history with fzf
 #   ctrl + c     : cancel
-#   ctrl + n     : clear line
 #   ctrl + space : git status (below)
 
 #   fn + left    : move to beginning of line
