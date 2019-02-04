@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+function auto_update {
+  if [ "git branch --list master" ]; then
+    echo "Pulling from GitHub..."
+
+    git fetch origin &> /dev/null
+
+    if [ -n "$(git log HEAD..origin/master)" ]; then
+      echo Hell yeah, running self-update process...
+      git reset --hard origin/master &> /dev/null
+      ./$(basename $0) && exit
+    fi
+
+    success "Done"
+  fi
+}
+
 function install_command_line_tools {
   if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables &> /dev/null; then
     return
@@ -176,22 +192,9 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until the script has finished.
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+auto_update
 install_command_line_tools
 install_homebrew
-
-if [ "git branch --list master" ]; then
-  echo "Pulling from GitHub..."
-
-  git fetch origin &> /dev/null
-
-  if [ -n "$(git log HEAD..origin/master)" ]; then
-    echo Hell yeah, running self-update process...
-    git reset --hard origin/master &> /dev/null
-    ./$(basename $0) && exit
-  fi
-
-  success "Done"
-fi
 
 read -p "$(tput setaf 4)$(tput bold)Ready to install brews. This will install ALL brews and casks in the Brewfile. Are you sure? (y/n) $(tput sgr 0)" -n 1 -r
 echo
