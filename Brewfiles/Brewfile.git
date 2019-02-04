@@ -1,3 +1,4 @@
 brew "tig"
+cask "github"
 cask "meld"
 cask "tower"
