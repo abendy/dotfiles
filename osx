@@ -211,29 +211,20 @@ defaults write com.apple.dock wvous-bl-modifier -int 0
 # Disable the crash reporter
 defaults write com.apple.CrashReporter DialogType -string "none"
 
-# Never go into computer sleep mode
-systemsetup -setcomputersleep Off > /dev/null
-
 # Start screensaver after
 defaults write com.apple.screensaver loginWindowIdleTime -int 0
-
-# Disable hibernation (speeds up entering sleep mode)
-sudo pmset -a hibernatemode 0
-
-# Set standby delay to 24 hours (default is 1 hour)
-sudo pmset -a standbydelay 86400
 
 # Show remaining battery percentage
 defaults write com.apple.menuextra.battery ShowPercent -string "YES"
 
 # Number of recent items: Applications: None
-osascript -e 'tell application "System Events" to tell appearance preferences to set recent applications limit to 0'
+osascript -e 'tell application "System Events" to tell appearance preferences to set recent applications limit to 20'
 
 # Number of recent items: Documents: None
-osascript -e 'tell application "System Events" to tell appearance preferences to set recent documents limit to 0'
+osascript -e 'tell application "System Events" to tell appearance preferences to set recent documents limit to 20'
 
 # Number of recent items: Servers: None
-osascript -e 'tell application "System Events" to tell appearance preferences to set recent servers limit to 0'
+osascript -e 'tell application "System Events" to tell appearance preferences to set recent servers limit to 20'
 
 # Set language and text formats
 # Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
@@ -273,9 +264,6 @@ defaults write com.apple.appstore ShowDebugMenu -bool true
 
 # Automatically quit printer app once the print jobs complete
 defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
-
-# Disable Swipe controls for Google Chrome
-defaults write com.google.Chrome.plist AppleEnableSwipeNavigateWithScrolls -bool FALSE
 
 # Expand Print Panel by Default
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true && \
