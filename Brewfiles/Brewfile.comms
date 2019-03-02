@@ -1,3 +1,6 @@
+brew "signal-cli"
+cask "signal"
 cask "skype-for-business"
 cask "skype"
 cask "slack"
+cask "zoomus"
