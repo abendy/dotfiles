@@ -25,8 +25,8 @@ brew "the_silver_searcher"
 brew "thefuck"
 brew "tomanthony/brews/itermocil"
 brew "tree"
-brew "vim", args: ["override-system-vi"]
-brew "wget", args: ["with-iri"]
+brew "vim"
+brew "wget"
 brew "z"
 brew "zlib"
 brew "zsh-completions"
