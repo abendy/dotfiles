@@ -14,7 +14,6 @@
   hard          = reset --hard
   origins       = remote show origin
   remotes       = remote -v show
-  root          = !git init && git commit -m 'root' --allow-empty
   s             = status
   ss            = status -s
   uncommit      = "!f() { git reset --soft HEAD~$1; } f"
