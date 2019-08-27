@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Setup a new empty git repository with develop branch.
+
+function success () {
+  echo "[ \033[00;32mOK\033[0m ] $1\n"
+}
+
+current_branch=$(echo $(git rev-parse --abbrev-ref HEAD) | tr -d '\n' | tr -d ' ')
+
+if [[ ! $current_branch =~ ^dev ]]; then
+  git checkout -b develop
+fi
+
+git add -A
+git commit -m 'initial commit'
+
+success "Initial git commit complete"
