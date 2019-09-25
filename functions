@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
 
+# Simple backup
+function backup() {
+  mv "$1" "$1.backup"
+}
+
 # All the dig info
 function digga() {
   dig +nocmd "$1" any +multiline +noall +answer
