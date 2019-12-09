@@ -16,6 +16,7 @@
 #   ctrl + x     : insert last command result (below)
 #   ctrl + z     : browse z history with fzf
 #   ctrl + c     : cancel
+#   ctrl + b     : go back to previous directory
 #   ctrl + space : git status (below)
 
 #   fn + left    : move to beginning of line
@@ -46,6 +47,9 @@ insert-last-command-output() {
 }
 zle -N insert-last-command-output
 bindkey '^X' insert-last-command-output
+
+# ctrl + b : go back to previous directory
+bindkey -s '^B' 'cd -^M'
 
 # ctrl + space : tig status
 bindkey -s '^ ' 'tig status^M'
