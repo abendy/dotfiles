@@ -11,6 +11,7 @@
                   # credit an author on the latest commit
   credit        = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
   fa            = fetch --all
+  fo            = fetch origin
   hard          = reset --hard
   origins       = remote show origin
   remotes       = remote -v show
