@@ -67,6 +67,19 @@ function mkd() {
   mkdir -p "$@" && cd "$@"
 }
 
+# Usage: mv oldfilename
+# If you call mv without the second parameter it will prompt you to edit the filename on command line.
+# Original mv is called when it's called with more than one argument.
+function mv() {
+  if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
+    command mv "$@"
+    return
+  fi
+
+  read -ei "$1" newfilename
+  command mv -v -- "$1" "$newfilename"
+}
+
 # `o` with no arguments opens current directory, otherwise opens the given
 # location
 function o() {
