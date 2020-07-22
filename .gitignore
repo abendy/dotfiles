@@ -1,4 +1,5 @@
 dotfiles.log
+*.lock.json
 
 # Folder view configuration files
 .DS_Store
