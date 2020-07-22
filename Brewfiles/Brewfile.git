@@ -1,6 +1,8 @@
 brew "gist"
 brew "git-extras"
 brew "isacikgoz/gitin/gitin"
+brew "zaquestion/tap/lab"
+cask "fork"
 cask "github"
 cask "meld"
 cask "sourcetree"
