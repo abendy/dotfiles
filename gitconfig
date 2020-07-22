@@ -87,6 +87,7 @@
 
 [fetch]
   prune = true
+  prune-tags = true
 
 [ghi]
   token = !security find-internet-password -a  -s github.com -l 'ghi token' -w
@@ -117,5 +118,5 @@
   enabled = true
 
 [user]
-  email = 
-  name = 
+  email =
+  name =
