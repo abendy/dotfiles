@@ -1,3 +1,5 @@
+brew "rigellute/tap/spotify-tui"
+brew "spotifyd"
 brew "youtube-dl"
 cask "beamer"
 cask "handbrake"
@@ -6,6 +8,7 @@ cask "soundcast"
 cask "soundflower"
 cask "soundflowerbed"
 cask "spotify-notifications"
+cask "spotify-now-playing"
 cask "spotify"
 cask "vlc"
 mas "Helium", id: 1054607607
