@@ -1,5 +1,4 @@
 brew "dnsmasq"
-brew "gnupg"
 brew "gnupg2"
 brew "gpg-agent"
 brew "httpie", args: ["HEAD"]
