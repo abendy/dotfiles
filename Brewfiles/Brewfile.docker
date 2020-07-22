@@ -4,7 +4,7 @@ brew "docker-machine-completion", link: false
 brew "docker-machine", restart_service: true
 brew "docker"
 cask "docker-toolbox"
-cask "docker"
+cask "homebrew/cask-versions/docker-edge"
 cask "kite"
 cask "kitematic"
 cask "kubernetic"
