@@ -58,6 +58,10 @@ cask "mullvadvpn"
 cask "oversight"
 cask "reikey"
 cask "sizeup"
+cask "spotify-notifications"
+cask "spotify-now-playing"
+cask "spotify"
 cask "visual-studio-code"
+cask "vlc"
 mas "Patterns", id: 429449079
 mas "PopClip", id: 445189367
