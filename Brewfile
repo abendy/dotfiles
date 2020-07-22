@@ -1,3 +1,4 @@
+brew "asdf"
 brew "bash"
 brew "bat"
 brew "coreutils"
