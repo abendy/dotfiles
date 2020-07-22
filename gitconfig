@@ -84,6 +84,14 @@
   # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject
   # instead of a/b/c/d as prefixes for patches
   mnemonicprefix = true
+  tool = meld
+
+[difftool]
+  prompt = false
+
+[difftool "meld"]
+  trustExitCode = true
+  cmd = open -W -a Meld --args \"$LOCAL\" \"$REMOTE\"
 
 [fetch]
   prune = true
@@ -100,7 +108,15 @@
 
 [merge]
   log = true
+  tool = meld
   verbose = true
+
+[mergetool]
+  prompt = false
+
+[mergetool "meld"]
+  cmd = open -W -a Meld --args --auto-merge \"$LOCAL\" \"$BASE\" \"$REMOTE\" --output=\"$MERGED\"
+  trustExitCode = true
 
 [pager]
   diff = diff-so-fancy | less --tabs=1,5 -RFX
