@@ -1,4 +1,3 @@
-brew "asdf"
 cask "facebook-ios-sdk"
 cask "google-cloud-sdk"
 mas "Xcode", id: 497799835
