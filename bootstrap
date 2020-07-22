@@ -46,10 +46,10 @@ function install_homebrew {
 }
 
 function is_brew_installed {
-  for i in $(brew list -1); do 
-    if [[ "$i" == "$1" ]]; then 
-      echo 1; 
-    fi; 
+  for i in $(brew list -1); do
+    if [[ "$i" == "$1" ]]; then
+      echo 1;
+    fi;
   done
 }
 

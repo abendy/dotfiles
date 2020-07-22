@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+# Prefer US English and use UTF-8
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
@@ -7,14 +11,13 @@ else
   export EDITOR='/usr/local/bin/code'
 fi
 
+# exa
+export EXA_COLORS="ur=37:uw=37:ux=37:ue=37:gr=37:gw=37:gx=37:tr=37:tw=37:tx=37:sn=38;5;240:sb=38;5;240:uu=1;38;5;10:un=38;5;10:da=38;5;25:di=38;5;75"
+
 # Link Homebrew casks in `/Applications` rather than `~/Applications`
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
-# Prefer US English and use UTF-8
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-
-# System
+# PATH
 export PATH="/usr/local/sbin:/usr/sbin:/sbin"
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 
@@ -23,10 +26,22 @@ if [ -n "$(brew --prefix coreutils)" ]; then
   export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
 fi
 
+# Curl
+export PATH="/usr/local/opt/curl/bin:$PATH"
+
+# GNU findutils
+export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
+
 # OpenSSL
 if [ -n "$(brew --prefix openssl@1.1)" ]; then
   export PATH="$(brew --prefix openssl@1.1)/bin:$PATH"
 fi
+
+# GNU sed
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+# GNU tar
+export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"
 
 # User (inc. bins supplied by this repo)
 export PATH="$HOME/bin:$PATH"
