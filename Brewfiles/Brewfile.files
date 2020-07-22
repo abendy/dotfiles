@@ -4,6 +4,7 @@ brew "fdupes"
 brew "fpp"
 brew "gawk"
 brew "jq"
+brew "kdiff3"
 brew "multitail"
 brew "p7zip"
 brew "rename"
@@ -19,3 +20,4 @@ cask "kaleidoscope"
 cask "kdiff3"
 cask "marta"
 mas "ForkLift", id: 412448059
+mas "Permanent Eraser", id: 500541921
