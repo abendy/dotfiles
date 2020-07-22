@@ -17,7 +17,7 @@ function auto_update {
 }
 
 function install_command_line_tools {
-  if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables &> /dev/null; then
+  if xcode-select -p 1> /dev/null; then
     return
   fi
 
@@ -30,7 +30,7 @@ function install_command_line_tools {
   echo -en "\tPress enter when the installation is complete"
   read
 
-  if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables &> /dev/null; then
+  if xcode-select -p 1> /dev/null; then
     success "Done installing OS X Command Line Tools"
   else
     fail "Command line tools not found"
