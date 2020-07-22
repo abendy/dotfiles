@@ -1,1 +1,2 @@
 brew "homebrew/nginx/nginx-full", args: ["with-debug", "with-http2", "with-php-session-module"]
+brew "php-session-nginx-module"

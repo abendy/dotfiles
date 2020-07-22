@@ -1,8 +1,10 @@
-brew "docker-compose"
-brew "docker-machine-completion"
+brew "docker-compose", link: false
+brew "docker-ls"
+brew "docker-machine-completion", link: false
 brew "docker-machine", restart_service: true
 brew "docker"
 cask "docker-toolbox"
 cask "docker"
 cask "kite"
 cask "kitematic"
+cask "kubernetic"

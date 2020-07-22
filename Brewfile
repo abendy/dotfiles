@@ -57,4 +57,5 @@ cask "oversight"
 cask "reikey"
 cask "sizeup"
 cask "visual-studio-code"
-mas "popclip"
+mas "Patterns", id: 429449079
+mas "PopClip", id: 445189367
