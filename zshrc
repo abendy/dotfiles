@@ -7,28 +7,7 @@ ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 ZSH_THEME="sunaku"
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
-plugins=(
-  brew        # `brews`
-  copyfile    # `copyfile <file>`
-  dircycle    # Cycle directory history with Ctrl+Shift+Left/Right
-  dirpersist
-  docker
-  extract     # `extract`
-  gitfast
-  history     # `h`
-  npm
-  pip
-  pyenv
-  pylint
-  python
-  sudo        # ESC x2 for sudo!
-  vscode      # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#vscode
-  yarn
-)
-
+[ -f $HOME/.zsh_plugins.sh ] && source $HOME/.zsh_plugins.sh
 source $ZSH/oh-my-zsh.sh
 
 # thefuck

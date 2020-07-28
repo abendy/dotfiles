@@ -15,7 +15,17 @@ git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
 
 You can create a `~/.localrc` file for additional local runtime configuration. This repo provides a template: `cp localrc ~/.localrc`.
 
-### Handling a `Brewfile`
+## Adding ZSH plugins
+
+We're using [antibody][ab] as the plugin manager. Add plugins (one per line) as per [antibody documentation][abd].
+
+```sh
+vi ~/.zshplugins
+antibody bundle < ~/.zsh_plugins.txt > ~/.zsh_plugins.sh
+exec zsh
+```
+
+## Handling a `Brewfile`
 
 Check if all dependencies are installed in a Brewfile.
 
@@ -35,8 +45,7 @@ List all dependencies present in a Brewfile, optionally limiting by types. You c
 brew bundle list [--all|--brews|--casks|--taps|--mas] --file=Brewfiles/<Brewfile>
 ```
 
-
-### Upgrade
+## Upgrade
 
 To update to the latest version:
 
@@ -49,3 +58,5 @@ cd ~/.dotfiles
    [hb]: <http://brew.sh>
    [casks]: <http://caskroom.io>
    [omz]: <https://github.com/robbyrussell/oh-my-zsh>
+   [ab]: <https://getantibody.github.io/>
+   [abd]: <https://getantibody.github.io/usage/>
