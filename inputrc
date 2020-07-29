@@ -10,6 +10,7 @@
 #   ctrl + u     : clear line
 #   ctrl + i     : insert TAB
 #   ctrl + a     : move to beginning of line
+#   ctrl + g     : toggle between global and local directory history
 #   ctrl + h     : reverse search with percol
 #   ctrl + k     : delete from character to end of line
 #   ctrl + l     : clear screen
