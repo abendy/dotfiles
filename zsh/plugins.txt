@@ -1,2 +1,0 @@
-# dircycle    # Cycle directory history with Ctrl+Shift+Left/Right
-twang817/zsh-dirpersist
