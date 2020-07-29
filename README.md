@@ -20,8 +20,9 @@ You can create a `~/.localrc` file for additional local runtime configuration. T
 We're using [antibody][ab] as the plugin manager. Add plugins (one per line) as per [antibody documentation][abd].
 
 ```sh
-vi zsh/zshplugins.txt
-antibody bundle < zsh/zshplugins.txt > ~/.zsh_plugins.sh
+touch ~/.zsh_plugins_local.txt
+vi ~/.zsh_plugins_local.txt
+antibody bundle < ~/.zsh_plugins_local.txt > ~/.zsh_plugin_locals.sh
 exec zsh
 ```
 
