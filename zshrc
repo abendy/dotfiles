@@ -2,21 +2,10 @@
 ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
 ZSH_THEME="sunaku"
 
 [ -f $HOME/.zsh_plugins.sh ] && source $HOME/.zsh_plugins.sh
 source $ZSH/oh-my-zsh.sh
-
-# thefuck
-if hash fuck &> /dev/null; then
-  eval "$(thefuck --alias)"
-fi
-
-# fzf
-[ -f $HOME/.fzf.zsh ] && source ~/.fzf.zsh
 
 # fzf-z
 [ -f $HOME/.dotfiles/zsh/fzf-z.plugin.zsh ] && source $HOME/.dotfiles/zsh/fzf-z.plugin.zsh

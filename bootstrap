@@ -161,10 +161,21 @@ function install_dotfiles {
   # Bundle ZSH plugins using Antibody plugin manager
   echo "Bundling ZSH plugins"
   echo
-  if [ ! -f "$DOTFILES_DIR/zsh/plugins.txt" ]; then
+  if [ ! -f $DOTFILES_DIR/zsh/plugins.txt ]; then
     fail "Missing ZSH plugins files for Antibody"
   else
-    antibody bundle < "$DOTFILES_DIR/zsh/plugins.txt" > ~/.zsh_plugins.sh
+    if [ -f $HOME/.zsh_plugins.sh ]; then
+      # backup zsh plugins, if exists
+      cp -f $HOME/.zsh_plugins.sh $HOME/.zsh_plugins_backup.sh
+
+      # merge backup plugin file with plugin file from repo, no duplicates
+      sort -u $HOME/.zsh_plugins_backup.sh $DOTFILES_DIR/zsh/zshplugins.txt > $DOTFILES_DIR/zsh/zshplugins.txt
+
+      #remove temp file
+      rm -f $HOME/.zsh_plugins_backup.sh
+    fi
+
+    antibody bundle < $DOTFILES_DIR/zsh/zshplugins.txt > $HOME/.zsh_plugins.sh
     success "Done bundling ZSH plugins"
   fi
 
