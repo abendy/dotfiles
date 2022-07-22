@@ -103,6 +103,9 @@
 [github]
   user = abendy
 
+[init]
+  defaultBranch = main
+
 [log]
   date = iso
 
