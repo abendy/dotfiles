@@ -78,6 +78,7 @@
   trustctime = false
 
 [commit]
+  gpgsign = true
   template = ~/.gitmessage
 
 [diff]
@@ -97,11 +98,20 @@
   prune = true
   prune-tags = true
 
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+
 [ghi]
   token = !security find-internet-password -a  -s github.com -l 'ghi token' -w
 
 [github]
   user = abendy
+
+[gpg]
+  program = /usr/local/bin/gpg
 
 [init]
   defaultBranch = main
