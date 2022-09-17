@@ -70,7 +70,7 @@
 
 [core]
   autocrlf = input
-  editor = code
+  editor = vim
   excludesfile = ~/.gitignore
   filemode = true
   pager = diff-so-fancy | less --tabs=4 -RFX
