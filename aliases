@@ -6,7 +6,7 @@ alias -g .....='cd ........'
 alias -g ....='cd ......'
 alias -g ...='cd....'
 alias -g C='| tr "\n\r" "\0" | pbcopy'
-alias -g G='| grep' # now you can do: ls foo G something
+alias -g G='| rg' # now you can do: ls foo G something
 alias sudo='sudo ' # enable aliases to be sudo’ed
 
 # File System
