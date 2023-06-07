@@ -48,7 +48,7 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/local/opt/zsh-history-substring-search/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 
 # Load the shell dotfiles, and then some:
-for file in ~/.{exports,aliases,functions,inputrc,localrc}; do
+for file in ~/.{exports,aliases,functions,input,localrc}; do
   [ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
 unset file
