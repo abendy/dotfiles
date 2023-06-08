@@ -1,6 +1,7 @@
 brew "asdf"
 brew "bash"
 brew "bat"
+brew "carbon-copy-cloner"
 brew "coreutils"
 brew "curl"
 brew "diff-so-fancy"
