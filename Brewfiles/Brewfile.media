@@ -9,4 +9,6 @@ cask "losslesscut"
 cask "soundcast"
 cask "soundflower"
 cask "soundflowerbed"
+cask "spotify-notifications"
+cask "spotify-now-playing"
 mas "Helium", id: 1054607607
