@@ -1,7 +1,7 @@
 brew "ffmpeg"
 brew "rigellute/tap/spotify-tui"
 brew "spotifyd"
-brew "youtube-dl"
+brew "yt-dlp/taps/yt-dlp"
 cask "beamer"
 cask "handbrake"
 cask "iina"
