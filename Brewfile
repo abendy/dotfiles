@@ -70,6 +70,7 @@ cask "reikey"
 cask "sizeup"
 cask "spotify"
 cask "visual-studio-code"
+cask "visual-studio-code-insiders"
 cask "vlc"
 mas "Patterns", id: 429449079
 mas "PopClip", id: 445189367
