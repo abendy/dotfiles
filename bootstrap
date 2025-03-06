@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function auto_update {
-  if [ "git branch --list master" ]; then
+  if [ "$(git branch --list master)" ]; then
     echo "Pulling from GitHub..."
 
     git fetch origin &> /dev/null
@@ -102,7 +102,6 @@ function install_oh_my_zsh {
   if [ ! -d "$ZSH" ]; then
     echo -en "Installing Oh My Zsh\n"
 
-    sh -c "$(cd ~)" &> /dev/null
     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &> /dev/null
 
     # https://www.iterm2.com/documentation-shell-integration.html
