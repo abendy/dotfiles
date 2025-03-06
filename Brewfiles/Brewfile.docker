@@ -1,8 +1,11 @@
+brew "docker-completion" 
+brew "docker-compose-completion"
 brew "docker-compose", link: false
 brew "docker-ls"
 brew "docker-machine-completion", link: false
 brew "docker-machine", restart_service: true
 brew "docker"
+brew "kubernetes-cli"
 cask "docker-toolbox"
 cask "homebrew/cask-versions/docker-edge"
 cask "kite"

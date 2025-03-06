@@ -1,7 +1,9 @@
+brew "bitwarden-cli"
 brew "dnsmasq"
 brew "gnupg2"
 brew "gpg-agent"
 brew "httpie", args: ["HEAD"]
+brew "nmap"
 brew "pwgen"
 brew "speedtest_cli"
 brew "ssh-copy-id"

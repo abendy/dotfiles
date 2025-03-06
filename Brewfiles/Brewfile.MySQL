@@ -1,4 +1,5 @@
 brew "mycli"
+brew "mysql-client"
 brew "mysql"
 brew "mysqltuner"
 cask "mysql-utilities"

@@ -48,21 +48,22 @@ brew "zsh-completions"
 brew "zsh-history-substring-search"
 brew "zsh-syntax-highlighting"
 brew "zsh"
-cask "alfred"
-cask "appcleaner"
-cask "apptrap"
 cask "1password"
 cask "1password-cli"
+# cask "appcleaner"
+cask "applite"
+# cask "apptrap"
 cask "bartender"
 cask "blockblock"
-cask "brewservicesmenubar"
-cask "caffeine"
+# cask "brewservicesmenubar"
+cask "caffeine" # this calls home so block outgoing
 cask "do-not-disturb"
 cask "flux"
 cask "gpg-suite"
-cask "historyhound"
+# cask "historyhound"
 cask "iterm2"
 cask "keka"
+cask "linearmouse"
 cask "lulu"
 cask "macdown"
 cask "meld"
@@ -76,3 +77,37 @@ cask "visual-studio-code-insiders"
 cask "vlc"
 mas "Patterns", id: 429449079
 mas "PopClip", id: 445189367
+
+
+
+iina
+
+brew "altserver"
+brew "bison"
+brew "borgbackup"
+brew "exercism"
+brew "gimp"
+brew "netiquette"
+brew "skitch"
+brew "terminal-notifier"
+
+pnpm
+
+
+orion
+cursor
+dropmark
+linearmouse
+vorta
+
+firefox-developer-edition
+brave-browser-dev brave-browser-nightly brave-browser
+
+supabase/tap/supabase
+macfuse
+klack
+zoom
+
+deno
+openssl zstd lz4 xxhash
+pkg-config
