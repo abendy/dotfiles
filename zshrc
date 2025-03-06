@@ -4,8 +4,11 @@ ZSH=$HOME/.oh-my-zsh
 # Set name of the theme to load.
 ZSH_THEME="sunaku"
 
-[ -f $HOME/.zsh_plugins.sh ] && source $HOME/.zsh_plugins.sh
-[ -f $HOME/.zsh_plugins_locals.sh ] && source $HOME/.zsh_plugins_locals.sh
+# antidote
+[ -f /usr/local/opt/antidote/share/antidote/antidote.zsh ] && source /usr/local/opt/antidote/share/antidote/antidote.zsh
+[ -f $HOME/.zsh_plugins.sh ] && antidote load $HOME/.zsh_plugins.sh
+[ -f $HOME/.zsh_plugins_locals.sh ] && antidote load $HOME/.zsh_plugins_locals.sh
+
 source $ZSH/oh-my-zsh.sh
 
 # fzf-z

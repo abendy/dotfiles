@@ -17,12 +17,12 @@ You can create a `~/.localrc` file for additional local runtime configuration. T
 
 ## Adding ZSH plugins
 
-We're using [antibody][ab] as the plugin manager. Add plugins (one per line) as per [antibody documentation][abd].
+We're using [antidote][ab] as the plugin manager. Add plugins (one per line) as per [antidote documentation][abd].
 
 ```sh
 touch ~/.zsh_plugins_local.txt
 vi ~/.zsh_plugins_local.txt
-antibody bundle < ~/.zsh_plugins_local.txt > ~/.zsh_plugin_locals.sh
+antidote bundle < ~/.zsh_plugins_local.txt > ~/.zsh_plugin_locals.sh
 exec zsh
 ```
 
@@ -59,5 +59,5 @@ cd ~/.dotfiles
    [hb]: <http://brew.sh>
    [casks]: <http://caskroom.io>
    [omz]: <https://github.com/robbyrussell/oh-my-zsh>
-   [ab]: <https://getantibody.github.io/>
-   [abd]: <https://getantibody.github.io/usage/>
+   [ab]: <https://github.com/mattmc3/antidote>
+   [abd]: <https://github.com/mattmc3/antidote?tab=readme-ov-file#usage>
