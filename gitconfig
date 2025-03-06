@@ -146,6 +146,9 @@
   # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
   enabled = true
 
+[sequence]
+    editor = interactive-rebase-tool
+
 [user]
   email =
   name =

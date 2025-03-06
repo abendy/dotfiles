@@ -11,8 +11,8 @@ else
   export EDITOR='/usr/local/bin/code'
 fi
 
-# exa
-export EXA_COLORS="ur=37:uw=37:ux=37:ue=37:gr=37:gw=37:gx=37:tr=37:tw=37:tx=37:sn=38;5;240:sb=38;5;240:uu=1;38;5;10:un=38;5;10:da=38;5;25:di=38;5;75"
+# eza
+export EZA_COLORS="ur=37:uw=37:ux=37:ue=37:gr=37:gw=37:gx=37:tr=37:tw=37:tx=37:sn=38;5;240:sb=38;5;240:uu=1;38;5;10:un=38;5;10:da=38;5;25:di=38;5;75"
 
 # Link Homebrew casks in `/Applications` rather than `~/Applications`
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
@@ -33,8 +33,8 @@ export PATH="/usr/local/opt/curl/bin:$PATH"
 export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 
 # OpenSSL
-if [ -n "$(brew --prefix openssl@1.1)" ]; then
-  export PATH="$(brew --prefix openssl@1.1)/bin:$PATH"
+if [ -n "$(brew --prefix openssl@3)" ]; then
+  export PATH="$(brew --prefix openssl@3)/bin:$PATH"
 fi
 
 # GNU sed
