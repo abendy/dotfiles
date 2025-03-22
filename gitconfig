@@ -47,6 +47,7 @@
 
 [branch]
   autosetupmerge = true
+  sort = -committerdate
 
 [color]
   branch = auto
@@ -80,10 +81,13 @@
 [commit]
   gpgsign = true
   template = ~/.gitmessage
+  verbose = true
 
 [diff]
   # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject
   # instead of a/b/c/d as prefixes for patches
+  algorithm = histogram
+  colorMoved = default
   mnemonicprefix = true
   tool = meld
 
@@ -93,6 +97,9 @@
 [difftool "meld"]
   trustExitCode = true
   cmd = open -W -a Meld --args \"$LOCAL\" \"$REMOTE\"
+
+[feature]
+  manyFiles = true
 
 [fetch]
   prune = true
@@ -119,6 +126,10 @@
 [log]
   date = iso
 
+[maintenance]
+  auto = true
+  strategy = incremental
+
 [merge]
   log = true
   tool = meld
@@ -141,6 +152,11 @@
 [push]
   default = simple
 
+[rebase]
+  autoStash = true
+  missingCommitsCheck = warn
+  updateRefs = true
+
 [rerere]
   # Remember my merges
   # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
@@ -148,6 +164,9 @@
 
 [sequence]
     editor = interactive-rebase-tool
+
+[stash]
+  showPatch = true
 
 [user]
   email =
