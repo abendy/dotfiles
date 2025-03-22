@@ -93,6 +93,15 @@
 
   # --- merging & rebasing ---
   
+  # Combine with your rebasing workflow
+  absorb        = "!f() { git commit --fixup=$(git log --pretty=format:'%h %s' -n 50 | fzf | cut -d' ' -f1) && git rebase -i --autosquash HEAD~50; }; f"
+
+  # Fix whitespace issues during rebase
+  apply         = "!f() { git apply --whitespace=fix \"$@\"; }; f"
+
+  # Auto-fixup to specific commits - great for rebasing
+  fixup         = "!f() { git commit --fixup=$1 && git rebase -i --autosquash $1~1; }; f"
+
   # Checkout master and merge the branch you were just on
   mb            = !git checkout master && git merge @{-1}
   
@@ -102,8 +111,14 @@
   # Interactive rebase the last N commits
   reb           = "!f() { git rebase -i HEAD~$1; }; f"
   
+  # Temporarily stash specific files during rebases
+  save          = "!f() { git stash push -m \"$1\" ${@:2}; }; f"
+
   # Sync your fork with the upstream repository
   sync          = !$HOME/bin/git-fork-sync
+
+  # Selective reset of files - useful during complex rebases
+  wipe          = "!f() { git checkout HEAD -- \"$@\"; }; f"
 
   # --- logging ---
   
