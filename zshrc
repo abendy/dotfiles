@@ -19,6 +19,18 @@ if hash grc &> /dev/null; then
   source "`brew --prefix`/etc/grc.bashrc"
 fi
 
+# history
+HISTSIZE=1000000   # Number of commands to keep in memory
+SAVEHIST=1000000   # Number of commands to save in history file
+
+setopt APPEND_HISTORY         # Append to history instead of overwriting
+setopt INC_APPEND_HISTORY     # Add commands as they're typed, not at shell exit
+setopt EXTENDED_HISTORY       # Save timestamp and duration information
+setopt HIST_IGNORE_DUPS       # Don't save immediate duplicates
+setopt HIST_IGNORE_SPACE      # Don't save commands that start with space
+setopt HIST_VERIFY            # Don't execute expanded history immediately
+setopt SHARE_HISTORY          # Share history between sessions
+
 # iterm2 shell integration
 if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
