@@ -1,45 +1,111 @@
 [alias]
+  # Add a file to staging
   a             = add
+  
+  # Add all changed files to staging
   aa            = add --all
+  
+  # Interactive add - lets you select portions of files to stage
   ai            = add -i
+  
+  # Add all changes and commit with a message quickly
   ac            = !git add -A && git commit -qvm
+  
+  # Amend the last commit preserving the commit message
   amend         = commit --amend -C HEAD
+  
+  # Interactively select hunks of code to stage - great for creating clean commits
   ap            = add --patch
+  
+  # Commit with a message (verbose mode)
   ci            = commit -vm
+  
+  # Clone a repository including all submodules
   cl            = clone --recursive
+  
+  # Checkout a branch
   co            = checkout
-# credit an author on the latest commit
+
+  # Credit an author on the latest commit
   credit        = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+  
+  # Fetch all remotes
   fa            = fetch --all
+  
+  # Fetch from origin
   fo            = fetch origin
+  
+  # Hard reset current branch to HEAD
   hard          = reset --hard
+  
+  # Show details about the origin remote
   origins       = remote show origin
+  
+  # Show all remotes with their URLs
   remotes       = remote -v show
+  
+  # Show repository status
   s             = status
+  
+  # Show status in short format
   ss            = status -s
-  uncommit      = "!f() { git reset --soft HEAD~$1; } f"
+  
+  # Undo the last N commits while keeping the changes
+  uncommit      = "!f() { git reset --soft HEAD~$1; }; f"
+  
+  # Undo the last commit while keeping the changes
   undo          = !git reset --soft HEAD^
 
-  # branching
+  # --- branching ---
   # http://stackoverflow.com/a/4991675/605748
+
+  # Find the common ancestor of two branches
   ancestor      = !zsh -c 'diff -u <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
+  
+  # List branches with details about commit messages and dates
   branches      = !git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
+  
+  # Create and push a new branch to origin in one command
   create-branch = !sh -c 'git push origin HEAD:refs/heads/$1 && git fetch origin && git branch --track $1 origin/$1 && cd . && git checkout $1' -
+  
+  # Delete a branch locally and remove it from origin
   delete-branch = !sh -c 'git push origin :refs/heads/$1 && git remote prune origin && git branch -D $1' -
+  
+  # Create and checkout a new branch in one command
   go            = checkout -b
+  
+  # Show recently updated remote branches with author info
   recent-branch = for-each-ref --sort=-committerdate --format=\"%(authordate:relative)\t%(authorname)\t%(refname:short)\" refs/remotes
 
-  # merging & rebasing
+  # --- merging & rebasing ---
+  
+  # Checkout master and merge the branch you were just on
   mb            = !git checkout master && git merge @{-1}
+  
+  # Create and checkout a new tracking branch
   ntb           = checkout --track -b
+  
+  # Interactive rebase the last N commits
   reb           = "!f() { git rebase -i HEAD~$1; }; f"
+  
+  # Sync your fork with the upstream repository
   sync          = !$HOME/bin/git-fork-sync
 
-  # logging
+  # --- logging ---
+  
+  # Count commits by author
   count         = !git shortlog -sn
+  
+  # Show a compact, colorized graph of the last 10 commits with file changes
   hist          = log --graph -n 10 --name-status --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+  
+  # Show changes in the last commit
   last          = diff HEAD^
+  
+  # Show commit logs in a single line format
   ll            = log --pretty=oneline
+  
+  # Show your commit streak in a calendar view
   streak        = !git-cal
 
 [apply]
