@@ -1,52 +1,179 @@
 [alias]
-  a             = add
-  aa            = add --all
-  ai            = add -i
-  ac            = !git add -A && git commit -qvm
-  amend         = commit --amend -C HEAD
-  ap            = add --patch
-  ci            = commit -vm
+  # --- clone ---
+
+  # Clone a repository including all submodules
   cl            = clone --recursive
-  co            = checkout
-# credit an author on the latest commit
+
+  # --- add ---
+
+  # Add a file to staging
+  a             = add
+  
+  # Add all changed files to staging
+  aa            = add --all
+  
+  # Interactive add - lets you select portions of files to stage
+  ai            = add -i
+  
+  # Add all changes and commit with a message quickly
+  ac            = !git add -A && git commit -qvm
+  
+  # --- commit ---
+
+  # Amend the last commit preserving the commit message
+  amend         = commit --amend -C HEAD
+  
+  # Interactively select hunks of code to stage - great for creating clean commits
+  ap            = add --patch
+  
+  # Commit with a message (verbose mode)
+  ci            = commit -vm
+
+  # Credit an author on the latest commit
   credit        = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-  fa            = fetch --all
-  fo            = fetch origin
-  hard          = reset --hard
-  origins       = remote show origin
-  remotes       = remote -v show
-  s             = status
-  ss            = status -s
-  uncommit      = "!f() { git reset --soft HEAD~$1; } f"
+
+  # Undo the last N commits while keeping the changes
+  uncommit      = "!f() { git reset --soft HEAD~$1; }; f"
+  
+  # Undo the last commit while keeping the changes
   undo          = !git reset --soft HEAD^
 
-  # branching
+  # --- fetch ---
+
+  # Fetch all remotes
+  fa            = fetch --all
+  
+  # Fetch from origin
+  fo            = fetch origin
+  
+  # --- reset ---
+
+  # Hard reset current branch to HEAD
+  hard          = reset --hard
+  
+  # --- origins/remote ---
+
+  # Show details about the origin remote
+  origins       = remote show origin
+  
+  # Show all remotes with their URLs
+  remotes       = remote -v show
+  
+  # --- status ---
+
+  # Show repository status
+  s             = status
+  
+  # Show status in short format
+  ss            = status -s
+  
+  # --- branching ---
   # http://stackoverflow.com/a/4991675/605748
+
+  # Find the common ancestor of two branches
   ancestor      = !zsh -c 'diff -u <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
+  
+  # List branches with details about commit messages and dates
   branches      = !git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
+  
+  # Checkout a branch
+  co            = checkout
+
+  # Create and push a new branch to origin in one command
   create-branch = !sh -c 'git push origin HEAD:refs/heads/$1 && git fetch origin && git branch --track $1 origin/$1 && cd . && git checkout $1' -
+  
+  # Delete a branch locally and remove it from origin
   delete-branch = !sh -c 'git push origin :refs/heads/$1 && git remote prune origin && git branch -D $1' -
+  
+  # Create and checkout a new branch in one command
   go            = checkout -b
+  
+  # Show recently updated remote branches with author info
   recent-branch = for-each-ref --sort=-committerdate --format=\"%(authordate:relative)\t%(authorname)\t%(refname:short)\" refs/remotes
 
-  # merging & rebasing
+  # --- merging & rebasing ---
+  
+  # Combine with your rebasing workflow
+  absorb        = "!f() { git commit --fixup=$(git log --pretty=format:'%h %s' -n 50 | fzf | cut -d' ' -f1) && git rebase -i --autosquash HEAD~50; }; f"
+
+  # Fix whitespace issues during rebase
+  apply         = "!f() { git apply --whitespace=fix \"$@\"; }; f"
+
+  # Auto-fixup to specific commits - great for rebasing
+  fixup         = "!f() { git commit --fixup=$1 && git rebase -i --autosquash $1~1; }; f"
+
+  # Checkout master and merge the branch you were just on
   mb            = !git checkout master && git merge @{-1}
+  
+  # Create and checkout a new tracking branch
   ntb           = checkout --track -b
+  
+  # Interactive rebase the last N commits
   reb           = "!f() { git rebase -i HEAD~$1; }; f"
+  
+  # Temporarily stash specific files during rebases
+  save          = "!f() { git stash push -m \"$1\" ${@:2}; }; f"
+
+  # Sync your fork with the upstream repository
   sync          = !$HOME/bin/git-fork-sync
 
-  # logging
+  # Selective reset of files - useful during complex rebases
+  wipe          = "!f() { git checkout HEAD -- \"$@\"; }; f"
+
+  # --- logging ---
+  
+  # Better logs for analyzing commit groups
+  compact-log   = log --graph --pretty=format:'%C(auto)%h%d %s %C(green)(%cr)%C(reset) %C(blue)<%an>%C(reset)'
+
+  # Count commits by author
   count         = !git shortlog -sn
+  
+  # For your 60 commit situation - helps identify semantically related commits
+  file-history  = log --follow --patch --
+
+  # Show a compact, colorized graph of the last 10 commits with file changes
   hist          = log --graph -n 10 --name-status --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+  
+  # Show changes in the last commit
   last          = diff HEAD^
+  
+  # Show commit logs in a single line format
   ll            = log --pretty=oneline
+  
+  # For complex rebases - a more detailed interactive log view
+  smart-log     = log --graph --pretty=format:'%C(auto)%h%d %s %C(green)(%ad)%C(reset) %C(blue)<%an>%C(reset)' --date=short
+
+  # Show your commit streak in a calendar view
   streak        = !git-cal
+
+  # --- commit analysis ---
+
+  # Analyze changes by file - helps identify related commits
+  by-file       = "!f() { git log --stat --no-merges --author=\"$1\" | grep '|' | sort -k2; }; f"
+
+  # Find commits modifying the same areas
+  related       = "!f() { git log --pretty=format:'%h %s' -p -S \"$1\"; }; f"
+
+  # Shows files most frequently changed - helps identify "hot spots"
+  hotspots      = "!f() { git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -20; }; f"
+
+  # Check commit similarity - useful when deciding what to combine
+  similar       = "!f() { git show $1:$3 $2:$3; }; f"
+
+  # --- apply ---
+
+  # Apply a patch from a file
+  apply-patch   = "!f() { git apply \"$@\"; }; f"
+
+  # Apply a patch from a URL
+  apply-url     = "!f() { git apply \"$@\"; }; f"
 
 [apply]
   whitespace = fix
 
 [branch]
   autosetupmerge = true
+  sort = -committerdate
 
 [color]
   branch = auto
@@ -80,10 +207,13 @@
 [commit]
   gpgsign = true
   template = ~/.gitmessage
+  verbose = true
 
 [diff]
   # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject
   # instead of a/b/c/d as prefixes for patches
+  algorithm = histogram
+  colorMoved = default
   mnemonicprefix = true
   tool = meld
 
@@ -93,6 +223,9 @@
 [difftool "meld"]
   trustExitCode = true
   cmd = open -W -a Meld --args \"$LOCAL\" \"$REMOTE\"
+
+[feature]
+  manyFiles = true
 
 [fetch]
   prune = true
@@ -119,6 +252,10 @@
 [log]
   date = iso
 
+[maintenance]
+  auto = true
+  strategy = incremental
+
 [merge]
   log = true
   tool = meld
@@ -141,6 +278,11 @@
 [push]
   default = simple
 
+[rebase]
+  autoStash = true
+  missingCommitsCheck = warn
+  updateRefs = true
+
 [rerere]
   # Remember my merges
   # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
@@ -148,6 +290,9 @@
 
 [sequence]
     editor = interactive-rebase-tool
+
+[stash]
+  showPatch = true
 
 [user]
   email =
