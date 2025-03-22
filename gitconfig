@@ -1,4 +1,11 @@
 [alias]
+  # --- clone ---
+
+  # Clone a repository including all submodules
+  cl            = clone --recursive
+
+  # --- add ---
+
   # Add a file to staging
   a             = add
   
@@ -11,6 +18,8 @@
   # Add all changes and commit with a message quickly
   ac            = !git add -A && git commit -qvm
   
+  # --- commit ---
+
   # Amend the last commit preserving the commit message
   amend         = commit --amend -C HEAD
   
@@ -19,43 +28,45 @@
   
   # Commit with a message (verbose mode)
   ci            = commit -vm
-  
-  # Clone a repository including all submodules
-  cl            = clone --recursive
-  
-  # Checkout a branch
-  co            = checkout
 
   # Credit an author on the latest commit
   credit        = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-  
-  # Fetch all remotes
-  fa            = fetch --all
-  
-  # Fetch from origin
-  fo            = fetch origin
-  
-  # Hard reset current branch to HEAD
-  hard          = reset --hard
-  
-  # Show details about the origin remote
-  origins       = remote show origin
-  
-  # Show all remotes with their URLs
-  remotes       = remote -v show
-  
-  # Show repository status
-  s             = status
-  
-  # Show status in short format
-  ss            = status -s
-  
+
   # Undo the last N commits while keeping the changes
   uncommit      = "!f() { git reset --soft HEAD~$1; }; f"
   
   # Undo the last commit while keeping the changes
   undo          = !git reset --soft HEAD^
 
+  # --- fetch ---
+
+  # Fetch all remotes
+  fa            = fetch --all
+  
+  # Fetch from origin
+  fo            = fetch origin
+  
+  # --- reset ---
+
+  # Hard reset current branch to HEAD
+  hard          = reset --hard
+  
+  # --- origins/remote ---
+
+  # Show details about the origin remote
+  origins       = remote show origin
+  
+  # Show all remotes with their URLs
+  remotes       = remote -v show
+  
+  # --- status ---
+
+  # Show repository status
+  s             = status
+  
+  # Show status in short format
+  ss            = status -s
+  
   # --- branching ---
   # http://stackoverflow.com/a/4991675/605748
 
@@ -65,6 +76,9 @@
   # List branches with details about commit messages and dates
   branches      = !git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
   
+  # Checkout a branch
+  co            = checkout
+
   # Create and push a new branch to origin in one command
   create-branch = !sh -c 'git push origin HEAD:refs/heads/$1 && git fetch origin && git branch --track $1 origin/$1 && cd . && git checkout $1' -
   
