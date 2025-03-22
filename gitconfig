@@ -160,6 +160,14 @@
   # Check commit similarity - useful when deciding what to combine
   similar       = "!f() { git show $1:$3 $2:$3; }; f"
 
+  # --- apply ---
+
+  # Apply a patch from a file
+  apply-patch   = "!f() { git apply \"$@\"; }; f"
+
+  # Apply a patch from a URL
+  apply-url     = "!f() { git apply \"$@\"; }; f"
+
 [apply]
   whitespace = fix
 
