@@ -122,9 +122,15 @@
 
   # --- logging ---
   
+  # Better logs for analyzing commit groups
+  compact-log   = log --graph --pretty=format:'%C(auto)%h%d %s %C(green)(%cr)%C(reset) %C(blue)<%an>%C(reset)'
+
   # Count commits by author
   count         = !git shortlog -sn
   
+  # For your 60 commit situation - helps identify semantically related commits
+  file-history  = log --follow --patch --
+
   # Show a compact, colorized graph of the last 10 commits with file changes
   hist          = log --graph -n 10 --name-status --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
   
@@ -134,6 +140,9 @@
   # Show commit logs in a single line format
   ll            = log --pretty=oneline
   
+  # For complex rebases - a more detailed interactive log view
+  smart-log     = log --graph --pretty=format:'%C(auto)%h%d %s %C(green)(%ad)%C(reset) %C(blue)<%an>%C(reset)' --date=short
+
   # Show your commit streak in a calendar view
   streak        = !git-cal
 
