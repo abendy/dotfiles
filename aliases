@@ -32,7 +32,8 @@ alias ls='eza --git'
 alias map='xargs -n1' # intuitive map function
 alias mv='mv -i'
 alias rm='rm -i' # nocorrect rm -i
-alias rsyncp='f() { rsync "${@:3}" $1 $2 | pv -lep -s $(/usr/local/opt/coreutils/libexec/gnubin/du -sb $1 | awk '\''{print $1}'\'') > /dev/null; unset -f f; }; f'
+alias rsyncp='f() { rsync "${@:3}" $1 $2 | pv -lep -s $($(brew --prefix coreutils)/libexec/gnubin/du -sb $1 | awk '\''{print $1}'\'') > /dev/null; unset -f f; }; f'
+alias tree='tree --du --si -a'
 
 # Network
 

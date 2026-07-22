@@ -7,30 +7,18 @@ sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 #/
- # Desktop
- # ==========================================================
- #/
-
-# "Show these items on the desktop"
-# External hard drives
-defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
-
-# Hard drives
-defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
-
-# Removable media
-defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
-
-# Connected servers
-defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
-
-#/
  # Dock
  # ==========================================================
  #/
 
 # Automatically hide and show the Dock
 defaults write com.apple.dock autohide -bool true
+
+# Automatically hide and show the menu bar
+defaults write NSGlobalDomain _HIHideMenuBar -bool true
+
+# Hide action icons in menus
+defaults write NSGlobalDomain NSMenuEnableActionImages -bool false
 
 # Set the icon size of Dock items to 36 pixels
 defaults write com.apple.dock tilesize -int 36
@@ -47,6 +35,9 @@ defaults write com.apple.dock mineffect -string "scale"
  # Finder, Files...
  # ==========================================================
  #/
+
+# Show hidden files
+defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder
 
 # Expand Save Panel by Default
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true && \
@@ -76,9 +67,6 @@ defaults write com.apple.finder QLEnableTextSelection -bool true
 # Disable the warning when changing a file extension
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
-# Disable Spotlight indexing for any volume that gets mounted and has not yet been indexed before
-defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
-
 # Use column view in all Finder windows by default, Arrange by Kind, Sort by Name
 defaults write com.apple.finder FXPreferredViewStyle -string "Clmv"
 defaults write com.apple.Finder FXPreferredGroupBy "Kind"
@@ -89,20 +77,13 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 General -bool true \
 OpenWith -bool true
 
-# Disable Sudden Motion Sensor
-# Leaving this turned on is useless when you're using SSDs.
-sudo pmset -a sms 0
-
-# Set Sidebar Icon Size to 'small'
-defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1
-
 #/
  # Keyboard
  # ==========================================================
  #/
 
-# Set a blazingly fast keyboard repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 0.02
+# Set the fastest keyboard repeat rate
+defaults write NSGlobalDomain KeyRepeat -int 0
 
 # Set no delay until keyboard repeat
 defaults write NSGlobalDomain InitialKeyRepeat -int 12
@@ -116,24 +97,6 @@ defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
 
 # Follow the keyboard focus while zoomed in
 defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
-
-#/
- # Mail
- # ==========================================================
- #/
-
-# Disable inline attachments (just show the icons)
-defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
-
-# Disable send and reply animations in Mail.app
-defaults write com.apple.Mail DisableReplyAnimations -bool true
-defaults write com.apple.Mail DisableSendAnimations -bool true
-
-# Add the keyboard shortcut ⌘ + Enter to send an email in Mail.app
-defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" -string "@\\U21a9"
-
-# Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
-defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
 
 #/
  # Screen
@@ -173,17 +136,6 @@ defaults write com.apple.systemsound com.apple.sound.beep.volume -float 0
 sudo nvram SystemAudioVolume=" "
 
 #/
- # Spelling
- # ==========================================================
- #/
-
-# Disable smart quotes as they’re annoying when typing code
-defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
-
-# Disable smart dashes as they’re annoying when typing code
-defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
-
-#/
  # System
  # ==========================================================
  #/
@@ -217,15 +169,6 @@ defaults write com.apple.screensaver loginWindowIdleTime -int 0
 # Show remaining battery percentage
 defaults write com.apple.menuextra.battery ShowPercent -string "YES"
 
-# Number of recent items: Applications: None
-osascript -e 'tell application "System Events" to tell appearance preferences to set recent applications limit to 20'
-
-# Number of recent items: Documents: None
-osascript -e 'tell application "System Events" to tell appearance preferences to set recent documents limit to 20'
-
-# Number of recent items: Servers: None
-osascript -e 'tell application "System Events" to tell appearance preferences to set recent servers limit to 20'
-
 # Set language and text formats
 # Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
 # `Inches`, `en_GB` with `en_US`, and `true` with `false`.
@@ -234,8 +177,10 @@ defaults write NSGlobalDomain AppleLocale -string "en_US@currency=USD"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Inches"
 defaults write NSGlobalDomain AppleMetricUnits -bool false
 
-# Allow App Downloaded From Anywhere
-sudo spctl --master-disable
+# Allow apps downloaded from anywhere only when explicitly requested
+if [[ "${DOTFILES_DISABLE_GATEKEEPER:-0}" == "1" ]]; then
+  sudo spctl --master-disable
+fi
 
 # Disable "close windows when quitting an app"
 defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
@@ -245,11 +190,10 @@ defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
  # ==========================================================
  #/
 
-# Disable local Time Machine backups
-hash tmutil &> /dev/null && sudo tmutil disablelocal
-
-# Disable local Time Machine snapshots
-sudo tmutil disablelocal
+# Disable local Time Machine snapshots on macOS versions that still support it
+if tmutil help 2>&1 | grep -q "disablelocal"; then
+  sudo tmutil disablelocal
+fi
 
 # Prevent Time Machine from prompting to use new hard drives as backup volume
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true

@@ -40,7 +40,7 @@ function install_command_line_tools {
 function install_homebrew {
   if ! hash brew &> /dev/null; then
     echo "Installing Homebrew"
-    (cd ~; echo -en "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &> /dev/null)
+    (cd ~; echo -en "\n" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &> /dev/null)
     success "Done installing Homebrew"
   fi
 }
@@ -102,7 +102,7 @@ function install_oh_my_zsh {
   if [ ! -d "$ZSH" ]; then
     echo -en "Installing Oh My Zsh\n"
 
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &> /dev/null
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &> /dev/null
 
     # https://www.iterm2.com/documentation-shell-integration.html
     sh -c "$(curl -L https://iterm2.com/misc/install_shell_integration.sh | bash)" &> /dev/null
@@ -133,7 +133,7 @@ function install_dotfiles {
     cd "$DOTFILES_DIR"
   fi
 
-  for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc"; do
+  for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc" "zprofile"; do
     complete_file_path=${current_path}/${file}
 
     if [ -f ${complete_file_path} ]; then
@@ -197,6 +197,43 @@ function install_dotfiles {
   fi
 }
 
+function configure_editor {
+  local_rc="$HOME/.localrc"
+
+  if [ ! -f "$local_rc" ]; then
+    cp -f "${current_path}/localrc" "$local_rc"
+    success "Copied localrc template to $local_rc"
+  fi
+
+  echo
+  read -p "Preferred editor for local sessions [code]: " editor_local
+  editor_local=${editor_local:-code}
+
+  read -p "Preferred editor for remote/SSH sessions [vim]: " editor_remote
+  editor_remote=${editor_remote:-vim}
+
+  # Drop any previously written block so re-running bootstrap doesn't duplicate it
+  # (GNU sed's -i takes no space-separated argument; BSD sed requires one, even if empty)
+  if sed --version &> /dev/null; then
+    sed -i '/# >>> dotfiles: editor >>>/,/# <<< dotfiles: editor <<</d' "$local_rc"
+  else
+    sed -i '' '/# >>> dotfiles: editor >>>/,/# <<< dotfiles: editor <<</d' "$local_rc"
+  fi
+
+  cat >> "$local_rc" <<EOF
+
+# >>> dotfiles: editor >>>
+if [[ -n \$SSH_CONNECTION ]]; then
+  export EDITOR='${editor_remote}'
+else
+  export EDITOR='${editor_local}'
+fi
+# <<< dotfiles: editor <<<
+EOF
+
+  success "Saved editor preferences to $local_rc"
+}
+
 function success () {
   echo -e "[ \033[00;32mOK\033[0m ] $1\n"
 }
@@ -237,6 +274,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   install_dotfiles
 fi
+
+configure_editor
 
 echo "Reloading shell..."
 exec zsh

@@ -1,14 +1,18 @@
-# Path to your oh-my-zsh configuration.
-ZSH=$HOME/.oh-my-zsh
-
-# Set name of the theme to load.
-ZSH_THEME="sunaku"
+# homebrew
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv zsh)"
+fi
 
 # antidote
-[ -f /usr/local/opt/antidote/share/antidote/antidote.zsh ] && source /usr/local/opt/antidote/share/antidote/antidote.zsh
+source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh"
 [ -f $HOME/.zsh_plugins.sh ] && antidote load $HOME/.zsh_plugins.sh
 [ -f $HOME/.zsh_plugins_locals.sh ] && antidote load $HOME/.zsh_plugins_locals.sh
 
+# oh my zsh
+ZSH=$HOME/.oh-my-zsh
+ZSH_THEME="sunaku"
 source $ZSH/oh-my-zsh.sh
 
 # fzf-z
@@ -31,36 +35,25 @@ setopt HIST_IGNORE_SPACE      # Don't save commands that start with space
 setopt HIST_VERIFY            # Don't execute expanded history immediately
 setopt SHARE_HISTORY          # Share history between sessions
 
-# iterm2 shell integration
-if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
-  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-fi
-
 # z
 if [ -d "$(brew --prefix)/opt/z" ]; then
-  . `brew --prefix`/etc/profile.d/z.sh
+  . "$(brew --prefix)/etc/profile.d/z.sh"
 fi
 
 # zsh-completions
-fpath=(/usr/local/share/zsh-completions $fpath)
-fpath=(/usr/local/share/zsh/site-functions $fpath)
-fpath=(~/.zsh/completion $fpath)
-
-# https://docs.brew.sh/Shell-Completion#configuring-completions-in-zsh
 if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
-
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
   autoload -Uz compinit
   compinit
 fi
 
 # zsh-syntax-highlighting
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # zsh-history-substring-search
 # must be behind `zsh-syntax-highlighting`
 # https://github.com/zsh-users/zsh-history-substring-search
-source /usr/local/opt/zsh-history-substring-search/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+source "$(brew --prefix)/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
 
 # Load the shell dotfiles, and then some:
 for file in ~/.{exports,aliases,functions,input,localrc}; do

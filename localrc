@@ -5,6 +5,16 @@
 # This file is not symlinked from your dotfiles repo. It must be manually copied to $HOME
 #/
 
+# editor
+# for local and remote sessions
+# >>> dotfiles: editor >>>
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='code'
+fi
+# <<< dotfiles: editor <<<
+
 # github
 export HOMEBREW_GITHUB_API_TOKEN=""
 
