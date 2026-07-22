@@ -18,11 +18,6 @@ source $ZSH/oh-my-zsh.sh
 # fzf-z
 [ -f $HOME/.dotfiles/zsh/fzf-z.plugin.zsh ] && source $HOME/.dotfiles/zsh/fzf-z.plugin.zsh
 
-# grc
-if hash grc &> /dev/null; then
-  source "`brew --prefix`/etc/grc.bashrc"
-fi
-
 # history
 HISTSIZE=1000000   # Number of commands to keep in memory
 SAVEHIST=1000000   # Number of commands to save in history file
