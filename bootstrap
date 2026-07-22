@@ -156,6 +156,16 @@ function install_dotfiles {
   done
   unset file
   success "Done copying custom commands to your home bin directory"
+
+  if [ ! -d $HOME/.hammerspoon ]; then
+    mkdir -p $HOME/.hammerspoon
+  fi
+
+  if [ -f ${current_path}/hammerspoon-init.lua ]; then
+    cp -f ${current_path}/hammerspoon-init.lua $HOME/.hammerspoon/init.lua
+    success "Done copying Hammerspoon config"
+  fi
+
   success "Completed dotfiles bootstrapping"
 
   # Bundle ZSH plugins using antidote plugin manager
