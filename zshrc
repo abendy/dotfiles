@@ -6,9 +6,13 @@ elif [ -x /usr/local/bin/brew ]; then
 fi
 
 # antidote
+# .zsh_plugins.sh and .zsh_plugins_locals.sh are pre-bundled by `antidote
+# bundle` (see bootstrap / README) into plain source-able zsh, not a
+# plugin list, so they're sourced directly rather than passed to `antidote
+# load` (which expects the author/repo list format instead)
 source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh"
-[ -f $HOME/.zsh_plugins.sh ] && antidote load $HOME/.zsh_plugins.sh
-[ -f $HOME/.zsh_plugins_locals.sh ] && antidote load $HOME/.zsh_plugins_locals.sh
+[ -f $HOME/.zsh_plugins.sh ] && source $HOME/.zsh_plugins.sh
+[ -f $HOME/.zsh_plugins_locals.sh ] && source $HOME/.zsh_plugins_locals.sh
 
 # oh my zsh
 ZSH=$HOME/.oh-my-zsh
