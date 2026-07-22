@@ -1,6 +1,5 @@
 twang817/zsh-dirpersist
 andrewferrier/fzf-z
-michaelxmcbride/zsh-dircycle
 wuotr/zsh-plugin-vscode
 laggardkernel/zsh-thefuck
 hcgraf/zsh-sudo

@@ -144,6 +144,36 @@ function install_dotfiles {
   unset file
   success "Done copying dotfiles to your home directory"
 
+  # Restore git user & email immediately - the copy above just overwrote
+  # ~/.gitconfig with this repo's blank [user] placeholder, so this can't
+  # wait until after the (network-dependent) steps below
+  echo ${git_user_name} \<${git_user_email}\>
+  if [ -n $gpg_key ]; then
+    echo "--- ${gpg_key} ---"
+  fi
+
+  echo
+  read -p "Are these your git user details? (y/n) " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    git config --global user.name "${git_user_name}"
+    git config --global user.email "${git_user_email}"
+    if [ -n $gpg_key ]; then
+      git config --global user.signingkey "${gpg_key}"
+    fi
+    success "Cool"
+  else
+    echo "Setup your git user details"
+
+    read -p "Enter your git name: " git_user_name
+    git config --global user.name "${git_user_name}"
+
+    read -p "Enter your git email: " git_user_email
+    git config --global user.email "${git_user_email}"
+
+    success "Saved"
+  fi
+
   if [ ! -d $HOME/bin ]; then
     mkdir -p $HOME/bin
   fi
@@ -174,41 +204,14 @@ function install_dotfiles {
     fail "Missing ZSH plugins files for Antidote"
   else
     # antidote ships as a zsh function, not a PATH-resolvable binary, so it
-    # has to be sourced inside a zsh subshell rather than run directly here
-    if zsh -c 'source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh" && antidote bundle' < $DOTFILES_DIR/zsh/plugins.txt > $HOME/.zsh_plugins.sh; then
+    # has to be sourced inside a zsh subshell rather than run directly here.
+    # GIT_TERMINAL_PROMPT=0 makes a dead/private plugin repo fail fast
+    # instead of hanging on an interactive credential prompt.
+    if GIT_TERMINAL_PROMPT=0 zsh -c 'source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh" && antidote bundle' < $DOTFILES_DIR/zsh/plugins.txt > $HOME/.zsh_plugins.sh; then
       success "Done bundling ZSH plugins"
     else
       fail "Failed to bundle ZSH plugins with Antidote"
     fi
-  fi
-
-  # Verify git user & email
-  echo ${git_user_name} \<${git_user_email}\>
-  # Verify user details & GPG
-  if [ -n $gpg_key ]; then
-    echo "--- ${gpg_key} ---"
-  fi
-
-  echo
-  read -p "Are these your git user details? (y/n) " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    git config --global user.name "${git_user_name}"
-    git config --global user.email "${git_user_email}"
-    if [ -n $gpg_key ]; then
-      git config --global user.signingkey "${gpg_key}"
-    fi
-    success "Cool"
-  else
-    echo "Setup your git user details"
-
-    read -p "Enter your git name: " git_user_name
-    git config --global user.name "${git_user_name}"
-
-    read -p "Enter your git email: " git_user_email
-    git config --global user.email "${git_user_email}"
-
-    success "Saved"
   fi
 }
 
