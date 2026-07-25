@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Settings for a Mac that runs headless (no display attached) most of the
+# time, so it stays reachable over SSH/Tailscale without needing physical
+# access. Run once per headless machine - ideally while a display/keyboard
+# is still attached, in case something needs fixing afterward.
+#
+# FileVault + automatic login is deliberately NOT handled here - see
+# mac-mini-setup.md. Full-disk encryption's pre-boot unlock always requires
+# someone physically at the keyboard; no script can change that.
+
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until this has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+#/
+ # Sleep
+ # ==========================================================
+ #/
+
+# Never sleep - a Mac mini only ever runs on AC power, so there's no
+# separate battery profile to also set
+sudo pmset -c sleep 0
+sudo pmset -c disksleep 0
+
+# Wake for network access, so Wake-on-LAN / a Tailscale ping can wake it
+# if it ever ends up sleeping anyway
+sudo pmset -c womp 1
+
+# Restart automatically after a power failure - there's no one there to
+# flip it back on
+sudo pmset -c autorestart 1
+
+#/
+ # Remote access
+ # ==========================================================
+ #/
+
+# Enable Remote Login (SSH). If this errors ("You need to enable Remote
+# Login under the Sharing panel..."), grant Terminal Full Disk Access in
+# System Settings > Privacy & Security and re-run - `systemsetup` needs it
+# on recent macOS.
+sudo systemsetup -setremotelogin on
+
+# Enable Screen Sharing as a GUI fallback for the rare case something
+# needs to be seen rather than SSH'd into. The first connection may still
+# prompt for Screen Recording / Accessibility permission locally - that's
+# Apple's TCC privacy prompt and can't be scripted around.
+sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
+  -activate -configure -access -on -restart -agent -privs -all
