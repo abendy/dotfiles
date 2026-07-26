@@ -34,6 +34,25 @@ sudo pmset -c womp 1
 sudo pmset -c autorestart 1
 
 #/
+ # Lock Screen
+ # ==========================================================
+ #/
+
+# Turn display off after 10 minutes of inactivity - independent of system
+# sleep above, so it doesn't affect SSH/Tailscale reachability, just
+# whatever display happens to be connected on the rare occasion there is one
+sudo pmset -c displaysleep 10
+
+# Start screen saver after 10 minutes of inactivity
+defaults -currentHost write com.apple.screensaver idleTime -int 600
+
+# Require password immediately after sleep or screen saver begins - matters
+# more here than on a machine that's usually attended, since this one sits
+# reachable on the network unattended most of the time
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+#/
  # Remote access
  # ==========================================================
  #/

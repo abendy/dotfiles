@@ -201,6 +201,15 @@ function install_dotfiles {
     success "Done copying Hammerspoon config"
   fi
 
+  if [ -f ${current_path}/iterm2/com.googlecode.iterm2.plist ]; then
+    cp -f ${current_path}/iterm2/com.googlecode.iterm2.plist $HOME/Library/Preferences/com.googlecode.iterm2.plist
+    # cfprefsd caches preferences in memory, so a plist overwritten on disk
+    # isn't picked up until it's restarted - ideally run this before iTerm2
+    # is launched for the first time on a new machine
+    killall cfprefsd &> /dev/null
+    success "Done copying iTerm2 preferences"
+  fi
+
   success "Completed dotfiles bootstrapping"
 
   # Bundle ZSH plugins using antidote plugin manager
