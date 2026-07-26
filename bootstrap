@@ -79,8 +79,6 @@ function install_brews {
           else
             fail "Failed to upgrade $brew - see $HOME/.dotfiles/dotfiles.log for details"
           fi
-        else
-          ((brews_installed++))
         fi
       done
       unset brew
@@ -318,7 +316,10 @@ function success () {
 
 function fail () {
   echo -e "[\033[0;31mFAIL\033[0m] $1\n"
-  exit
+  # `exit 1`, not a bare `exit` - a bare `exit` returns the status of the
+  # last command run (the `echo` above, so 0), which would report success
+  # to callers, `&&` chains and CI even as it prints FAIL to the terminal
+  exit 1
 }
 
 # Ask for the administrator password upfront.
