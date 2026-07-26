@@ -9,6 +9,20 @@ DOTFILES_DIR="$HOME/.dotfiles"
 current_path="$DOTFILES_DIR"
 
 function auto_update {
+  # Operate on the deploy clone explicitly rather than on $PWD. auto_update is
+  # the first thing the script calls and nothing has cd'd yet - the only
+  # `cd "$DOTFILES_DIR"` lives inside install_dotfiles, much later and behind a
+  # prompt. Without this, `cd ~/somewhere-else && ~/.dotfiles/bootstrap` would
+  # fetch and `git reset --hard origin/master` whatever repo you were standing
+  # in, because the guard below only asks "is there a master branch here?".
+  # Resetting ~/.dotfiles is intentional - it's a deploy target, not a working
+  # copy - but resetting the repo you develop in would discard real work.
+  if [ ! -d "$DOTFILES_DIR/.git" ]; then
+    return
+  fi
+
+  cd "$DOTFILES_DIR" || return
+
   if [ "$(git branch --list master)" ]; then
     echo "Pulling from GitHub..."
 
@@ -17,6 +31,8 @@ function auto_update {
     if [ -n "$(git log HEAD..origin/master)" ]; then
       echo Hell yeah, running self-update process...
       git reset --hard origin/master &> /dev/null
+      # Relative re-exec is safe now that we've cd'd into the deploy clone;
+      # previously it re-ran whichever bootstrap happened to sit in $PWD
       ./$(basename $0) && exit
     fi
 
