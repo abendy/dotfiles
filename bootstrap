@@ -66,14 +66,22 @@ function install_brews {
         if [ -z "$(is_brew_installed $brew)" ]; then
           echo "Installing $brew"
 
-          brew install $brew &> /dev/null
+          if brew install $brew &> "$HOME/.dotfiles/dotfiles.log"; then
+            ((brews_installed++))
+          else
+            fail "Failed to install $brew - see $HOME/.dotfiles/dotfiles.log for details"
+          fi
         elif [ -n "$(brew outdated $brew)" ]; then
           echo "Upgrading $brew"
 
-          brew upgrade $brew &> /dev/null
+          if brew upgrade $brew &> "$HOME/.dotfiles/dotfiles.log"; then
+            ((brews_installed++))
+          else
+            fail "Failed to upgrade $brew - see $HOME/.dotfiles/dotfiles.log for details"
+          fi
+        else
+          ((brews_installed++))
         fi
-
-        ((brews_installed++))
       done
       unset brew
 
@@ -83,13 +91,16 @@ function install_brews {
       # Absolute path so this doesn't depend on the caller's cwd, and
       # `tee` so failures are visible instead of silently sitting in the
       # log - PIPESTATUS[0] is needed because `tee`'s own exit status
-      # (not brew bundle's) is what `$?`/an `if` on the pipeline would see
-      brew bundle install --verbose --file="$HOME/.dotfiles/Brewfile" | tee dotfiles.log
+      # (not brew bundle's) is what `$?`/an `if` on the pipeline would see.
+      # `2>&1` because brew writes Error:/Warning: to stderr, so without it
+      # the log records only the successes and the `fail` below points at a
+      # log with the reason for the failure missing
+      brew bundle install --verbose --file="$HOME/.dotfiles/Brewfile" 2>&1 | tee "$HOME/.dotfiles/dotfiles.log"
 
       if [ ${PIPESTATUS[0]} -eq 0 ]; then
         ((brews_installed++))
       else
-        fail "Failed to install Brewfile - see dotfiles.log for details"
+        fail "Failed to install Brewfile - see $HOME/.dotfiles/dotfiles.log for details"
       fi
     fi
 

@@ -1,3 +1,3 @@
-# fzf
+" fzf
 set rtp+=/opt/homebrew/opt/fzf
 
