@@ -257,6 +257,28 @@ EOF
   success "Saved editor preferences to $local_rc"
 }
 
+function fix_insecure_directories {
+  # zsh's compinit refuses to load completions from any directory in its
+  # search path that's group- or world-writable (mainly under Homebrew's
+  # share/ tree), since another user with write access there could plant
+  # a completion script that runs code the next time a shell starts. That
+  # shows up as an "insecure directories" prompt every time zshrc runs
+  # compinit. Fixing permissions once here means it never has to ask.
+  # compaudit is a zsh-only autoloaded function, not a binary, so it has
+  # to run inside a zsh subshell rather than directly from this script.
+  echo "Checking for insecure zsh completion directories..."
+
+  local insecure_dirs
+  insecure_dirs="$(zsh -c 'autoload -Uz compaudit && compaudit' 2>/dev/null)"
+
+  if [ -n "$insecure_dirs" ]; then
+    echo "$insecure_dirs" | xargs chmod g-w,o-w
+    success "Fixed insecure completion directory permissions"
+  else
+    success "No insecure completion directories found"
+  fi
+}
+
 function success () {
   echo -e "[ \033[00;32mOK\033[0m ] $1\n"
 }
@@ -289,6 +311,7 @@ else
 fi
 
 install_oh_my_zsh
+fix_insecure_directories
 
 read -p "$(tput setaf 4)$(tput bold)Ready to install dotfiles. This will overwrite any matching existing files in your home directory. Are you sure? (y/n) $(tput sgr 0)" -n 1 -r
 echo
