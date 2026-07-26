@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#
+# pinentry dispatcher.
+#
+# gpg-agent reads a single `pinentry-program` from gpg-agent.conf, but the
+# right pinentry depends on where the session is. pinentry-mac opens a GUI
+# dialog, which is what you want on a machine you're sitting at and useless
+# over SSH/mosh - the dialog opens on the *remote* machine's display, where
+# nobody can see it, and signing appears to hang.
+#
+# gpg-agent is a long-running daemon, so it does not inherit SSH_CONNECTION
+# from the calling shell and this script cannot test for it directly. What
+# gpg-agent does forward is PINENTRY_USER_DATA, so `exports` sets that in
+# remote sessions and we read it back here.
+
+PINENTRY_MAC="/usr/local/MacGPG2/libexec/pinentry-mac.app/Contents/MacOS/pinentry-mac"
+
+# `pinentry` from Homebrew's gnupg dependency is the curses build; prefer an
+# explicitly-named pinentry-curses if one is present
+PINENTRY_CURSES="$(command -v pinentry-curses || command -v pinentry)"
+
+# Curses when the session asked for it, or whenever the GUI binary is missing
+# (gpg-suite not installed) - pointing gpg-agent at an absent binary breaks
+# signing entirely, so falling back is always safer than failing
+case "${PINENTRY_USER_DATA}" in
+  *USE_CURSES=1*)
+    exec "${PINENTRY_CURSES}" "$@"
+    ;;
+esac
+
+if [ -x "${PINENTRY_MAC}" ]; then
+  exec "${PINENTRY_MAC}" "$@"
+fi
+
+exec "${PINENTRY_CURSES}" "$@"

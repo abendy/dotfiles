@@ -30,6 +30,23 @@ export PATH="$(brew --prefix findutils)/libexec/gnubin:$PATH"
 # fzf
 hash fzf &> /dev/null && source <(fzf --zsh)
 
+# GPG
+# gpg-agent needs to know which terminal to attach a curses pinentry to.
+# Without this, signing from a shell fails with "Inappropriate ioctl for
+# device" - the same error that makes any non-interactive `git commit` on a
+# gpgsign=true repo fail.
+if [ -t 0 ]; then
+  export GPG_TTY="$(tty)"
+fi
+
+# gpg-agent is a daemon and doesn't inherit SSH_CONNECTION, so `bin/pinentry-auto`
+# can't detect a remote session on its own. PINENTRY_USER_DATA is forwarded by
+# gpg-agent to the pinentry process, so it's how we tell the wrapper to use the
+# curses UI instead of opening a GUI dialog on a display nobody is looking at.
+if [ -n "$SSH_CONNECTION" ]; then
+  export PINENTRY_USER_DATA="USE_CURSES=1"
+fi
+
 # Grep
 export PATH="$(brew --prefix grep)/libexec/gnubin:$PATH"
 

@@ -77,6 +77,33 @@ On a new machine, migrate an existing `z` database if there is one. The old data
 zoxide import z < ~/.z
 ```
 
+## GPG signing
+
+`gitconfig` sets `gpgsign = true`, so commits fail outright if gpg-agent can't
+run a usable pinentry. Homebrew's default `pinentry` is the curses build, which
+needs a controlling terminal and dies with `Inappropriate ioctl for device`
+anywhere it doesn't have one.
+
+`bootstrap` points gpg-agent at `bin/pinentry-auto`, which picks per session:
+
+| Session | pinentry | Why |
+| --- | --- | --- |
+| Local | `pinentry-mac` (gpg-suite) | GUI prompt, Keychain integration |
+| SSH / mosh | `pinentry-curses` | A GUI dialog would open on the *remote* machine's display |
+
+gpg-agent is a daemon and doesn't inherit `SSH_CONNECTION`, so the wrapper can't
+detect a remote session itself. `exports` sets `PINENTRY_USER_DATA=USE_CURSES=1`
+when `$SSH_CONNECTION` is present, which gpg-agent forwards to the pinentry
+process. `exports` also sets `GPG_TTY`, which curses pinentry needs to attach.
+
+The `pinentry-program` line is written into a delimited block in
+`~/.gnupg/gpg-agent.conf`, so re-running `bootstrap` won't duplicate it and any
+other settings in that file are left alone. To apply changes by hand:
+
+```sh
+gpgconf --kill gpg-agent   # agent caches its config at startup
+```
+
 ## Handling a `Brewfile`
 
 Check if all dependencies are installed in a Brewfile.
