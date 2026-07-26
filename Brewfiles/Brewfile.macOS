@@ -1,0 +1,11 @@
+cask "appcleaner"
+cask "apptrap"
+cask "blockblock"
+cask "caffeine"
+cask "do-not-disturb"
+cask "keka"
+cask "lulu"
+cask "mullvadvpn"
+cask "oversight"
+cask "reikey"
+mas "PopClip", id: 445189367

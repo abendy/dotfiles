@@ -1,3 +1,2 @@
-cask "facebook-ios-sdk"
-cask "google-cloud-sdk"
+brew "TomAnthony/brews/itermocil"
 mas "Xcode", id: 497799835

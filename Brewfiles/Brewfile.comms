@@ -1,3 +1,4 @@
+brew "gmailctl"
 brew "signal-cli"
 cask "signal"
 cask "slack"

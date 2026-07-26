@@ -1,3 +1,4 @@
+brew "carbon-copy-cloner"
 brew "cfv"
 brew "dos2unix"
 brew "fdupes"
