@@ -1,7 +1,5 @@
 twang817/zsh-dirpersist
-andrewferrier/fzf-z
 wuotr/zsh-plugin-vscode
-laggardkernel/zsh-thefuck
 hcgraf/zsh-sudo
 0b10/cheatsheet
 caarlos0/git-add-remote

@@ -14,7 +14,20 @@ source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh"
 [ -f $HOME/.zsh_plugins.sh ] && source $HOME/.zsh_plugins.sh
 [ -f $HOME/.zsh_plugins_locals.sh ] && source $HOME/.zsh_plugins_locals.sh
 
+# zsh-completions
+# FPATH has to be extended *before* oh-my-zsh is sourced, because oh-my-zsh
+# runs the one and only `compinit` for this shell - anything added to FPATH
+# after that point is invisible to the completion system
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+fi
+
 # oh my zsh
+# oh-my-zsh.sh runs `autoload -Uz compinit` + `compinit` itself, so nothing
+# else in this file may run a second one. It used to (below the `z` block),
+# which made `compinit` run twice and `compaudit` four times on every shell
+# for no benefit - the second run only existed to pick up the FPATH entry
+# now set above it
 ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="sunaku"
 source $ZSH/oh-my-zsh.sh
@@ -34,16 +47,12 @@ setopt HIST_IGNORE_SPACE      # Don't save commands that start with space
 setopt HIST_VERIFY            # Don't execute expanded history immediately
 setopt SHARE_HISTORY          # Share history between sessions
 
-# z
-if [ -d "$(brew --prefix)/opt/z" ]; then
-  . "$(brew --prefix)/etc/profile.d/z.sh"
-fi
-
-# zsh-completions
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  autoload -Uz compinit
-  compinit
+# zoxide (replaces `z`)
+# Still provides a `z` command, plus `zi` for interactive selection, so the
+# muscle memory carries over. Must stay below oh-my-zsh: `zoxide init` calls
+# `compdef`, which only exists once oh-my-zsh has run `compinit`.
+if type zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
 fi
 
 # zsh-syntax-highlighting

@@ -37,8 +37,8 @@ __fzfz_get_command() {
     fi
 
     # EXCLUDER is applied directly only to searches that need it (i.e. not
-    # `z`). That improvements performance, and makes sure that the
-    # FZFZ_SUBDIR_LIMIT is applied on the post-excluded list.
+    # the recently-used-dirs list). That improvements performance, and makes
+    # sure that the FZFZ_SUBDIR_LIMIT is applied on the post-excluded list.
 
     if (($+FZFZ_EXTRA_DIRS)); then
         local EXTRA_DIRS="{ $FZFZ_FIND_PREFIX $FZFZ_EXTRA_DIRS $FZFZ_FIND_POSTFIX 2> /dev/null | $EXCLUDER }"
@@ -50,7 +50,10 @@ __fzfz_get_command() {
     local LIMIT_LENGTH="head -n $(($FZFZ_SUBDIR_LIMIT+1))"
 
     local SUBDIRS="{ $FZFZ_FIND_PREFIX $PWD $FZFZ_FIND_POSTFIX | $EXCLUDER | $LIMIT_LENGTH | $REMOVE_FIRST }"
-    local RECENTLY_USED_DIRS="{ z -l | gtac | sed 's/^[[:digit:].]*[[:space:]]*//' }"
+    # `zoxide query -l` already emits bare paths sorted highest-score-first,
+    # so this no longer needs `gtac` to reverse z's ascending output nor `sed`
+    # to strip a leading score column
+    local RECENTLY_USED_DIRS="{ zoxide query -l }"
 
     local FZF_COMMAND="fzf --height ${FZF_TMUX_HEIGHT:-40%} ${FZFZ_EXTRA_OPTS} --tiebreak=end,index -m --preview='$FZFZ_PREVIEW_COMMAND | head -\$LINES'"
 
