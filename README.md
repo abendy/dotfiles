@@ -13,17 +13,68 @@ git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
 ./osx
 ```
 
-You can create a `~/.localrc` file for additional local runtime configuration. This repo provides a template: `cp localrc ~/.localrc`.
+`~/.localrc` holds local runtime configuration and is not tracked by this repo. `bootstrap` copies the `localrc` template there for you if the file doesn't already exist, so an existing one is never overwritten. To seed it by hand: `cp localrc ~/.localrc`.
 
-## Adding ZSH plugins
+## ZSH plugins
 
-We're using [antidote][ab] as the plugin manager. Add plugins (one per line) as per [antidote documentation][abd].
+We're using [antidote][ab] as the plugin manager, across two lists.
+
+**Shared plugins** live in `zsh/plugins.txt` (tracked, applies to every machine). `bootstrap` bundles it automatically. If you edit the list without re-running `bootstrap`, re-bundle by hand:
 
 ```sh
-touch ~/.zsh_plugins_local.txt
-vi ~/.zsh_plugins_local.txt
-antidote bundle < ~/.zsh_plugins_local.txt > ~/.zsh_plugin_locals.sh
+antidote bundle < ~/.dotfiles/zsh/plugins.txt > ~/.zsh_plugins.sh
 exec zsh
+```
+
+**Machine-local plugins** live in a file you create yourself, so they stay off the shared list. Add plugins one per line as per the [antidote documentation][abd].
+
+```sh
+touch ~/.zsh_plugins_locals.txt
+vi ~/.zsh_plugins_locals.txt
+antidote bundle < ~/.zsh_plugins_locals.txt > ~/.zsh_plugins_locals.sh
+exec zsh
+```
+
+The output filename matters: `zshrc` sources `~/.zsh_plugins.sh` and `~/.zsh_plugins_locals.sh` behind a `[ -f ]` test, so a mistyped name fails silently rather than erroring.
+
+## Key bindings
+
+Defined in `input`, installed to `~/.input` by `bootstrap` and sourced from `zshrc`. Uses emacs mode (`bindkey -e`).
+
+| Key | Action | Provided by |
+| --- | --- | --- |
+| `alt + left` / `alt + right` | move back / forward one word | `input` |
+| `ctrl + x` | insert output of last command | `input` |
+| `ctrl + b` | `cd -` — back to previous directory | `input` |
+| `ctrl + space` | `tig status` | `input` |
+| `ctrl + r` | reverse-search history | fzf |
+| `ctrl + t` | search current directory, insert path on the command line | fzf |
+| `ctrl + z` | browse zoxide history with fzf | `zsh/fzf-z.plugin.zsh` |
+| `ctrl + a` | move to beginning of line | zsh |
+| `ctrl + w` | delete word backward | zsh |
+| `ctrl + y` | insert last deleted word | zsh |
+| `ctrl + u` | clear line | zsh |
+| `ctrl + k` | delete to end of line | zsh |
+| `ctrl + l` | clear screen | zsh |
+| `ctrl + g` | abort | zsh |
+| `ctrl + c` | cancel | zsh |
+| `fn + left` / `fn + right` | move to beginning / end of line | terminal |
+
+To check what a key is actually bound to: `bindkey "^X"`.
+
+## Directory jumping
+
+We're using [zoxide][zx], which provides a `z` command that jumps to the best match for a partial path, and `zi` to pick from matches interactively.
+
+```sh
+z dotfiles      # jump to the highest-ranked directory matching "dotfiles"
+zi dotfiles     # choose interactively between matches
+```
+
+On a new machine, migrate an existing `z` database if there is one. The old datafile is read on **stdin**:
+
+```sh
+zoxide import z < ~/.z
 ```
 
 ## Handling a `Brewfile`
@@ -61,3 +112,4 @@ cd ~/.dotfiles
    [omz]: <https://github.com/robbyrussell/oh-my-zsh>
    [ab]: <https://github.com/mattmc3/antidote>
    [abd]: <https://github.com/mattmc3/antidote?tab=readme-ov-file#usage>
+   [zx]: <https://github.com/ajeetdsouza/zoxide>
