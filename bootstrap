@@ -62,7 +62,7 @@ function install_brews {
     brews_installed=0;
 
     if [[ $1 == "ZSH" ]]; then
-      for brew in {zsh,zsh-completions,zsh-history-substring-search,zsh-syntax-highlighting}; do
+      for brew in {antidote,zsh,zsh-completions,zsh-history-substring-search,zsh-syntax-highlighting}; do
         if [ -z "$(is_brew_installed $brew)" ]; then
           echo "Installing $brew"
 
@@ -147,18 +147,23 @@ function install_dotfiles {
   # Restore git user & email immediately - the copy above just overwrote
   # ~/.gitconfig with this repo's blank [user] placeholder, so this can't
   # wait until after the (network-dependent) steps below
-  echo ${git_user_name} \<${git_user_email}\>
-  if [ -n $gpg_key ]; then
-    echo "--- ${gpg_key} ---"
+  if [ -n "$git_user_name" ] || [ -n "$git_user_email" ]; then
+    echo ${git_user_name} \<${git_user_email}\>
+    if [ -n "$gpg_key" ]; then
+      echo "--- ${gpg_key} ---"
+    fi
+
+    echo
+    read -p "Are these your git user details? (y/n) " -n 1 -r
+    echo
+  else
+    REPLY="n"
   fi
 
-  echo
-  read -p "Are these your git user details? (y/n) " -n 1 -r
-  echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     git config --global user.name "${git_user_name}"
     git config --global user.email "${git_user_email}"
-    if [ -n $gpg_key ]; then
+    if [ -n "$gpg_key" ]; then
       git config --global user.signingkey "${gpg_key}"
     fi
     success "Cool"
