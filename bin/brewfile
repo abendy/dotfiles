@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+#
+# Install optional Brewfile bundles on demand.
+#
+# The shared Brewfile at the repo root is what `bootstrap` installs on every
+# machine. Everything in Brewfiles/ is opt-in: language ecosystems and topic
+# bundles you pull in per machine, so the Mini doesn't get design tools and the
+# laptop doesn't get things it never needs.
+#
+# Brewfiles/archive/ is deliberately excluded - those are kept as notes, not as
+# installable bundles.
+
+set -uo pipefail
+
+BREWFILE_DIR="${BREWFILE_DIR:-$HOME/.dotfiles/Brewfiles}"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  brewfile                    pick bundles interactively (fzf), then install
+  brewfile ls                 list bundles and how many entries each has
+  brewfile install <name>...  install one or more bundles
+  brewfile check <name>...    report which entries are missing
+  brewfile cat <name>...      print a bundle
+
+Bundles live in Brewfiles/ as <name>.Brewfile. Brewfiles/archive/ is ignored.
+EOF
+}
+
+# Bundle names, one per line, archive/ excluded by not recursing
+bundles() {
+  local f
+  for f in "$BREWFILE_DIR"/*.Brewfile; do
+    [ -e "$f" ] || continue
+    basename "$f" .Brewfile
+  done
+}
+
+bundle_path() {
+  echo "$BREWFILE_DIR/$1.Brewfile"
+}
+
+require_bundle() {
+  if [ ! -f "$(bundle_path "$1")" ]; then
+    echo "brewfile: no such bundle '$1'" >&2
+    echo "try: brewfile ls" >&2
+    return 1
+  fi
+}
+
+cmd_ls() {
+  local name path count
+  while read -r name; do
+    path="$(bundle_path "$name")"
+    # Count only real entries, not the comment headers
+    count="$(grep -cE '^[[:space:]]*(brew|cask|mas|tap) ' "$path")"
+    printf '%-16s %s\n' "$name" "$count entries"
+  done < <(bundles)
+}
+
+cmd_install() {
+  local name status=0
+  for name in "$@"; do
+    require_bundle "$name" || { status=1; continue; }
+    echo "==> installing $name"
+    # --verbose so a failing formula is visible rather than buried
+    if ! brew bundle install --verbose --file="$(bundle_path "$name")"; then
+      echo "brewfile: $name failed" >&2
+      status=1
+    fi
+  done
+  return $status
+}
+
+cmd_check() {
+  local name status=0
+  for name in "$@"; do
+    require_bundle "$name" || { status=1; continue; }
+    echo "==> $name"
+    brew bundle check --verbose --file="$(bundle_path "$name")" || status=1
+  done
+  return $status
+}
+
+cmd_cat() {
+  local name status=0
+  for name in "$@"; do
+    require_bundle "$name" || { status=1; continue; }
+    echo "==> $name"
+    cat "$(bundle_path "$name")"
+  done
+  return $status
+}
+
+cmd_pick() {
+  if ! command -v fzf > /dev/null 2>&1; then
+    echo "brewfile: fzf not installed - name bundles explicitly instead" >&2
+    echo >&2
+    cmd_ls >&2
+    return 1
+  fi
+
+  local selected
+  selected="$(bundles | fzf --multi \
+    --prompt='bundle> ' \
+    --header='tab to select multiple, enter to install, esc to cancel' \
+    --preview="cat '$BREWFILE_DIR'/{}.Brewfile")"
+
+  # Empty means the picker was cancelled; not an error
+  [ -n "$selected" ] || return 0
+
+  # shellcheck disable=SC2086 - word splitting on newlines is what we want here
+  cmd_install $(echo "$selected" | tr '\n' ' ')
+}
+
+if [ ! -d "$BREWFILE_DIR" ]; then
+  echo "brewfile: $BREWFILE_DIR not found" >&2
+  exit 1
+fi
+
+# An empty glob would otherwise make `ls` print nothing and exit 0, which reads
+# as "no bundles exist" rather than "you're pointed at the wrong directory" -
+# the usual cause being a ~/.dotfiles that predates the <name>.Brewfile rename
+if [ -z "$(bundles)" ]; then
+  echo "brewfile: no <name>.Brewfile bundles in $BREWFILE_DIR" >&2
+  if compgen -G "$BREWFILE_DIR/Brewfile.*" > /dev/null; then
+    echo "brewfile: found old-style Brewfile.<name> files there - that clone predates the rename, so run bootstrap or pull" >&2
+  fi
+  exit 1
+fi
+
+case "${1:-}" in
+  '')                 cmd_pick ;;
+  ls|list)            cmd_ls ;;
+  install|add)        shift; [ $# -gt 0 ] || { usage >&2; exit 1; }; cmd_install "$@" ;;
+  check)              shift; [ $# -gt 0 ] || { usage >&2; exit 1; }; cmd_check "$@" ;;
+  cat|show)           shift; [ $# -gt 0 ] || { usage >&2; exit 1; }; cmd_cat "$@" ;;
+  -h|--help|help)     usage ;;
+  *)                  echo "brewfile: unknown command '$1'" >&2; usage >&2; exit 1 ;;
+esac

@@ -104,24 +104,50 @@ other settings in that file are left alone. To apply changes by hand:
 gpgconf --kill gpg-agent   # agent caches its config at startup
 ```
 
-## Handling a `Brewfile`
+## Packages
 
-Check if all dependencies are installed in a Brewfile.
+The `Brewfile` at the repo root is the shared set, installed on every machine by
+`bootstrap`. Keep it lean.
+
+Everything else is opt-in, as `Brewfiles/<name>.Brewfile` — language ecosystems
+and topic bundles you pull in per machine, so the Mini doesn't get design tools
+and the laptop doesn't get things it never needs. Install them with `brewfile`:
 
 ```sh
-brew bundle check --verbose --file=Brewfiles/<Brewfile>
+brewfile                    # pick interactively (fzf), then install
+brewfile ls                 # list bundles and entry counts
+brewfile install node go    # install by name
+brewfile check node         # report what's missing
+brewfile cat go             # print a bundle
 ```
 
-Install or upgrade all dependencies in a Brewfile.
+### Language ecosystems
+
+One tool per language rather than a polyglot version manager, since each has a
+good native story now:
+
+| Language | Bundle | Tool | Version pinning |
+| --- | --- | --- | --- |
+| Node | `node` | `fnm` | `.node-version`, `.nvmrc` |
+| Python | `python` | `uv` | `.python-version`, `pyproject.toml` |
+| Rust | `rust` | `rustup` | `rust-toolchain.toml` |
+| Go | `go` | stock `go` | `go.mod` — no version manager needed |
+
+Go needs no version manager because since Go 1.21 the default `GOTOOLCHAIN=auto`
+makes the `go` command read the `go`/`toolchain` lines in `go.mod` and download
+the matching toolchain on demand.
+
+Shell integration for these is guarded on the tool being present, so a machine
+that skips a bundle doesn't pay for it or error at startup.
+
+### `Brewfiles/archive/`
+
+Old bundles kept as notes — PHP, MySQL, nginx, WordPress, Ruby, and the previous
+Node/Python setups. `brewfile` ignores this directory; use `brew bundle` directly
+if you ever want something out of it:
 
 ```sh
-brew bundle install --verbose --file=Brewfiles/<Brewfile>
-```
-
-List all dependencies present in a Brewfile, optionally limiting by types. You can do this if you do not want to install all dependencies, then copy a dependency and install it manually.
-
-```sh
-brew bundle list [--all|--brews|--casks|--taps|--mas] --file=Brewfiles/<Brewfile>
+brew bundle install --verbose --file=Brewfiles/archive/Brewfile.PHP
 ```
 
 ## Upgrade
