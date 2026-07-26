@@ -55,6 +55,19 @@ if type zoxide &>/dev/null; then
   eval "$(zoxide init zsh)"
 fi
 
+# fnm (replaces nvm)
+# Guarded on the binary being present, because Node is an opt-in bundle
+# (`brewfile install node`) rather than part of the shared Brewfile - a machine
+# that skips it should not error at startup.
+#
+# This lives here, tracked, rather than in the untracked ~/.localrc where the
+# nvm equivalent used to sit - that made the Node setup unreproducible on any
+# new machine. --use-on-cd installs a chpwd hook that reads .node-version and
+# .nvmrc, which is the part nvm was spending ~300ms per shell doing eagerly.
+if type fnm &>/dev/null; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+
 # zsh-syntax-highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
