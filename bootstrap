@@ -80,9 +80,17 @@ function install_brews {
     else
       echo "Installing all Brews"
 
-      brew bundle install --verbose --file=Brewfile &> dotfiles.log
+      # Absolute path so this doesn't depend on the caller's cwd, and
+      # `tee` so failures are visible instead of silently sitting in the
+      # log - PIPESTATUS[0] is needed because `tee`'s own exit status
+      # (not brew bundle's) is what `$?`/an `if` on the pipeline would see
+      brew bundle install --verbose --file="$HOME/.dotfiles/Brewfile" | tee dotfiles.log
 
-      ((brews_installed++))
+      if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        ((brews_installed++))
+      else
+        fail "Failed to install Brewfile - see dotfiles.log for details"
+      fi
     fi
 
     if [ $brews_installed -gt 0 ]; then
