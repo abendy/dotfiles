@@ -1,6 +1,19 @@
 dotfiles.log
 *.lock.json
 
+# Key material must never be committable from this repo. These patterns are
+# defence in depth, not a place to keep keys - anything matching here should be
+# living outside the repo entirely. git-allowed-signers is the deliberate
+# exception: it holds only *public* signing keys and is meant to be tracked.
+gpg/
+*.asc
+*.rev
+*.key
+*.pem
+id_rsa
+id_ed25519
+!git-allowed-signers
+
 # Folder view configuration files
 .DS_Store
 Desktop.ini
