@@ -367,59 +367,6 @@ function configure_git_signing {
   fi
 }
 
-function configure_gpg_agent {
-  # gitconfig sets gpgsign = true, so an unusable pinentry makes every commit
-  # fail. gpg-agent's default pinentry on this setup is Homebrew's curses
-  # build, which needs a controlling terminal and dies with "Inappropriate
-  # ioctl for device" anywhere it doesn't have one. Point the agent at the
-  # dispatcher in bin/ instead, which picks GUI or curses per session.
-  local gpg_home="$HOME/.gnupg"
-  local agent_conf="$gpg_home/gpg-agent.conf"
-  local pinentry="$HOME/bin/pinentry-auto"
-
-  # Declining the install_dotfiles prompt means bin/ was never copied. Skip
-  # rather than fail: pointing gpg-agent at a script that isn't there would
-  # leave signing more broken than it started.
-  if [ ! -x "$pinentry" ]; then
-    echo "Skipping gpg-agent config - $pinentry not installed"
-    return
-  fi
-
-  # gpg refuses to use a home directory others can read, and silently ignores
-  # a world-readable conf, so both permissions matter here
-  mkdir -p "$gpg_home"
-  chmod 700 "$gpg_home"
-  touch "$agent_conf"
-
-  # Strip any previously written block, then any trailing blank lines, so
-  # re-running bootstrap neither duplicates the block nor leaves an extra blank
-  # line behind each time. Writing through a temp file rather than `sed -i`
-  # also sidesteps the GNU/BSD split on whether -i takes an argument.
-  local tmp
-  tmp="$(mktemp)"
-  sed '/# >>> dotfiles: pinentry >>>/,/# <<< dotfiles: pinentry <<</d' "$agent_conf" \
-    | awk '{ l[NR] = $0 }
-           END { n = NR
-                 while (n > 0 && l[n] ~ /^[[:space:]]*$/) n--
-                 for (i = 1; i <= n; i++) print l[i] }' > "$tmp"
-  mv "$tmp" "$agent_conf"
-
-  cat >> "$agent_conf" <<EOF
-
-# >>> dotfiles: pinentry >>>
-pinentry-program ${pinentry}
-# <<< dotfiles: pinentry <<<
-EOF
-
-  chmod 600 "$agent_conf"
-
-  # The agent caches its config at startup, so a running one keeps using the
-  # old pinentry until restarted
-  gpgconf --kill gpg-agent &> /dev/null
-
-  success "Configured gpg-agent pinentry"
-}
-
 function fix_insecure_directories {
   # zsh's compinit refuses to load completions from any directory in its
   # search path that's group- or world-writable (mainly under Homebrew's
@@ -489,7 +436,6 @@ fi
 
 configure_editor
 configure_git_signing
-configure_gpg_agent
 
 echo "Reloading shell..."
 exec zsh

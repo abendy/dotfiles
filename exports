@@ -46,20 +46,18 @@ if [ -z "$SSH_CONNECTION" ]; then
 fi
 
 # GPG
-# gpg-agent needs to know which terminal to attach a curses pinentry to.
-# Without this, signing from a shell fails with "Inappropriate ioctl for
-# device" - the same error that makes any non-interactive `git commit` on a
-# gpgsign=true repo fail.
+# Git no longer signs with GPG (gitconfig uses gpg.format = ssh), so gpg's only
+# remaining job here is *verifying* the openpgp-signed commits made before that
+# switch. Verification needs no passphrase, hence no pinentry wrangling.
+#
+# GPG_TTY survives that cleanup because it costs three lines and is what makes
+# gpg usable interactively at all - decrypting or signing something by hand
+# otherwise fails with "Inappropriate ioctl for device", which is a genuinely
+# confusing error to rediscover. The pinentry dispatcher and PINENTRY_USER_DATA
+# that used to sit here existed only to make gpg sign *unattended*, which
+# nothing asks for now.
 if [ -t 0 ]; then
   export GPG_TTY="$(tty)"
-fi
-
-# gpg-agent is a daemon and doesn't inherit SSH_CONNECTION, so `bin/pinentry-auto`
-# can't detect a remote session on its own. PINENTRY_USER_DATA is forwarded by
-# gpg-agent to the pinentry process, so it's how we tell the wrapper to use the
-# curses UI instead of opening a GUI dialog on a display nobody is looking at.
-if [ -n "$SSH_CONNECTION" ]; then
-  export PINENTRY_USER_DATA="USE_CURSES=1"
 fi
 
 # Grep

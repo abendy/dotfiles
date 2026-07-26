@@ -77,32 +77,50 @@ On a new machine, migrate an existing `z` database if there is one. The old data
 zoxide import z < ~/.z
 ```
 
-## GPG signing
+## Commit signing
 
-`gitconfig` sets `gpgsign = true`, so commits fail outright if gpg-agent can't
-run a usable pinentry. Homebrew's default `pinentry` is the curses build, which
-needs a controlling terminal and dies with `Inappropriate ioctl for device`
-anywhere it doesn't have one.
+Commits are signed with SSH, not GPG — `gitconfig` sets `commit.gpgsign = true`
+with `gpg.format = ssh`.
 
-`bootstrap` points gpg-agent at `bin/pinentry-auto`, which picks per session:
+The signing key is `~/.ssh/git_signing`, **one per machine**, ed25519, with **no
+passphrase**. That's the point: it signs unattended on the Mini over SSH, where
+GPG falls back to a curses pinentry and prompts, and where 1Password's agent
+can't help because it needs the desktop GUI to approve and its Touch ID grant
+expires after 24 hours.
 
-| Session | pinentry | Why |
-| --- | --- | --- |
-| Local | `pinentry-mac` (gpg-suite) | GUI prompt, Keychain integration |
-| SSH / mosh | `pinentry-curses` | A GUI dialog would open on the *remote* machine's display |
+The tradeoff is deliberate and scoped. The key is signing-only and must never
+appear in any `authorized_keys`, so compromise means forged signatures rather
+than server access. GitHub tracks signing keys separately from authentication
+keys. Rotation is just generating a new key and updating two places.
 
-gpg-agent is a daemon and doesn't inherit `SSH_CONNECTION`, so the wrapper can't
-detect a remote session itself. `exports` sets `PINENTRY_USER_DATA=USE_CURSES=1`
-when `$SSH_CONNECTION` is present, which gpg-agent forwards to the pinentry
-process. `exports` also sets `GPG_TTY`, which curses pinentry needs to attach.
+`bootstrap` generates the key when it's missing and prints it. Register it:
 
-The `pinentry-program` line is written into a delimited block in
-`~/.gnupg/gpg-agent.conf`, so re-running `bootstrap` won't duplicate it and any
-other settings in that file are left alone. To apply changes by hand:
+1. **github.com/settings/keys → New SSH key**, and set the **Key type** dropdown
+   to **Signing Key** — it defaults to *Authentication Key*. There's no separate
+   signing-key page; that heading only appears once one exists.
+2. **`git-allowed-signers`** in this repo, so local verification works. Without
+   it `git log --show-signature` reports `No principal matched` even for valid
+   signatures. `bootstrap` installs it to `~/.ssh/allowed_signers`.
 
-```sh
-gpgconf --kill gpg-agent   # agent caches its config at startup
-```
+One key per machine means a retired machine is revoked by deleting its line from
+`git-allowed-signers`, rather than rotating a key shared everywhere.
+
+`user.signingkey` is a *path* rather than a key id, so it's identical on every
+machine while the key behind it differs.
+
+### What GPG is still for
+
+Only verifying commits made before the switch to SSH signing. Verification needs
+no passphrase, so there's no pinentry setup here — `exports` sets `GPG_TTY` and
+nothing more, which is what makes gpg usable if you ever decrypt or sign
+something by hand.
+
+### SSH authentication
+
+Separate from signing. `~/.ssh/config` sets `IdentityAgent` to the 1Password
+agent, and `exports` points `SSH_AUTH_SOCK` at the same socket so `ssh-add`,
+`git`, `rsync` and `mosh` see it too. That's skipped under `$SSH_CONNECTION`, so
+a forwarded agent isn't clobbered.
 
 ## Packages
 
