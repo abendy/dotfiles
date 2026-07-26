@@ -1,0 +1,14 @@
+# Public signing keys trusted for verifying commits in this repo's identity.
+#
+# Consumed via gpg.ssh.allowedSignersFile in gitconfig; bootstrap installs it to
+# ~/.ssh/allowed_signers. Without it, `git log --show-signature` reports "No
+# principal matched" even for signatures that are perfectly valid.
+#
+# One signing key per machine, so a lost or retired machine can be revoked by
+# deleting its line here rather than rotating a shared key. Add the Mini's
+# public key when it's generated.
+#
+# namespaces="git" scopes each key to git signing only.
+
+# MacBook
+1480258+abendy@users.noreply.github.com namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF+fpHlNt0OCrtLXmAzrzi0WuI+DIL5EqZYCBkaWdaok

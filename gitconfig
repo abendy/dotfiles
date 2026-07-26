@@ -254,7 +254,25 @@
   user = abendy
 
 [gpg]
+  # SSH signing rather than OpenPGP. GPG signing only worked here because
+  # pinentry-mac caches the passphrase in Keychain; over SSH to the Mini it
+  # falls back to curses pinentry and prompts, which breaks unattended commits.
+  # An SSH key with no passphrase signs identically on both machines with no
+  # agent, no GUI and no approval step.
+  #
+  # 1Password's agent was the other candidate and can't do this: its docs
+  # require the desktop GUI to approve, and the Touch ID grant expires after
+  # 24h, so a rebooted Mini would stop signing until someone unlocked it.
+  # 1Password still handles auth keys - see SSH_AUTH_SOCK in `exports`.
+  format = ssh
+  # Only consulted when format = openpgp; kept so existing GPG-signed history
+  # and any non-git gpg use still work
   program = gpg
+
+[gpg "ssh"]
+  # Needed for `git log --show-signature` to report "Good signature" rather
+  # than "No principal matched" - verification needs to know which keys count
+  allowedSignersFile = ~/.ssh/allowed_signers
 
 [init]
   defaultBranch = main
@@ -307,4 +325,11 @@
 [user]
   email =
   name =
-  signingkey =
+  # Path to the *public* half of the per-machine signing key. The path is the
+  # same everywhere while the key behind it differs per machine, so this line
+  # needs no per-machine editing. Generate with:
+  #   ssh-keygen -t ed25519 -f ~/.ssh/git_signing -N "" -C "git signing - $(hostname -s)"
+  # then add the public key to Brewfiles' sibling git-allowed-signers and to
+  # GitHub under Settings > SSH and GPG keys > Signing keys (a separate list
+  # from authentication keys).
+  signingkey = ~/.ssh/git_signing.pub

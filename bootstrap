@@ -161,7 +161,11 @@ function install_oh_my_zsh {
 function install_dotfiles {
   git_user_name="$(git config --get user.name | tr -d '\n')"
   git_user_email="$(git config --get user.email | tr -d '\n')"
-  gpg_key="$(git config --get user.signingkey | tr -d '\n')" # string
+  # user.signingkey is deliberately *not* captured and restored any more. It
+  # used to hold a machine-specific GPG key id, so it had to survive the
+  # gitconfig copy below. It's now a fixed path (~/.ssh/git_signing.pub) that is
+  # identical on every machine while the key behind it differs, so the tracked
+  # value is already correct and restoring an old GPG id would undo it.
 
   if [ ! -d "$DOTFILES_DIR" ]; then
     fail "Clone dotfiles to ~/.dotfiles and re-run bootstrap"
@@ -193,9 +197,6 @@ function install_dotfiles {
   # wait until after the (network-dependent) steps below
   if [ -n "$git_user_name" ] || [ -n "$git_user_email" ]; then
     echo ${git_user_name} \<${git_user_email}\>
-    if [ -n "$gpg_key" ]; then
-      echo "--- ${gpg_key} ---"
-    fi
 
     echo
     read -p "Are these your git user details? (y/n) " -n 1 -r
@@ -207,9 +208,6 @@ function install_dotfiles {
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     git config --global user.name "${git_user_name}"
     git config --global user.email "${git_user_email}"
-    if [ -n "$gpg_key" ]; then
-      git config --global user.signingkey "${gpg_key}"
-    fi
     success "Cool"
   else
     echo "Setup your git user details"
@@ -319,6 +317,50 @@ fi
 EOF
 
   success "Saved editor preferences to $local_rc"
+}
+
+function configure_git_signing {
+  # gitconfig sets commit.gpgsign with gpg.format = ssh, so commits need an SSH
+  # signing key present or every commit fails. A key with no passphrase is the
+  # point: it signs unattended on the Mini over SSH, where GPG would fall back
+  # to curses pinentry and prompt, and where 1Password's agent can't help
+  # because it needs the desktop GUI to approve.
+  local signing_key="$HOME/.ssh/git_signing"
+  local allowed_signers="$HOME/.ssh/allowed_signers"
+
+  mkdir -p "$HOME/.ssh"
+  chmod 700 "$HOME/.ssh"
+
+  if [ ! -f "$signing_key" ]; then
+    echo "Generating a git signing key for this machine"
+    # Signing only - this key must never go into any authorized_keys, so
+    # compromise means forged signatures rather than server access
+    if ssh-keygen -t ed25519 -f "$signing_key" -N "" -q \
+         -C "git signing - $(hostname -s) - $(date +%Y-%m)"; then
+      success "Generated $signing_key"
+      echo
+      echo "Add this to GitHub under Settings > SSH and GPG keys > Signing keys"
+      echo "(a separate list from authentication keys), and add it to"
+      echo "git-allowed-signers in this repo so verification works:"
+      echo
+      cat "${signing_key}.pub"
+      echo
+    else
+      fail "Could not generate $signing_key"
+    fi
+  fi
+
+  chmod 600 "$signing_key"
+  chmod 644 "${signing_key}.pub"
+
+  if [ -f "${current_path}/git-allowed-signers" ]; then
+    if cp -f "${current_path}/git-allowed-signers" "$allowed_signers"; then
+      chmod 644 "$allowed_signers"
+      success "Installed $allowed_signers"
+    else
+      fail "Failed to copy git-allowed-signers to $allowed_signers"
+    fi
+  fi
 }
 
 function configure_gpg_agent {
@@ -442,6 +484,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 configure_editor
+configure_git_signing
 configure_gpg_agent
 
 echo "Reloading shell..."
