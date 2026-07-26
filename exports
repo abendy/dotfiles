@@ -30,6 +30,21 @@ export PATH="$(brew --prefix findutils)/libexec/gnubin:$PATH"
 # fzf
 hash fzf &> /dev/null && source <(fzf --zsh)
 
+# 1Password SSH agent
+# `ssh` picks the agent up from IdentityAgent in ~/.ssh/config, but ssh-add,
+# git, rsync and mosh all read SSH_AUTH_SOCK instead - so point that at the same
+# socket rather than leaving them with no agent at all.
+#
+# Deliberately skipped over SSH: sshd sets SSH_AUTH_SOCK itself for a forwarded
+# agent, and overwriting it would break agent forwarding to the Mini. Also
+# skipped when the socket is absent, i.e. 1Password isn't running or installed,
+# so a machine without it just falls back to on-disk keys.
+if [ -z "$SSH_CONNECTION" ]; then
+  _onepassword_agent="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+  [ -S "$_onepassword_agent" ] && export SSH_AUTH_SOCK="$_onepassword_agent"
+  unset _onepassword_agent
+fi
+
 # GPG
 # gpg-agent needs to know which terminal to attach a curses pinentry to.
 # Without this, signing from a shell fails with "Inappropriate ioctl for
