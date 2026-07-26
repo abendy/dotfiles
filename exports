@@ -30,20 +30,17 @@ export PATH="$(brew --prefix findutils)/libexec/gnubin:$PATH"
 # fzf
 hash fzf &> /dev/null && source <(fzf --zsh)
 
-# 1Password SSH agent
-# `ssh` picks the agent up from IdentityAgent in ~/.ssh/config, but ssh-add,
-# git, rsync and mosh all read SSH_AUTH_SOCK instead - so point that at the same
-# socket rather than leaving them with no agent at all.
+# SSH agent
+# SSH_AUTH_SOCK is deliberately left alone - macOS launchd already points it at
+# the system ssh-agent, which is where keys loaded via
+# `ssh-add --apple-use-keychain` live. Those are the keys that work unattended,
+# so they're the ones agents on this machine need.
 #
-# Deliberately skipped over SSH: sshd sets SSH_AUTH_SOCK itself for a forwarded
-# agent, and overwriting it would break agent forwarding to the Mini. Also
-# skipped when the socket is absent, i.e. 1Password isn't running or installed,
-# so a machine without it just falls back to on-disk keys.
-if [ -z "$SSH_CONNECTION" ]; then
-  _onepassword_agent="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-  [ -S "$_onepassword_agent" ] && export SSH_AUTH_SOCK="$_onepassword_agent"
-  unset _onepassword_agent
-fi
+# An earlier version pointed this at 1Password's agent. That looked right while
+# 1Password was the only agent holding anything, but it hides the system agent:
+# any key not in the vault becomes unreachable, which is exactly how the gitlab
+# key broke. 1Password is now opt-in per host via IdentityAgent in
+# ~/.ssh/config, for keys a human unlocks interactively.
 
 # GPG
 # Git no longer signs with GPG (gitconfig uses gpg.format = ssh), so gpg's only
