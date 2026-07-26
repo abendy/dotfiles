@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Resolved at script scope, not inside install_dotfiles. configure_editor reads
+# current_path too and runs unconditionally, whereas install_dotfiles only runs
+# if the user accepts its prompt - so assigning these inside install_dotfiles
+# left them empty on the decline path, and configure_editor silently tried to
+# `cp -f "/localrc"` while still printing a success line.
+DOTFILES_DIR="$HOME/.dotfiles"
+current_path="$DOTFILES_DIR"
+
 function auto_update {
   if [ "$(git branch --list master)" ]; then
     echo "Pulling from GitHub..."
@@ -135,9 +143,6 @@ function install_oh_my_zsh {
 }
 
 function install_dotfiles {
-  DOTFILES_DIR="$HOME/.dotfiles"
-  current_path="${PWD}"
-  current_dir="${PWD##*/}"
   git_user_name="$(git config --get user.name | tr -d '\n')"
   git_user_email="$(git config --get user.email | tr -d '\n')"
   gpg_key="$(git config --get user.signingkey | tr -d '\n')" # string
@@ -146,11 +151,17 @@ function install_dotfiles {
     fail "Clone dotfiles to ~/.dotfiles and re-run bootstrap"
   fi
 
-  if [ ${current_dir} != "$DOTFILES_DIR" ]; then
-    cd "$DOTFILES_DIR"
-  fi
+  # Unconditional - `cd` to where we already are is a no-op. The old guard
+  # compared ${PWD##*/} (a basename, e.g. "dotfiles") against "$DOTFILES_DIR"
+  # (a full path), which could never match, so it always took the cd branch
+  # anyway while reading files from the pre-cd $PWD.
+  cd "$DOTFILES_DIR"
 
-  for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "inputrc" "zshrc" "zprofile" "zshenv"; do
+  # "input", not "inputrc" - the repo file is `input` and zshrc sources
+  # `~/.input`. The old "inputrc" entry silently matched nothing (the `-f`
+  # test below just skipped it), so no keybindings from that file were ever
+  # installed on any machine bootstrapped by this script
+  for file in "aliases" "exports" "functions" "gitconfig" "gitignore" "gitmessage" "input" "zshrc" "zprofile" "zshenv"; do
     complete_file_path=${current_path}/${file}
 
     if [ -f ${complete_file_path} ]; then
@@ -255,8 +266,14 @@ function configure_editor {
   local_rc="$HOME/.localrc"
 
   if [ ! -f "$local_rc" ]; then
-    cp -f "${current_path}/localrc" "$local_rc"
-    success "Copied localrc template to $local_rc"
+    # Checked, not fire-and-forget - the previous version printed the success
+    # line whatever `cp` returned, so a failed copy reported OK and the editor
+    # block below was then appended to a file that didn't exist yet
+    if cp -f "${current_path}/localrc" "$local_rc"; then
+      success "Copied localrc template to $local_rc"
+    else
+      fail "Failed to copy ${current_path}/localrc to $local_rc"
+    fi
   fi
 
   echo
