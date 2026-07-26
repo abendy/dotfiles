@@ -339,9 +339,13 @@ function configure_git_signing {
          -C "git signing - $(hostname -s) - $(date +%Y-%m)"; then
       success "Generated $signing_key"
       echo
-      echo "Add this to GitHub under Settings > SSH and GPG keys > Signing keys"
-      echo "(a separate list from authentication keys), and add it to"
-      echo "git-allowed-signers in this repo so verification works:"
+      echo "Register this key in two places:"
+      echo
+      echo "  1. github.com/settings/keys > New SSH key"
+      echo "     Set the \"Key type\" dropdown to \"Signing Key\" - it defaults"
+      echo "     to \"Authentication Key\". There is no separate signing-key"
+      echo "     page; that heading only appears once one exists."
+      echo "  2. git-allowed-signers in this repo, so local verification works"
       echo
       cat "${signing_key}.pub"
       echo

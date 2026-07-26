@@ -329,7 +329,10 @@
   # same everywhere while the key behind it differs per machine, so this line
   # needs no per-machine editing. Generate with:
   #   ssh-keygen -t ed25519 -f ~/.ssh/git_signing -N "" -C "git signing - $(hostname -s)"
-  # then add the public key to Brewfiles' sibling git-allowed-signers and to
-  # GitHub under Settings > SSH and GPG keys > Signing keys (a separate list
-  # from authentication keys).
+  # then add the public key to git-allowed-signers in this repo, and to GitHub:
+  # Settings > SSH and GPG keys > New SSH key, and set the "Key type" dropdown
+  # to "Signing Key" - it defaults to "Authentication Key". There is no separate
+  # signing-key page; the heading only appears once one exists. Leaving it on
+  # the default would fail to verify commits *and* grant the key repo access,
+  # defeating the point of a signing-only key.
   signingkey = ~/.ssh/git_signing.pub
