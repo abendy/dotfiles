@@ -4,7 +4,7 @@
 #   alt + right  : move to next word (below)
 
 #   ctrl + w     : delete word backward
-#   ctrl + r     : reverse search with fzf
+#   ctrl + r     : search shared shell history with Atuin
 #   ctrl + t     : search current directory with fzf and use path on the command line
 #   ctrl + y     : insert last deleted word
 #   ctrl + u     : clear line

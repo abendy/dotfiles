@@ -1,4 +1,5 @@
 brew "antidote"
+brew "atuin"
 brew "bash"
 brew "bat"
 brew "coreutils"

@@ -1,0 +1,25 @@
+# Shared, non-secret Atuin configuration.
+#
+# Account credentials, the sync session, the encryption key, and history data
+# live in Atuin's data directory and must never be added to this repository.
+
+# Search the combined laptop + Mini history by default.
+search_mode = "fuzzy"
+filter_mode = "global"
+
+# Sync promptly enough that a command run on one Mac is useful on the other
+# without making a network request after every command.
+auto_sync = true
+sync_frequency = "10m"
+
+# Return a selected command to the prompt for review instead of executing it
+# directly.
+enter_accept = false
+
+# Keep Atuin's built-in credential patterns enabled. This is a safety net, not
+# a substitute for prefixing sensitive commands with a space.
+secrets_filter = true
+
+# This repository remains the source of truth for shell configuration.
+[dotfiles]
+enabled = false

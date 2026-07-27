@@ -47,7 +47,7 @@ Defined in `input`, installed to `~/.input` by `bootstrap` and sourced from `zsh
 | `ctrl + x` | insert output of last command | `input` |
 | `ctrl + b` | `cd -` — back to previous directory | `input` |
 | `ctrl + space` | `tig status` | `input` |
-| `ctrl + r` | reverse-search history | fzf |
+| `ctrl + r` | search shared laptop + Mini history | Atuin |
 | `ctrl + t` | search current directory, insert path on the command line | fzf |
 | `ctrl + z` | browse zoxide history with fzf | `zsh/fzf-z.plugin.zsh` |
 | `ctrl + a` | move to beginning of line | zsh |
@@ -61,6 +61,43 @@ Defined in `input`, installed to `~/.input` by `bootstrap` and sourced from `zsh
 | `fn + left` / `fn + right` | move to beginning / end of line | terminal |
 
 To check what a key is actually bound to: `bindkey "^X"`.
+
+## Shell history
+
+[Atuin][atuin] records contextual shell history locally and, once signed in,
+syncs it end-to-end encrypted between the laptop and Mini. `Ctrl-R` searches
+global history; the Up arrow keeps its normal shell behavior. Selecting a result
+returns it to the prompt for review rather than executing it immediately.
+
+The tracked config contains no account or key material. Atuin keeps its
+encryption key and sync session outside this repo. Store the encryption key in
+1Password: it is required, along with the account password, to add a new
+machine.
+
+One-time setup on the first machine:
+
+```sh
+atuin import auto
+HISTFILE=/path/to/old/.zsh_history atuin import zsh
+atuin register -u USERNAME -e EMAIL
+atuin sync
+```
+
+Import each source only once: repeated imports create duplicate history.
+Omitting password/key flags keeps those values out of the legacy Zsh history
+file and prompts for them safely.
+
+On the second machine:
+
+```sh
+atuin login -u USERNAME
+atuin sync
+atuin doctor
+```
+
+Prefix any sensitive command with a space to keep it out of both Zsh and Atuin
+history. Atuin's built-in secret filter is enabled as an additional safety net,
+but it cannot recognize every possible credential.
 
 ## Directory jumping
 
@@ -178,6 +215,7 @@ cd ~/.dotfiles
 ```
 
    [xclt]: <https://developer.apple.com/downloads>
+   [atuin]: <https://docs.atuin.sh/>
    [hb]: <http://brew.sh>
    [casks]: <http://caskroom.io>
    [omz]: <https://github.com/robbyrussell/oh-my-zsh>

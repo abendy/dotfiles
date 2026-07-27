@@ -257,6 +257,16 @@ function install_dotfiles {
     success "Done copying tmux config"
   fi
 
+  if [ -f ${current_path}/atuin/config.toml ]; then
+    mkdir -p "$HOME/.config/atuin"
+    if cp -f ${current_path}/atuin/config.toml "$HOME/.config/atuin/config.toml"; then
+      chmod 600 "$HOME/.config/atuin/config.toml"
+      success "Installed Atuin config"
+    else
+      fail "Failed to install Atuin config"
+    fi
+  fi
+
   success "Completed dotfiles bootstrapping"
 
   # Bundle ZSH plugins using antidote plugin manager
