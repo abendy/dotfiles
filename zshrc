@@ -29,7 +29,9 @@ fi
 # for no benefit - the second run only existed to pick up the FPATH entry
 # now set above it
 ZSH=$HOME/.oh-my-zsh
-ZSH_THEME="sunaku"
+# Starship owns the prompt; Oh My Zsh remains for its shell framework and
+# plugins, but must not install a competing theme.
+ZSH_THEME=""
 source $ZSH/oh-my-zsh.sh
 
 # fzf-z
@@ -89,4 +91,11 @@ unset file
 # Account/session/key material lives outside this repo under Atuin's data dir.
 if type atuin &>/dev/null; then
   eval "$(atuin init zsh --disable-up-arrow --disable-ai)"
+fi
+
+# starship
+# Initialize after every other shell integration so it owns the final prompt
+# without replacing Oh My Zsh or any of its plugins.
+if type starship &>/dev/null; then
+  eval "$(starship init zsh)"
 fi

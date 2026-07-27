@@ -267,6 +267,16 @@ function install_dotfiles {
     fi
   fi
 
+  if [ -f ${current_path}/starship.toml ]; then
+    mkdir -p "$HOME/.config"
+    if cp -f ${current_path}/starship.toml "$HOME/.config/starship.toml"; then
+      chmod 644 "$HOME/.config/starship.toml"
+      success "Installed Starship config"
+    else
+      fail "Failed to install Starship config"
+    fi
+  fi
+
   success "Completed dotfiles bootstrapping"
 
   # Bundle ZSH plugins using antidote plugin manager

@@ -99,6 +99,22 @@ Prefix any sensitive command with a space to keep it out of both Zsh and Atuin
 history. Atuin's built-in secret filter is enabled as an additional safety net,
 but it cannot recognize every possible credential.
 
+## Prompt
+
+[Starship][starship] provides the prompt while Oh My Zsh continues to provide
+the shell framework and plugins. The tracked prompt is deliberately selective:
+
+- hostname only over SSH (`Mac-2` is displayed as `nigiri-san`);
+- current directory and read-only state;
+- Git branch, worktree counts, ahead/behind counts, and operations such as
+  rebases or cherry-picks;
+- Node, Python, Go, and Rust versions only in matching projects;
+- commands taking at least five seconds, non-zero exit status, and background
+  jobs.
+
+The command entry starts on a second line so its position stays stable as
+contextual modules appear and disappear.
+
 ## Directory jumping
 
 We're using [zoxide][zx], which provides a `z` command that jumps to the best match for a partial path, and `zi` to pick from matches interactively.
@@ -221,4 +237,5 @@ cd ~/.dotfiles
    [omz]: <https://github.com/robbyrussell/oh-my-zsh>
    [ab]: <https://github.com/mattmc3/antidote>
    [abd]: <https://github.com/mattmc3/antidote?tab=readme-ov-file#usage>
+   [starship]: <https://starship.rs/>
    [zx]: <https://github.com/ajeetdsouza/zoxide>

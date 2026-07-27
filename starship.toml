@@ -1,0 +1,101 @@
+# Shared prompt for the laptop and Mini. Keep it compact and contextual: modules
+# should appear only when they help answer "where am I, what state is this
+# project in, and did the last command work?"
+
+add_newline = false
+
+format = """
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$nodejs\
+$python\
+$golang\
+$rust\
+$cmd_duration\
+$status\
+$jobs\
+$line_break\
+$character"""
+
+[hostname]
+ssh_only = true
+ssh_symbol = "ssh:"
+format = "[$ssh_symbol$hostname]($style) "
+style = "bold blue"
+aliases = { "Mac-2" = "nigiri-san" }
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+read_only = " read-only"
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "bold cyan"
+read_only_style = "bold red"
+
+[git_branch]
+symbol = ""
+format = "[$branch]($style) "
+style = "bold purple"
+
+[git_state]
+format = "[($state( $progress_current/$progress_total))]($style) "
+style = "bold yellow"
+
+[git_status]
+format = "([$all_status$ahead_behind]($style) )"
+style = "bold yellow"
+conflicted = "=${count} "
+stashed = "*${count} "
+deleted = "✘${count} "
+renamed = "»${count} "
+modified = "!${count} "
+staged = "+${count} "
+untracked = "?${count} "
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+up_to_date = ""
+
+[nodejs]
+symbol = "node "
+format = "[($symbol$version )]($style)"
+version_format = "v${major}.${minor}"
+
+[python]
+symbol = "py "
+format = "[($symbol$version( ($virtualenv)) )]($style)"
+version_format = "v${major}.${minor}"
+
+[golang]
+symbol = "go "
+format = "[($symbol$version )]($style)"
+version_format = "v${major}.${minor}"
+
+[rust]
+symbol = "rust "
+format = "[($symbol$version )]($style)"
+version_format = "v${major}.${minor}"
+
+[cmd_duration]
+min_time = 5_000
+format = "[took $duration]($style) "
+style = "bold yellow"
+
+[status]
+disabled = false
+format = "[$symbol$status]($style) "
+symbol = "exit "
+success_symbol = ""
+style = "bold red"
+
+[jobs]
+symbol = "jobs "
+format = "[$symbol$number]($style) "
+style = "bold blue"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
