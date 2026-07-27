@@ -112,8 +112,8 @@ the shell framework and plugins. The tracked prompt is deliberately selective:
 - commands taking at least five seconds, non-zero exit status, and background
   jobs.
 
-The command entry starts on a second line so its position stays stable as
-contextual modules appear and disappear.
+Context and command entry share one line so terminal clear commands such as
+iTerm2's `Cmd-K` do not erase the useful prompt state above the cursor.
 
 ## Directory jumping
 

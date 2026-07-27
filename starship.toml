@@ -17,7 +17,6 @@ $rust\
 $cmd_duration\
 $status\
 $jobs\
-$line_break\
 $character"""
 
 [hostname]
