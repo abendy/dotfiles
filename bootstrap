@@ -310,33 +310,17 @@ function configure_editor {
     fi
   fi
 
-  echo
-  read -p "Preferred editor for local sessions [code]: " editor_local
-  editor_local=${editor_local:-code}
-
-  read -p "Preferred editor for remote/SSH sessions [vim]: " editor_remote
-  editor_remote=${editor_remote:-vim}
-
-  # Drop any previously written block so re-running bootstrap doesn't duplicate it
-  # (GNU sed's -i takes no space-separated argument; BSD sed requires one, even if empty)
-  if sed --version &> /dev/null; then
-    sed -i '/# >>> dotfiles: editor >>>/,/# <<< dotfiles: editor <<</d' "$local_rc"
+  # localrc is deliberately machine-owned rather than overwritten by this
+  # repo. The template already provides sensible local/SSH defaults, and an
+  # existing machine may use something else entirely. Repeated bootstrap runs
+  # should never turn that into an interactive prompt or rewrite the choice.
+  if grep -Eq '^[[:space:]]*(export[[:space:]]+)?(EDITOR|VISUAL)=' "$local_rc"; then
+    success "Editor already configured in $local_rc"
+  elif [ -n "${EDITOR:-}" ] || [ -n "${VISUAL:-}" ]; then
+    success "Using editor from the current environment; edit $local_rc to persist it"
   else
-    sed -i '' '/# >>> dotfiles: editor >>>/,/# <<< dotfiles: editor <<</d' "$local_rc"
+    echo "No editor configured; edit $local_rc and set EDITOR and/or VISUAL"
   fi
-
-  cat >> "$local_rc" <<EOF
-
-# >>> dotfiles: editor >>>
-if [[ -n \$SSH_CONNECTION ]]; then
-  export EDITOR='${editor_remote}'
-else
-  export EDITOR='${editor_local}'
-fi
-# <<< dotfiles: editor <<<
-EOF
-
-  success "Saved editor preferences to $local_rc"
 }
 
 function configure_git_signing {

@@ -13,7 +13,11 @@ git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
 ./osx
 ```
 
-`~/.localrc` holds local runtime configuration and is not tracked by this repo. `bootstrap` copies the `localrc` template there for you if the file doesn't already exist, so an existing one is never overwritten. To seed it by hand: `cp localrc ~/.localrc`.
+`~/.localrc` holds local runtime configuration and is not tracked by this repo.
+`bootstrap` copies the `localrc` template there if the file doesn't already
+exist, then leaves it alone. Editor selection is not prompted on later runs;
+edit `EDITOR` (and optionally `VISUAL`) in `~/.localrc` directly. To seed it by
+hand: `cp localrc ~/.localrc`.
 
 ## ZSH plugins
 
