@@ -47,14 +47,6 @@ setopt HIST_IGNORE_SPACE      # Don't save commands that start with space
 setopt HIST_VERIFY            # Don't execute expanded history immediately
 setopt SHARE_HISTORY          # Share history between sessions
 
-# atuin
-# Ctrl-R searches the encrypted history shared by the laptop and Mini. Keep the
-# normal Up-arrow behavior, and leave Atuin AI out of the shell integration.
-# Account/session/key material lives outside this repo under Atuin's data dir.
-if type atuin &>/dev/null; then
-  eval "$(atuin init zsh --disable-up-arrow --disable-ai)"
-fi
-
 # zoxide (replaces `z`)
 # Still provides a `z` command, plus `zi` for interactive selection, so the
 # muscle memory carries over. Must stay below oh-my-zsh: `zoxide init` calls
@@ -89,3 +81,12 @@ for file in ~/.{exports,aliases,functions,input,localrc}; do
   [ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
 unset file
+
+# atuin
+# Keep this after every other shell integration: fzf's startup hooks also bind
+# Ctrl-R and would otherwise replace Atuin's global-history search. Preserve the
+# normal Up-arrow behavior, and leave Atuin AI out of the shell integration.
+# Account/session/key material lives outside this repo under Atuin's data dir.
+if type atuin &>/dev/null; then
+  eval "$(atuin init zsh --disable-up-arrow --disable-ai)"
+fi
