@@ -277,9 +277,6 @@
 [init]
   defaultBranch = main
 
-[log]
-  date = iso
-
 [maintenance]
   auto = true
   strategy = incremental
