@@ -8,3 +8,10 @@ if [ -x /opt/homebrew/bin/brew ]; then
 elif [ -x /usr/local/bin/brew ]; then
   eval "$(/usr/local/bin/brew shellenv zsh)"
 fi
+
+# Keep fnm's default Node available to non-interactive consumers such as MCP
+# servers. Interactive shells still use `fnm env --use-on-cd` from zshrc for
+# per-project .node-version and .nvmrc switching.
+if [ -d "$HOME/.local/share/fnm/aliases/default/bin" ]; then
+  export PATH="$HOME/.local/share/fnm/aliases/default/bin:$PATH"
+fi
