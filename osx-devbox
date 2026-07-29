@@ -9,11 +9,25 @@
 # mac-mini-setup.md. Full-disk encryption's pre-boot unlock always requires
 # someone physically at the keyboard; no script can change that.
 
+readonly DEVBOX_NAME="nigiri-san"
+
 # Ask for the administrator password upfront
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until this has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+#/
+ # Identity
+ # ==========================================================
+ #/
+
+# Set every macOS name explicitly. Without HostName, macOS can accept a
+# DHCP-provided name such as Mac-3.lan even when ComputerName and
+# LocalHostName are already correct.
+sudo scutil --set ComputerName "$DEVBOX_NAME"
+sudo scutil --set LocalHostName "$DEVBOX_NAME"
+sudo scutil --set HostName "$DEVBOX_NAME"
 
 #/
  # Sleep

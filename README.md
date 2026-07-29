@@ -13,6 +13,10 @@ git clone https://github.com/abendy/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
 ./osx
 ```
 
+On the headless Mini, run `./osx-devbox` instead of `./osx`. It applies the
+Mini-specific power and remote-access policy and permanently converges its
+ComputerName, LocalHostName, and HostName to `nigiri-san`.
+
 `~/.localrc` holds local runtime configuration and is not tracked by this repo.
 `bootstrap` copies the `localrc` template there if the file doesn't already
 exist, then leaves it alone. Editor selection is not prompted on later runs;
@@ -108,7 +112,7 @@ but it cannot recognize every possible credential.
 [Starship][starship] provides the prompt while Oh My Zsh continues to provide
 the shell framework and plugins. The tracked prompt is deliberately selective:
 
-- hostname only over SSH (`Mac-2` is displayed as `nigiri-san`);
+- hostname only over SSH (`nigiri-san` on the Mini);
 - current directory and read-only state;
 - Git branch, worktree counts, ahead/behind counts, and operations such as
   rebases or cherry-picks;

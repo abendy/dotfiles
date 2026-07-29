@@ -24,7 +24,6 @@ ssh_only = true
 ssh_symbol = "ssh:"
 format = "[$ssh_symbol$hostname]($style) "
 style = "bold blue"
-aliases = { "Mac-2" = "nigiri-san" }
 
 [directory]
 truncation_length = 3
