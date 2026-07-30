@@ -17,6 +17,9 @@ On the headless Mini, run `./osx-devbox` instead of `./osx`. It applies the
 Mini-specific power and remote-access policy and permanently converges its
 ComputerName, LocalHostName, and HostName to `nigiri-san`.
 
+See the [remote workflow](remote-workflow.md) for setup and troubleshooting and
+[REMOTE-COMMANDS(1)](remote-commands.md) for the tmux/mosh helper reference.
+
 `~/.localrc` holds local runtime configuration and is not tracked by this repo.
 `bootstrap` copies the `localrc` template there if the file doesn't already
 exist, then leaves it alone. Editor selection is not prompted on later runs;

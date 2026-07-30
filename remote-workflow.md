@@ -64,6 +64,7 @@ Shorthands live in `functions` (so they work identically over SSH/mosh, which
 is the point for iOS Termius): `t [name]` new-or-attach (default `main`), `tl`
 list, `ta` attach or fzf-pick, `tt` session-per-repo, `tb` session-per-branch,
 `td` detach, `tn` rename, `tk` kill-with-confirm. `t` alone is the 99% command.
+See [REMOTE-COMMANDS(1)](remote-commands.md) for complete syntax and behavior.
 
 ## Codex Desktop SSH alongside ChatGPT Remote Control
 
