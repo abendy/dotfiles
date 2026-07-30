@@ -134,8 +134,8 @@ function v() {
 function t() {
   local name=${1:-main}
   if [[ -n $TMUX ]]; then
-    tmux has-session -t "$name" 2>/dev/null || tmux new-session -d -s "$name"
-    tmux switch-client -t "$name"
+    tmux has-session -t "=$name" 2>/dev/null || tmux new-session -d -s "$name"
+    tmux switch-client -t "=$name"
   else
     tmux new-session -A -s "$name"
   fi
@@ -159,9 +159,9 @@ function ta() {
     fi
   fi
   if [[ -n $TMUX ]]; then
-    tmux switch-client -t "$name"
+    tmux switch-client -t "=$name"
   else
-    tmux attach -t "$name"
+    tmux attach -t "=$name"
   fi
 }
 
@@ -201,7 +201,7 @@ function tk() {
   fi
   if read -q "REPLY?Kill tmux session '$name'? [y/N] "; then
     echo
-    tmux kill-session -t "$name"
+    tmux kill-session -t "=$name"
   else
     echo
   fi
@@ -213,4 +213,20 @@ function tk() {
 # mosh in and land straight in a tmux session (default `main`)
 function mini() {
   mosh nigiri -- tmux new-session -A -s "${1:-main}"
+}
+
+# no arguments: plain SSH login without auto-tmux; otherwise retain the original
+# pass-through behavior for non-interactive commands and tunnels
+function mini-ssh() {
+  if (( $# )); then
+    ssh nigiri "$@"
+  else
+    ssh -t nigiri env DOTFILES_SKIP_TMUX_AUTOATTACH=1 /bin/zsh -l
+  fi
+}
+
+# plain roaming shell without auto-tmux; the server wrapper makes the opt-out
+# survive mosh's SSH bootstrap into the login shell it starts
+function mini-mosh() {
+  mosh --server='env DOTFILES_SKIP_TMUX_AUTOATTACH=1 mosh-server' nigiri "$@"
 }

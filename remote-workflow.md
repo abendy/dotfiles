@@ -196,11 +196,14 @@ mosh nigiri -- tmux new-session -A -s main
 ```
 
 This is now wired up as `mini` (in `functions`): `mini` or `mini <session>`
-does exactly the above. `mini-ssh` / `mini-mosh` (in `aliases`) give the raw
-transports for scp-adjacent work or a tmux-free shell.
+does exactly the above. `mini-ssh` with no arguments and `mini-mosh` (also in
+`functions`) open tmux-free shells. Arguments to `mini-ssh` retain plain SSH
+pass-through for non-interactive commands and `-N` tunnels.
 
 To skip typing anything at all from iOS Termius (no startup snippets on the
 free tier), the Mini auto-attaches `main` on any interactive SSH/mosh login.
 It's wired in `zshrc` and scoped to the Mini by hostname (`nigiri-san`), so it
 needs no per-machine setup and survives a rebuild. Guarded to fire only on
 remote logins, never on the MacBook, and never for the Codex Desktop SSH path.
+The raw helpers set `DOTFILES_SKIP_TMUX_AUTOATTACH` in the server environment
+so their login shells bypass the hook explicitly.

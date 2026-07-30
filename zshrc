@@ -107,9 +107,12 @@ fi
 # this tracked file and reproduces on a rebuild with no untracked ~/.localrc
 # state - the same reasoning that moved fnm out of ~/.localrc above. Other
 # guards: interactive shell, inside an SSH/mosh session, not already in tmux, and
-# not the Codex Desktop SSH app-server path (CODEX_REMOTE_PAYLOAD).
+# not the Codex Desktop SSH app-server path (CODEX_REMOTE_PAYLOAD). The raw
+# transport helpers set DOTFILES_SKIP_TMUX_AUTOATTACH in the server environment.
 if [[ ${HOST%%.*} == nigiri-san && -o interactive \
       && -n ${SSH_CONNECTION:-} && -z ${TMUX:-} \
-      && -z ${CODEX_REMOTE_PAYLOAD:-} ]] && command -v tmux &>/dev/null; then
+      && -z ${CODEX_REMOTE_PAYLOAD:-} \
+      && -z ${DOTFILES_SKIP_TMUX_AUTOATTACH:-} ]] \
+      && command -v tmux &>/dev/null; then
   tmux new-session -A -s main
 fi
