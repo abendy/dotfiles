@@ -127,3 +127,90 @@ function v() {
     vim "$@"
   fi
 }
+
+# --- tmux (server side, mainly the Mini) ---
+
+# new-or-attach a session (default `main`); switches if already inside tmux
+function t() {
+  local name=${1:-main}
+  if [[ -n $TMUX ]]; then
+    tmux has-session -t "$name" 2>/dev/null || tmux new-session -d -s "$name"
+    tmux switch-client -t "$name"
+  else
+    tmux new-session -A -s "$name"
+  fi
+}
+
+# list sessions
+function tl() {
+  tmux ls 2>/dev/null || echo "no tmux sessions"
+}
+
+# attach/select an existing session; fzf-pick when no name given
+function ta() {
+  local name=$1
+  if [[ -z $name ]]; then
+    if command -v fzf >/dev/null; then
+      name=$(tmux list-sessions -F '#{session_name}' 2>/dev/null \
+             | fzf --height 40% --reverse) || return
+    else
+      tl
+      return
+    fi
+  fi
+  if [[ -n $TMUX ]]; then
+    tmux switch-client -t "$name"
+  else
+    tmux attach -t "$name"
+  fi
+}
+
+# contextual: session named after the current git repo (else the current dir)
+function tt() {
+  local root name
+  root=$(git rev-parse --show-toplevel 2>/dev/null) || root=$PWD
+  name=${root:t}              # zsh basename
+  t "${name//[.: ]/-}"       # tmux dislikes . and : in names
+}
+
+# contextual: session named after the current git branch (else the short SHA)
+function tb() {
+  local branch
+  branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) \
+    || branch=$(git rev-parse --short HEAD 2>/dev/null) \
+    || { echo "tb: not in a git repo" >&2; return 1; }
+  t "${branch//[\/.: ]/-}"   # tmux dislikes / . : in names
+}
+
+# detach the current client
+function td() {
+  tmux detach-client "$@"
+}
+
+# rename the current session
+function tn() {
+  tmux rename-session "$1"
+}
+
+# kill a session (current if unnamed) — only after confirmation
+function tk() {
+  local name=${1:-$(tmux display-message -p '#S' 2>/dev/null)}
+  if [[ -z $name ]]; then
+    echo "tk: no session"
+    return 1
+  fi
+  if read -q "REPLY?Kill tmux session '$name'? [y/N] "; then
+    echo
+    tmux kill-session -t "$name"
+  else
+    echo
+  fi
+}
+
+# --- connect to the Mini (client side, the MacBook) ---
+# `nigiri` is the ~/.ssh/config Host (Tailscale MagicDNS); swap the token if renamed.
+
+# mosh in and land straight in a tmux session (default `main`)
+function mini() {
+  mosh nigiri -- tmux new-session -A -s "${1:-main}"
+}

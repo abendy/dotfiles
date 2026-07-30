@@ -60,6 +60,11 @@ shown in the status bar so it's obvious which machine you're in):
 - Scroll/select with the mouse - this config turns that on, unlike tmux's
   default.
 
+Shorthands live in `functions` (so they work identically over SSH/mosh, which
+is the point for iOS Termius): `t [name]` new-or-attach (default `main`), `tl`
+list, `ta` attach or fzf-pick, `tt` session-per-repo, `tb` session-per-branch,
+`td` detach, `tn` rename, `tk` kill-with-confirm. `t` alone is the 99% command.
+
 ## Codex Desktop SSH alongside ChatGPT Remote Control
 
 The MacBook can open Mini-hosted projects through Codex Desktop's SSH
@@ -190,6 +195,12 @@ reachable from anywhere (Tailscale):
 mosh nigiri -- tmux new-session -A -s main
 ```
 
-Worth adding as an alias (e.g. `alias mini='mosh nigiri -- tmux new-session -A -s main'`
-in `aliases`) if this ends up being the 99%-of-the-time entry point - not
-added yet, just flagging it as the natural next step.
+This is now wired up as `mini` (in `functions`): `mini` or `mini <session>`
+does exactly the above. `mini-ssh` / `mini-mosh` (in `aliases`) give the raw
+transports for scp-adjacent work or a tmux-free shell.
+
+To skip typing anything at all from iOS Termius (no startup snippets on the
+free tier), the Mini auto-attaches `main` on any interactive SSH/mosh login.
+It's wired in `zshrc` and scoped to the Mini by hostname (`nigiri-san`), so it
+needs no per-machine setup and survives a rebuild. Guarded to fire only on
+remote logins, never on the MacBook, and never for the Codex Desktop SSH path.

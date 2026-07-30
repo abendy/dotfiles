@@ -50,3 +50,8 @@ alias show='defaults write com.apple.finder AppleShowAllFiles -bool true && kill
 # Shell
 
 alias path='echo $PATH | tr -s ":" "\n\r"' # pretty print the path
+
+# Remote
+
+alias mini-ssh='ssh nigiri'    # plain ssh: scp-adjacent work, tunnels, one-off cmds
+alias mini-mosh='mosh nigiri'  # plain mosh: roaming connection, no auto-tmux
