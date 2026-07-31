@@ -20,6 +20,11 @@ ComputerName, LocalHostName, and HostName to `nigiri-san`.
 See the [remote workflow](remote-workflow.md) for setup and troubleshooting and
 [REMOTE-COMMANDS(1)](remote-commands.md) for the tmux/mosh helper reference.
 
+`bootstrap` installs Tmux Plugin Manager before deploying `~/.tmux.conf`. On a
+new machine, start tmux and press `prefix I` once to install resurrect and
+continuum; continuum then autosaves sessions every 15 minutes and restores them
+after reboot.
+
 `~/.localrc` holds local runtime configuration and is not tracked by this repo.
 `bootstrap` copies the `localrc` template there if the file doesn't already
 exist, then leaves it alone. Editor selection is not prompted on later runs;

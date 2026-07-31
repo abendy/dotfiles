@@ -102,7 +102,8 @@ fi
 
 # tmux auto-attach on interactive remote logins to the Mini
 # Server-side replacement for a Termius startup snippet: an interactive SSH/mosh
-# login to the devbox lands straight in the `main` session. Scoped to the Mini
+# login to the devbox lands straight in the `phone` session, separate from the
+# MacBook helper's `laptop` session. Scoped to the Mini
 # by hostname (osx-devbox enforces it to `nigiri-san`), so the behavior lives in
 # this tracked file and reproduces on a rebuild with no untracked ~/.localrc
 # state - the same reasoning that moved fnm out of ~/.localrc above. Other
@@ -114,5 +115,5 @@ if [[ ${HOST%%.*} == nigiri-san && -o interactive \
       && -z ${CODEX_REMOTE_PAYLOAD:-} \
       && -z ${DOTFILES_SKIP_TMUX_AUTOATTACH:-} ]] \
       && command -v tmux &>/dev/null; then
-  tmux new-session -A -s main
+  tmux new-session -A -s phone
 fi

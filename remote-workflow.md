@@ -59,6 +59,10 @@ shown in the status bar so it's obvious which machine you're in):
   this config specifically).
 - Scroll/select with the mouse - this config turns that on, unlike tmux's
   default.
+- Install the configured TPM plugins with `prefix I` after the first
+  bootstrap. Continuum then saves every 15 minutes and restores saved sessions
+  at startup; resurrect also captures pane contents and restarts Codex, Claude,
+  Vim, and vi processes.
 
 Shorthands live in `functions` (so they work identically over SSH/mosh, which
 is the point for iOS Termius): `t [name]` new-or-attach (default `main`), `tl`
@@ -193,16 +197,17 @@ changes (mosh) into a session that survives disconnects entirely (tmux),
 reachable from anywhere (Tailscale):
 
 ```
-mosh nigiri -- tmux new-session -A -s main
+mosh nigiri -- tmux new-session -A -s laptop
 ```
 
 This is now wired up as `mini` (in `functions`): `mini` or `mini <session>`
-does exactly the above. `mini-ssh` with no arguments and `mini-mosh` (also in
+does exactly the above, defaulting to the dedicated `laptop` session.
+`mini-ssh` with no arguments and `mini-mosh` (also in
 `functions`) open tmux-free shells. Arguments to `mini-ssh` retain plain SSH
 pass-through for non-interactive commands and `-N` tunnels.
 
 To skip typing anything at all from iOS Termius (no startup snippets on the
-free tier), the Mini auto-attaches `main` on any interactive SSH/mosh login.
+free tier), the Mini auto-attaches `phone` on any interactive SSH/mosh login.
 It's wired in `zshrc` and scoped to the Mini by hostname (`nigiri-san`), so it
 needs no per-machine setup and survives a rebuild. Guarded to fire only on
 remote logins, never on the MacBook, and never for the Codex Desktop SSH path.
