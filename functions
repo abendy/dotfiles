@@ -210,9 +210,10 @@ function tk() {
 # --- connect to the Mini (client side, the MacBook) ---
 # `nigiri` is the ~/.ssh/config Host (Tailscale MagicDNS); swap the token if renamed.
 
-# mosh in and land straight in a tmux session (default `main`)
+# mosh in from the MacBook and land straight in a tmux session (default
+# `laptop`, kept separate from the phone's automatic session)
 function mini() {
-  mosh nigiri -- tmux new-session -A -s "${1:-main}"
+  mosh nigiri -- tmux new-session -A -s "${1:-laptop}"
 }
 
 # no arguments: plain SSH login without auto-tmux; otherwise retain the original

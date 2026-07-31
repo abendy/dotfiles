@@ -158,6 +158,27 @@ function install_oh_my_zsh {
   fi
 }
 
+function install_tmux_plugin_manager {
+  local tpm_dir="$HOME/.tmux/plugins/tpm"
+
+  if [ -x "$tpm_dir/tpm" ]; then
+    success "Tmux Plugin Manager already installed"
+    return
+  fi
+
+  if [ -e "$tpm_dir" ]; then
+    fail "$tpm_dir exists but is not a valid Tmux Plugin Manager checkout"
+  fi
+
+  mkdir -p "$(dirname "$tpm_dir")"
+  if GIT_TERMINAL_PROMPT=0 git clone --depth 1 \
+       https://github.com/tmux-plugins/tpm "$tpm_dir"; then
+    success "Installed Tmux Plugin Manager"
+  else
+    fail "Failed to install Tmux Plugin Manager"
+  fi
+}
+
 function install_dotfiles {
   git_user_name="$(git config --get user.name | tr -d '\n')"
   git_user_email="$(git config --get user.email | tr -d '\n')"
@@ -253,6 +274,9 @@ function install_dotfiles {
   fi
 
   if [ -f ${current_path}/tmux.conf ]; then
+    # TPM must exist before this config is installed. Otherwise its final
+    # `run` line cannot load the plugin manager and prefix-I is a no-op.
+    install_tmux_plugin_manager
     cp -f ${current_path}/tmux.conf $HOME/.tmux.conf
     success "Done copying tmux config"
   fi

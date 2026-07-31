@@ -88,7 +88,7 @@ session can be determined.
 ### `mini [session]`
 
 Connect to the Mini with mosh and create or attach to `session` immediately.
-The default is `main`.
+The default is `laptop`, kept separate from the phone's automatic session.
 
 This runs tmux as mosh's remote command. Detaching from tmux therefore ends the
 mosh connection.
@@ -118,7 +118,7 @@ into mosh's login shell.
 ## AUTO-ATTACH
 
 A plain interactive `ssh nigiri` or `mosh nigiri` login automatically opens the
-Mini's `main` session when all of these conditions are true:
+Mini's `phone` session when all of these conditions are true:
 
 - the short hostname is `nigiri-san`;
 - the shell is interactive;
@@ -177,7 +177,7 @@ tb
 ta
 tk old-api
 
-# Roaming connection directly into tmux
+# Roaming connection directly into the laptop session
 mini
 mini api
 
