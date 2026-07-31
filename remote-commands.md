@@ -130,7 +130,7 @@ Mini's `phone` session when all of these conditions are true:
 
 - the short hostname is `nigiri-san`;
 - the shell is interactive;
-- standard output is a terminal;
+- standard input is a terminal;
 - `SSH_CONNECTION` is set;
 - `TMUX` is empty or unset;
 - `CODEX_REMOTE_PAYLOAD` is empty or unset;
