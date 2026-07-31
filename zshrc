@@ -111,7 +111,7 @@ fi
 # (CODEX_REMOTE_PAYLOAD). The raw transport helpers set
 # DOTFILES_SKIP_TMUX_AUTOATTACH in the server environment.
 if [[ ${HOST%%.*} == nigiri-san && -o interactive \
-      && -t 1 \
+      && -t 0 \
       && -n ${SSH_CONNECTION:-} && -z ${TMUX:-} \
       && -z ${CODEX_REMOTE_PAYLOAD:-} \
       && -z ${DOTFILES_SKIP_TMUX_AUTOATTACH:-} ]] \
