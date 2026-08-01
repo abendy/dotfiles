@@ -60,9 +60,21 @@ shown in the status bar so it's obvious which machine you're in):
 - Scroll/select with the mouse - this config turns that on, unlike tmux's
   default.
 - Install the configured TPM plugins with `prefix I` after the first
-  bootstrap. Continuum then saves every 15 minutes and restores saved sessions
-  at startup; resurrect also captures pane contents and restarts Codex, Claude,
-  Vim, and vi processes.
+  bootstrap. Continuum checks for a save every 15 minutes while an attached
+  client's status line is refreshing. With every client detached, the last
+  completed snapshot stays unchanged; use `prefix Ctrl-s` before a planned
+  restart or long detached period. Resurrect captures pane contents, includes
+  vi and Vim by default, and uses contains-matches for Codex and Claude so
+  commands launched with flags remain eligible for restoration.
+
+On macOS, continuum's automatic-start LaunchAgent runs after GUI login and is
+configured here to open iTerm2. It does not provide pre-login boot recovery. If
+the first post-reboot touch is SSH or mosh, that connection can create the
+`phone` or `laptop` session while continuum's asynchronous restore is starting;
+resurrect will not replace a pane that already exists. Do not assume those
+first-session contents were restored: check `tmux ls` and the snapshot linked
+by `~/.tmux/resurrect/last`. A real Mini reboot test is still required before
+treating this path as verified recovery.
 
 Shorthands live in `functions` (so they work identically over SSH/mosh, which
 is the point for iOS Termius): `t [name]` new-or-attach (default `main`), `tl`
