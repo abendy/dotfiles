@@ -49,6 +49,8 @@ MacBook keeps the shared display; the Mini never has one attached.
 4. ✅ Run `./osx-devbox` from this repo (while still physically at the
    Mini) - disables sleep, enables wake-on-network and auto-restart after
    power failure, turns on Remote Login (SSH) and Screen Sharing.
+   *(2026-08-01: the auto-restart part did not survive on macOS 26.5.2 -
+   see step 13 and [#24](https://github.com/abendy/dotfiles/issues/24).)*
 5. ✅ Clone this repo to `~/.dotfiles` and run `./bootstrap` to install
    Brewfile packages and copy dotfiles into place. Hit two upstream
    Homebrew breakages along the way (both fixed in the Brewfile, so a
@@ -112,6 +114,26 @@ MacBook keeps the shared display; the Mini never has one attached.
     scheduled cache pruning (Homebrew, npm, Brave, Codex) with a menu bar
     app and dry-run CLI. Built and installed by `bootstrap`; targets
     toggle in `~/.config/disk-prune/config.json`.
+13. ⬜ Re-assert auto-restart after power failure (2026-08-01,
+    [#24](https://github.com/abendy/dotfiles/issues/24)): `pmset -g`
+    shows `autorestart 0` despite step 4. Shell history shows
+    `./osx-devbox` ran twice *on* 26.5.2 (Jul 25 22:39 and Jul 28 22:20,
+    after the Jul 25 17:29 update), yet the persisted value is an
+    explicit false whose last write (Jul 29 14:17) matches no logged
+    run - so on this build the setting either never persists or an OS
+    write flips it back. Not renamed away: `pmset -g cap` still lists
+    `autorestart`, and 26.5 *added* `autorestartatconnect` ("Start up
+    when power is connected", Energy pane, 2024+ Mac minis), which is
+    `1` here and - with NVRAM `auto-boot=true` - is what actually covers
+    mains-restore on this hardware, so the box isn't unprotected
+    meanwhile. `osx-devbox` now verifies both settings after writing and
+    warns instead of failing silently. Remaining, needs interactive
+    sudo, then a restart:
+    - `sudo pmset -c autorestart 1 && pmset -g custom | grep autorestart`
+    - if it reads back `0`, toggle it in System Settings → Energy
+      instead and note the result in #24
+    - after the next restart, confirm `pmset -g` still shows
+      `autorestart 1`, then close out #24's autorestart item
 
 ## TODO
 
@@ -119,6 +141,10 @@ MacBook keeps the shared display; the Mini never has one attached.
   physically repositioned (`System Settings → Network → ••• → Set Service
   Order…`).
 - Decide and record the FileVault/auto-login tradeoff above.
+- Re-apply `autorestart` and verify it survives a reboot (step 13,
+  [#24](https://github.com/abendy/dotfiles/issues/24)); feeds the
+  reboot/FileVault operating model in
+  [#45](https://github.com/abendy/dotfiles/issues/45).
 - Consider enabling Tailscale SSH (`tailscale set --ssh`) and/or writing
   Tailscale ACLs to formally gate which devices can reach the Mini,
   rather than relying on OpenSSH key possession alone.

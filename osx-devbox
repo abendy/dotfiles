@@ -44,8 +44,25 @@ sudo pmset -c disksleep 0
 sudo pmset -c womp 1
 
 # Restart automatically after a power failure - there's no one there to
-# flip it back on
+# flip it back on. macOS 26.5 has been seen leaving this 0 even after
+# this line ran (#24), so read the persisted value back and complain
+# instead of trusting the exit code.
 sudo pmset -c autorestart 1
+if [ "$(pmset -g custom | awk '$1 == "autorestart" { print $2 }')" != "1" ]; then
+  echo "WARNING: autorestart did not persist (macOS 26.5 zeroes it; see" >&2
+  echo "         abendy/dotfiles#24). Try System Settings > Energy." >&2
+fi
+
+# macOS 26.5 added autorestartatconnect - "Start up when power is
+# connected" in System Settings > Energy, on 2024-or-later Mac minis.
+# "Always" (1) is what actually brings a headless box back after an
+# outage: power coming back counts as a connect. The OS/GUI owns it
+# (pmset writes to it error on some Apple Silicon Macs), so verify only;
+# fix it in the Energy pane if it ever reads 0.
+if [ "$(pmset -g custom | awk '$1 == "autorestartatconnect" { print $2 }')" != "1" ]; then
+  echo "WARNING: autorestartatconnect is 0 - set System Settings > Energy >" >&2
+  echo "         \"Start up when power is connected\" to Always (see #24)." >&2
+fi
 
 #/
  # Lock Screen
