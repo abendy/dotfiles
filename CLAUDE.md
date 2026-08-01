@@ -19,6 +19,7 @@ Declarative setup for two machines:
 | [remote-workflow.md](remote-workflow.md) | day-to-day remote use (Tailscale/mosh/tmux, Codex SSH) |
 | [remote-commands.md](remote-commands.md) | tmux/mosh helper reference |
 | [disk-prune/README.md](disk-prune/README.md) | scheduled cache pruning tool |
+| [nigiri-control-plane/README.md](nigiri-control-plane/README.md) | Mini-monitoring app — **planning only**, no machine-state changes yet |
 
 **The rule this file exists for:** any change to machine state — Brewfile
 edits, new LaunchAgents, `defaults` writes, new steps in `bootstrap` /
