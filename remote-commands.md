@@ -38,10 +38,17 @@ to a different session named `api-old`.
 
 ### `t [session]`
 
-Create or attach to `session`. The default is `main`.
+With `session`, create or attach to that exact session. Outside tmux this uses
+`tmux new-session -A`; inside tmux it creates the session if necessary and
+switches the current client to it.
 
-Outside tmux, create-or-attach using `tmux new-session -A`. Inside tmux, create
-the exact session if necessary and switch the current client to it.
+With no session outside tmux, attach to the most recently active session. If no
+sessions exist, print `t: no sessions; use: t <name>` and return an error rather
+than creating an implicit default.
+
+With no session inside tmux, switch to the last session, like `cd -`. If there
+is no last session, keep the current session, print `t: no last session`, and
+return success.
 
 ### `tl`
 
@@ -151,9 +158,11 @@ remote shell.
 Unless described otherwise, each helper returns the status of its final
 underlying `tmux`, `ssh`, `mosh`, `git`, or `fzf` command.
 
-`tl` treats an unavailable tmux server as an empty session list and returns
-success after printing its fallback message. `tk` returns `1` when it cannot
-determine a session; declining its confirmation returns success.
+`t` without a name returns `1` outside tmux when no sessions exist, but returns
+success inside tmux when there is no last session to select. `tl` treats an
+unavailable tmux server as an empty session list and returns success after
+printing its fallback message. `tk` returns `1` when it cannot determine a
+session; declining its confirmation returns success.
 
 ## FILES
 
@@ -166,8 +175,11 @@ determine a session; declining its confirmation returns success.
 ## EXAMPLES
 
 ```sh
-# The shared main session
+# Reattach the most recently active session
 t
+
+# Create or switch to an exact named session
+t api
 
 # Session for the current repository or branch
 tt
