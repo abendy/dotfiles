@@ -1,12 +1,12 @@
 import AppKit
 import DiskPruneCore
 
-/// Menu-bar companion to the disk-prune CLI. Links the same DiskPruneCore,
-/// so what it displays and what the scheduled run frees always agree.
+/// Menu-bar frontend for mole, sharing DiskPruneCore with the disk-prune
+/// CLI, so what it displays and what the scheduled run frees always agree.
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private let menu = NSMenu()
-    private var reports: [TargetReport] = []
+    private var summary: DryRunSummary?
     private var refreshing = false
     private var pruning = false
     private var timer: Timer?
@@ -22,8 +22,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         rebuildMenu(status: "Measuring…")
         refresh()
 
-        // Measuring is cheap (a few du calls), but not free - every 6 hours
-        // plus a manual Refresh item is plenty for a monthly pruner.
+        // A refresh runs `mo clean --dry-run` (~30s) plus a few du calls;
+        // every 6 hours plus a manual Refresh item is plenty for a monthly
+        // cleaner.
         timer = Timer.scheduledTimer(withTimeInterval: 6 * 3600, repeats: true) { [weak self] _ in
             self?.refresh()
         }
@@ -33,9 +34,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard !refreshing else { return }
         refreshing = true
         DispatchQueue.global(qos: .utility).async {
-            let reports = Runner.dryRun(config: Config.load())
+            let summary = Runner.dryRun(config: Config.load())
             DispatchQueue.main.async {
-                self.reports = reports
+                self.summary = summary
                 self.refreshing = false
                 self.rebuildMenu(status: nil)
             }
@@ -45,38 +46,39 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func rebuildMenu(status: String?) {
         menu.removeAllItems()
 
-        var pruneTotal: Int64 = 0
-        var reportTotal: Int64 = 0
-        for report in reports where report.bytes != nil {
-            if report.effectiveMode == .prune {
-                pruneTotal += report.bytes ?? 0
-            } else if report.effectiveMode == .report {
-                reportTotal += report.bytes ?? 0
-            }
-        }
-
         let headline: String
         if let status {
             headline = status
+        } else if let summary {
+            if summary.mole == nil {
+                headline = "mole not installed"
+            } else {
+                headline = "Prunable: \(Disk.format(summary.prunableBytes))"
+            }
         } else {
-            headline = "Prunable: \(Disk.format(pruneTotal))"
+            headline = "No measurement"
         }
         menu.addItem(disabled(headline))
         statusItem.button?.toolTip = "disk-prune - \(headline)"
 
-        if status == nil {
+        if status == nil, let summary {
             menu.addItem(.separator())
-            for report in reports {
-                var title = "\(report.label): \(report.bytes.map(Disk.format) ?? "-")"
-                switch report.effectiveMode {
-                case .report: title += "  (report-only)"
-                case .off: title = "\(report.label): off"
-                case .prune: break
-                }
-                menu.addItem(disabled(title))
+
+            if let mole = summary.mole {
+                let items = mole.items.map { " · \($0) items" } ?? ""
+                menu.addItem(disabled("mole: \(mole.potentialBytes.map(Disk.format) ?? "-")\(items)"))
+            } else {
+                menu.addItem(disabled("mole: not found (brew install mole)"))
             }
-            if reportTotal > 0 {
-                menu.addItem(disabled("Report-only total: \(Disk.format(reportTotal))"))
+
+            let dockerSize = summary.dockerBytes.map(Disk.format) ?? summary.dockerDetail ?? "-"
+            let dockerSuffix = summary.dockerMode == .off ? "  (off until #37)" : ""
+            menu.addItem(disabled("Docker: \(dockerSize)\(dockerSuffix)"))
+
+            menu.addItem(.separator())
+            menu.addItem(disabled("Watched, never pruned:"))
+            for watch in summary.watches {
+                menu.addItem(disabled("\(watch.label): \(watch.bytes.map(Disk.format) ?? "-")"))
             }
         }
 
@@ -85,7 +87,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let prune = NSMenuItem(title: pruning ? "Pruning…" : "Prune Now",
                                action: #selector(pruneNow), keyEquivalent: "")
         prune.target = self
-        prune.isEnabled = !pruning && !refreshing
+        prune.isEnabled = !pruning && !refreshing && summary?.mole != nil
         menu.addItem(prune)
 
         let refresh = NSMenuItem(title: "Refresh", action: #selector(refreshClicked), keyEquivalent: "r")
@@ -96,6 +98,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(.separator())
         menu.addItem(actionItem("Open Log", #selector(openLog)))
         menu.addItem(actionItem("Open Config", #selector(openConfig)))
+        menu.addItem(actionItem("Open mole Whitelist", #selector(openWhitelist)))
         menu.addItem(.separator())
         menu.addItem(actionItem("Quit disk-prune", #selector(quit), key: "q"))
 
@@ -142,6 +145,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openConfig() {
         NSWorkspace.shared.open(URL(fileURLWithPath: Config.defaultPath))
+    }
+
+    @objc private func openWhitelist() {
+        NSWorkspace.shared.open(URL(fileURLWithPath: NSHomeDirectory() + "/.config/mole/whitelist"))
     }
 
     @objc private func quit() {

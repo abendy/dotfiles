@@ -78,26 +78,6 @@ public enum Shell {
 }
 
 public enum Disk {
-    public enum SafetyError: Error, CustomStringConvertible {
-        case outsideAllowlist(String)
-        public var description: String {
-            switch self {
-            case .outsideAllowlist(let path):
-                return "refusing to delete inside \(path): not under an allowlisted cache root"
-            }
-        }
-    }
-
-    /// The only roots this tool is ever allowed to delete inside. Everything
-    /// else - Documents, Messages, Photos, project sources - is refused at
-    /// this layer no matter what a target or the config asks for. The roots
-    /// themselves are never deleted, only entries inside them.
-    public static let allowedRoots = [
-        NSHomeDirectory() + "/Library/Caches/",
-        NSHomeDirectory() + "/.cache/",
-        NSHomeDirectory() + "/.npm/",
-    ]
-
     /// Size of a path in bytes via /usr/bin/du (absolute path: issue #38).
     /// Returns nil when the path is missing or unreadable. du can exit
     /// non-zero on permission errors while still printing a usable total,
@@ -135,34 +115,39 @@ public enum Disk {
         return formatter.string(fromByteCount: bytes)
     }
 
-    /// Delete the *contents* of a directory, never the directory itself, and
-    /// only when the (symlink-resolved) directory sits under an allowlisted
-    /// cache root. Files held open by a running app fail to delete; that is
-    /// counted, not fatal - caches are pruned best-effort.
-    @discardableResult
-    public static func clearContents(of path: String) throws -> (removed: Int, failed: Int) {
-        let fm = FileManager.default
-        var isDirectory: ObjCBool = false
-        guard fm.fileExists(atPath: path, isDirectory: &isDirectory), isDirectory.boolValue else {
-            return (0, 0)
+    /// Parse the human sizes mole and docker print: "6.94GB", "37.69MB",
+    /// "496KB", "0B" (decimal units), plus the binary "GiB" family.
+    public static func parseHumanSize(_ raw: String) -> Int64? {
+        let token = raw.trimmingCharacters(in: .whitespaces)
+            .split(separator: " ").first.map(String.init) ?? ""
+        let multipliers: [(String, Double)] = [
+            ("TiB", 1_099_511_627_776), ("GiB", 1_073_741_824), ("MiB", 1_048_576), ("KiB", 1024),
+            ("TB", 1e12), ("GB", 1e9), ("MB", 1e6), ("kB", 1e3), ("KB", 1e3), ("B", 1),
+        ]
+        for (suffix, multiplier) in multipliers where token.hasSuffix(suffix) {
+            let number = String(token.dropLast(suffix.count))
+            guard let value = Double(number) else { return nil }
+            return Int64(value * multiplier)
         }
+        return nil
+    }
+}
 
-        let resolved = URL(fileURLWithPath: path).resolvingSymlinksInPath().path
-        guard allowedRoots.contains(where: { resolved.hasPrefix($0) }) else {
-            throw SafetyError.outsideAllowlist(resolved)
-        }
+public enum Text {
+    /// Remove ANSI color/style sequences from CLI output before parsing it.
+    public static func stripANSI(_ text: String) -> String {
+        text.replacingOccurrences(of: "\u{1B}\\[[0-9;]*m", with: "", options: .regularExpression)
+    }
 
-        var removed = 0
-        var failed = 0
-        for entry in (try? fm.contentsOfDirectory(atPath: resolved)) ?? [] {
-            do {
-                try fm.removeItem(atPath: resolved + "/" + entry)
-                removed += 1
-            } catch {
-                failed += 1
-            }
-        }
-        return (removed, failed)
+    /// First capture group of `pattern` in `text`, or nil.
+    public static func capture(_ pattern: String, in text: String) -> String? {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
+        let range = NSRange(text.startIndex..., in: text)
+        guard let match = regex.firstMatch(in: text, range: range),
+              match.numberOfRanges > 1,
+              let captureRange = Range(match.range(at: 1), in: text)
+        else { return nil }
+        return String(text[captureRange])
     }
 }
 

@@ -241,11 +241,11 @@ brew bundle install --verbose --file=Brewfiles/archive/Brewfile.PHP
 
 ## Disk pruning
 
-[`disk-prune/`](disk-prune/) is a small Swift package that reclaims cache
-space (Homebrew, npm, Brave, Codex; Docker once issue #37 settles) on a
-monthly launchd schedule, with a menu bar app showing what's prunable and a
-`disk-prune dry-run` CLI. `bootstrap` builds and installs it; targets are
-toggled in `~/.config/disk-prune/config.json`. See
+[`disk-prune/`](disk-prune/) schedules [mole](https://github.com/tw93/Mole)
+(`brew "mole"`, the cleaning engine) monthly via launchd and layers on a run
+log, a notification, a menu bar app showing what's prunable, and the tracked
+mole whitelist that keeps `mo clean` away from the Trash. Docker pruning is
+gated off until issue #37 settles. `bootstrap` builds and installs it. See
 [disk-prune/README.md](disk-prune/README.md).
 
 ## Upgrade

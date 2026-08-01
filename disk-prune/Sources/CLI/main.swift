@@ -1,7 +1,7 @@
 import DiskPruneCore
 import Foundation
 
-let version = "0.1.0"
+let version = "0.2.0"
 
 func die(_ message: String) -> Never {
     FileHandle.standardError.write(Data(("disk-prune: " + message + "\n").utf8))
@@ -10,15 +10,19 @@ func die(_ message: String) -> Never {
 
 func printUsage() {
     print("""
-    disk-prune \(version) - scheduled cache pruning for this Mac
+    disk-prune \(version) - scheduled cleaning for this Mac, engine by mole
+
+    disk-prune schedules mole (https://mole.fit) and layers on a run log,
+    a notification, the docker gate, and watch-only path reports. Cleaning
+    policy lives in mole's whitelist (~/.config/mole/whitelist).
 
     usage: disk-prune [command] [options]
 
     commands:
-      dry-run     measure each enabled target and report what a run would
-                  free, deleting nothing (default)
-      run         prune enabled targets, log to \(Log.path.replacingOccurrences(of: NSHomeDirectory(), with: "~")),
-                  and post a notification
+      dry-run     mole's cleanup preview plus the watch list; deletes
+                  nothing (default)
+      run         mo clean (and docker, if enabled), log to
+                  ~/Library/Logs/disk-prune.log, notify
       version     print the version
       help        this text
 
@@ -63,16 +67,18 @@ if let notifyOverride {
     config.notify = notifyOverride
 }
 
-func tabulate(rows: [(String, String, String, String)]) {
-    let widths = (0 ..< 3).map { column in
-        rows.map { row in
-            [row.0, row.1, row.2, row.3][column].count
-        }.max() ?? 0
+func printExtras(dockerMode: Config.DockerMode, dockerBytes: Int64?, dockerDetail: String?, watches: [WatchReport]) {
+    let dockerSize = dockerBytes.map(Disk.format) ?? dockerDetail ?? "-"
+    switch dockerMode {
+    case .off:
+        print("  docker: off until issue #37 - \(dockerSize) reclaimable")
+    case .prune:
+        print("  docker: prune - \(dockerSize) reclaimable")
     }
-    for row in rows {
-        let cells = [row.0, row.1, row.2, row.3]
-        let padded = (0 ..< 3).map { cells[$0].padding(toLength: widths[$0] + 2, withPad: " ", startingAt: 0) }
-        print("  " + padded.joined() + cells[3])
+    for watch in watches {
+        let size = watch.bytes.map(Disk.format) ?? "-"
+        let detail = watch.detail.map { "  (\($0))" } ?? ""
+        print("  \(watch.label): \(size)\(detail)")
     }
 }
 
@@ -84,50 +90,41 @@ case "version":
     print("disk-prune \(version)")
 
 case "dry-run":
-    print("disk-prune \(version) - dry run, nothing will be deleted\n")
-    let reports = Runner.dryRun(config: config)
+    let summary = Runner.dryRun(config: config)
 
-    var rows: [(String, String, String, String)] = [("TARGET", "MODE", "RECLAIMABLE", "NOTES")]
-    var pruneTotal: Int64 = 0
-    var reportTotal: Int64 = 0
-    for report in reports {
-        let size = report.bytes.map(Disk.format) ?? "-"
-        rows.append((report.id, report.effectiveMode.rawValue, size, report.detail ?? ""))
-        if let bytes = report.bytes {
-            if report.effectiveMode == .prune {
-                pruneTotal += bytes
-            } else if report.effectiveMode == .report {
-                reportTotal += bytes
-            }
-        }
+    if let mole = summary.mole {
+        print(mole.output)
+    } else {
+        print("disk-prune: mo not found - install the engine with `brew install mole` (it's in the Brewfile)\n")
     }
-    tabulate(rows: rows)
 
-    print("\nA run now would free about \(Disk.format(pruneTotal)).")
-    if reportTotal > 0 {
-        print("Report-only targets hold another \(Disk.format(reportTotal)) (not touched by runs).")
-    }
+    print("disk-prune watch list (never pruned):")
+    printExtras(dockerMode: summary.dockerMode, dockerBytes: summary.dockerBytes,
+                dockerDetail: summary.dockerDetail, watches: summary.watches)
+    print("\nA run now would free about \(Disk.format(summary.prunableBytes)).")
 
 case "run":
-    print("disk-prune \(version) - pruning\n")
     let summary = Runner.run(config: config)
 
-    var rows: [(String, String, String, String)] = [("TARGET", "MODE", "FREED", "NOTES")]
-    for result in summary.results {
-        let freed: String
-        if let bytes = result.freedBytes {
-            freed = Disk.format(bytes)
-        } else if let reclaimable = result.reclaimableBytes {
-            freed = "(\(Disk.format(reclaimable)) held)"
-        } else {
-            freed = "-"
+    if let mole = summary.mole {
+        print(mole.output)
+        if !mole.succeeded {
+            print("disk-prune: mo clean failed - see ~/Library/Logs/mole/")
         }
-        rows.append((result.id, result.mode.rawValue, freed, result.note ?? ""))
+    } else {
+        print("disk-prune: mo not found - nothing cleaned. Install with `brew install mole`.")
     }
-    tabulate(rows: rows)
+
+    if config.docker == .prune {
+        let docker = summary.dockerFreed.map(Disk.format) ?? summary.dockerNote ?? "no result"
+        print("docker: \(docker)")
+    }
 
     let seconds = Int(summary.finished.timeIntervalSince(summary.started).rounded())
     print("\nFreed \(Disk.format(summary.totalFreed)) in \(seconds)s. Log: \(Log.path.replacingOccurrences(of: NSHomeDirectory(), with: "~"))")
+    if summary.mole == nil {
+        exit(1)
+    }
 
 default:
     die("unreachable")

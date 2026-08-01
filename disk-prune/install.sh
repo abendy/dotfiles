@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-# Build and install disk-prune:
+# Build and install disk-prune (a scheduling/notification layer over mole):
 #   - release binaries (CLI + menu bar app) into ~/bin
 #   - default config into ~/.config/disk-prune (kept if already present)
+#   - mole whitelist into ~/.config/mole (always overwritten - it's policy)
 #   - LaunchAgents: monthly prune + menu bar app at login (started now)
 #
 # Idempotent - safe to re-run from bootstrap or by hand after editing the
@@ -13,6 +14,12 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if ! command -v swift > /dev/null; then
   echo "disk-prune: swift not found - install the Xcode Command Line Tools first" >&2
+  exit 1
+fi
+
+# The cleaning engine. Without it disk-prune schedules nothing but reports.
+if ! command -v mo > /dev/null && [ ! -x /opt/homebrew/bin/mo ]; then
+  echo "disk-prune: mole not found - brew install mole (it's in the Brewfile)" >&2
   exit 1
 fi
 
@@ -30,9 +37,18 @@ mkdir -p "$config_dir"
 if [ ! -f "$config_dir/config.json" ]; then
   cp "$here/config/config.json" "$config_dir/config.json"
   echo "Installed default config to $config_dir/config.json"
+elif /usr/bin/grep -q '"targets"' "$config_dir/config.json"; then
+  # Pre-mole schema (per-target modes); the engine owns targets now
+  cp -f "$here/config/config.json" "$config_dir/config.json"
+  echo "Migrated config to the mole-era schema at $config_dir/config.json"
 else
   echo "Keeping existing config at $config_dir/config.json"
 fi
+
+mole_config_dir="$HOME/.config/mole"
+mkdir -p "$mole_config_dir"
+sed "s|__HOME__|$HOME|g" "$here/config/mole-whitelist.template" > "$mole_config_dir/whitelist"
+echo "Installed mole whitelist (protects the Trash from mo clean)"
 
 agents_dir="$HOME/Library/LaunchAgents"
 mkdir -p "$agents_dir"
