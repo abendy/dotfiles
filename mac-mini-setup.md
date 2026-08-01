@@ -78,7 +78,7 @@ MacBook keeps the shared display; the Mini never has one attached.
      under one account.
    - Installed the `tailscale-app` cask on the MacBook too (it was
      mistakenly devbox-only before - moved it, and `mosh`, into the
-     shared `Brewfile` instead of `Brewfiles/Brewfile.devbox`, since both
+     shared `Brewfile` instead of `other-brews/devbox.Brewfile`, since both
      need a client-side + server-side presence on *every* machine, not
      just the Mini; only `tmux` is genuinely Mini-only).
    - MagicDNS is enabled tailnet-wide, giving a stable hostname
