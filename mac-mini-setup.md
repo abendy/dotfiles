@@ -106,8 +106,8 @@ MacBook keeps the shared display; the Mini never has one attached.
     `Brewfile`. Rationale: Squirrel/Sparkle updaters download in the
     background but wait for a click to install, and nobody clicks on a
     headless box - updates now ride `brew upgrade --greedy` over SSH.
-    Google Chrome stays deliberately unmanaged: it's kept for Computer
-    Use, and its Keystone updater genuinely self-updates.
+    Google Chrome followed on 2026-08-01 (`google-chrome` cask, adopted) -
+    kept on the Mini for Computer Use.
 12. ✅ Installed [disk-prune](disk-prune/README.md) (2026-07-31): monthly
     scheduled cache pruning (Homebrew, npm, Brave, Codex) with a menu bar
     app and dry-run CLI. Built and installed by `bootstrap`; targets
