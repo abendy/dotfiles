@@ -106,7 +106,7 @@ fi
 # by hostname (osx-devbox enforces it to `nigiri-san`), so the behavior lives in
 # this tracked file and reproduces on a rebuild with no untracked ~/.localrc
 # state - the same reasoning that moved fnm out of ~/.localrc above. Other
-# guards: interactive shell with terminal output, inside an SSH/mosh session,
+# guards: interactive shell with terminal stdin, inside an SSH/mosh session,
 # not already in tmux, and not the Codex Desktop SSH app-server path
 # (CODEX_REMOTE_PAYLOAD). The raw transport helpers set
 # DOTFILES_SKIP_TMUX_AUTOATTACH in the server environment.
