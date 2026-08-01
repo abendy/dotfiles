@@ -3,16 +3,16 @@
 # Install optional Brewfile bundles on demand.
 #
 # The shared Brewfile at the repo root is what `bootstrap` installs on every
-# machine. Everything in Brewfiles/ is opt-in: language ecosystems and topic
+# machine. Everything in other-brews/ is opt-in: language ecosystems and topic
 # bundles you pull in per machine, so the Mini doesn't get design tools and the
 # laptop doesn't get things it never needs.
 #
-# Brewfiles/archive/ is deliberately excluded - those are kept as notes, not as
-# installable bundles.
+# other-brews/archive/ is deliberately excluded - those are kept as notes, not
+# as installable bundles.
 
 set -uo pipefail
 
-BREWFILE_DIR="${BREWFILE_DIR:-$HOME/.dotfiles/Brewfiles}"
+BREWFILE_DIR="${BREWFILE_DIR:-$HOME/.dotfiles/other-brews}"
 
 usage() {
   cat <<'EOF'
@@ -23,7 +23,7 @@ Usage:
   brewfile check <name>...    report which entries are missing
   brewfile cat <name>...      print a bundle
 
-Bundles live in Brewfiles/ as <name>.Brewfile. Brewfiles/archive/ is ignored.
+Bundles live in other-brews/ as <name>.Brewfile. other-brews/archive/ is ignored.
 EOF
 }
 
@@ -115,6 +115,11 @@ cmd_pick() {
 
 if [ ! -d "$BREWFILE_DIR" ]; then
   echo "brewfile: $BREWFILE_DIR not found" >&2
+  # The bundles directory was renamed from Brewfiles/ to other-brews/; a
+  # deploy clone that predates the rename still has the old name
+  if [ -d "$(dirname "$BREWFILE_DIR")/Brewfiles" ]; then
+    echo "brewfile: found Brewfiles/ there - that clone predates the other-brews rename, so run bootstrap or pull" >&2
+  fi
   exit 1
 fi
 

@@ -198,7 +198,7 @@ a forwarded agent isn't clobbered.
 The `Brewfile` at the repo root is the shared set, installed on every machine by
 `bootstrap`. Keep it lean.
 
-Everything else is opt-in, as `Brewfiles/<name>.Brewfile` — language ecosystems
+Everything else is opt-in, as `other-brews/<name>.Brewfile` — language ecosystems
 and topic bundles you pull in per machine, so the Mini doesn't get design tools
 and the laptop doesn't get things it never needs. Install them with `brewfile`:
 
@@ -229,14 +229,14 @@ the matching toolchain on demand.
 Shell integration for these is guarded on the tool being present, so a machine
 that skips a bundle doesn't pay for it or error at startup.
 
-### `Brewfiles/archive/`
+### `other-brews/archive/`
 
 Old bundles kept as notes — PHP, MySQL, nginx, WordPress, Ruby, and the previous
 Node/Python setups. `brewfile` ignores this directory; use `brew bundle` directly
 if you ever want something out of it:
 
 ```sh
-brew bundle install --verbose --file=Brewfiles/archive/Brewfile.PHP
+brew bundle install --verbose --file=other-brews/archive/Brewfile.PHP
 ```
 
 ## Upgrade
