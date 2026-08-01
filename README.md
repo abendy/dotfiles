@@ -22,8 +22,10 @@ See the [remote workflow](remote-workflow.md) for setup and troubleshooting and
 
 `bootstrap` installs Tmux Plugin Manager before deploying `~/.tmux.conf`. On a
 new machine, start tmux and press `prefix I` once to install resurrect and
-continuum; continuum then autosaves sessions every 15 minutes and restores them
-after reboot.
+continuum. Its 15-minute autosave check runs through the status line, so a
+fully detached server keeps its last completed snapshot rather than continuing
+to save. Use `prefix Ctrl-s` before a planned restart. On macOS, automatic start
+opens iTerm2 only after GUI login; see the remote workflow for reboot caveats.
 
 `~/.localrc` holds local runtime configuration and is not tracked by this repo.
 `bootstrap` copies the `localrc` template there if the file doesn't already
