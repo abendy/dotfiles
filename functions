@@ -130,9 +130,27 @@ function v() {
 
 # --- tmux (server side, mainly the Mini) ---
 
-# new-or-attach a session (default `main`); switches if already inside tmux
+# With a name, create or attach exactly that session. With no name, return to
+# the most recently active session instead of inventing another default.
 function t() {
-  local name=${1:-main}
+  local name=$1
+
+  if [[ -z $name ]]; then
+    if [[ -n $TMUX ]]; then
+      if tmux switch-client -l 2>/dev/null; then
+        return
+      fi
+      echo "t: no last session"
+      return 0
+    fi
+
+    if tmux attach 2>/dev/null; then
+      return
+    fi
+    echo "t: no sessions; use: t <name>" >&2
+    return 1
+  fi
+
   if [[ -n $TMUX ]]; then
     tmux has-session -t "=$name" 2>/dev/null || tmux new-session -d -s "$name"
     tmux switch-client -t "=$name"
