@@ -38,6 +38,14 @@ MacBook keeps the shared display; the Mini never has one attached.
   from the brew formula, not the app bundle). Which one survives is
   [#37](https://github.com/abendy/dotfiles/issues/37); disk-prune's
   `docker` target stays off until that lands.
+- **Power-failure recovery**: run in "Start up when power is connected:
+  Always" mode (`autorestartatconnect 1`), decided 2026-08-01. macOS 26.5
+  made it and the classic `autorestart` mutually exclusive on 2024+
+  minis - each write zeroes the other, and the OS re-asserts
+  atconnect-mode unprompted
+  ([#24](https://github.com/abendy/dotfiles/issues/24)). Start-on-connect
+  boots the headless box on any mains restore, even from powered-off,
+  retiring the old restart-after-power-failure model here.
 
 ## Setup steps
 
@@ -114,26 +122,27 @@ MacBook keeps the shared display; the Mini never has one attached.
     scheduled cache pruning (Homebrew, npm, Brave, Codex) with a menu bar
     app and dry-run CLI. Built and installed by `bootstrap`; targets
     toggle in `~/.config/disk-prune/config.json`.
-13. ⬜ Re-assert auto-restart after power failure (2026-08-01,
+13. ⬜ Power-failure recovery, macOS 26.5 edition (2026-08-01,
     [#24](https://github.com/abendy/dotfiles/issues/24)): `pmset -g`
-    shows `autorestart 0` despite step 4. Shell history shows
-    `./osx-devbox` ran twice *on* 26.5.2 (Jul 25 22:39 and Jul 28 22:20,
-    after the Jul 25 17:29 update), yet the persisted value is an
-    explicit false whose last write (Jul 29 14:17) matches no logged
-    run - so on this build the setting either never persists or an OS
-    write flips it back. Not renamed away: `pmset -g cap` still lists
-    `autorestart`, and 26.5 *added* `autorestartatconnect` ("Start up
-    when power is connected", Energy pane, 2024+ Mac minis), which is
-    `1` here and - with NVRAM `auto-boot=true` - is what actually covers
-    mains-restore on this hardware, so the box isn't unprotected
-    meanwhile. `osx-devbox` now verifies both settings after writing and
-    warns instead of failing silently. Remaining, needs interactive
-    sudo, then a restart:
-    - `sudo pmset -c autorestart 1 && pmset -g custom | grep autorestart`
-    - if it reads back `0`, toggle it in System Settings → Energy
-      instead and note the result in #24
-    - after the next restart, confirm `pmset -g` still shows
-      `autorestart 1`, then close out #24's autorestart item
+    showed `autorestart 0` despite step 4, with `./osx-devbox` having
+    run twice *on* 26.5.2 (Jul 25 22:39, Jul 28 22:20). Live re-testing
+    explained it: on 26.5.2 the classic `autorestart` and the new
+    `autorestartatconnect` ("Start up when power is connected", Energy
+    pane, 2024+ Mac minis) are *mutually exclusive* - setting
+    `autorestart 1` by hand flipped `autorestartatconnect` 1→0 on this
+    box, and the unexplained Jul 29 14:17 "revert" was the same
+    mechanism in the other direction, the OS re-asserting
+    atconnect-mode. Decision above: run in atconnect mode ("Always");
+    `osx-devbox` now asserts that and no longer touches `autorestart`
+    (it reading 0 is expected). Remaining, needs interactive sudo,
+    then a restart:
+    - `sudo pmset autorestartatconnect 1` (no profile flag; expect
+      `autorestart` to drop to 0 - that's the exclusivity), confirm
+      with `pmset -g custom`
+    - after the next deliberate restart (doubles as
+      [#45](https://github.com/abendy/dotfiles/issues/45)'s recovery
+      test), confirm `autorestartatconnect` still reads `1`, then
+      close out #24's autorestart item
 
 ## TODO
 
@@ -141,9 +150,9 @@ MacBook keeps the shared display; the Mini never has one attached.
   physically repositioned (`System Settings → Network → ••• → Set Service
   Order…`).
 - Decide and record the FileVault/auto-login tradeoff above.
-- Re-apply `autorestart` and verify it survives a reboot (step 13,
-  [#24](https://github.com/abendy/dotfiles/issues/24)); feeds the
-  reboot/FileVault operating model in
+- Apply atconnect mode and verify it survives a reboot (step 13,
+  [#24](https://github.com/abendy/dotfiles/issues/24)); the restart
+  doubles as the remote-recovery test for
   [#45](https://github.com/abendy/dotfiles/issues/45).
 - Consider enabling Tailscale SSH (`tailscale set --ssh`) and/or writing
   Tailscale ACLs to formally gate which devices can reach the Mini,
