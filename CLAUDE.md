@@ -34,8 +34,8 @@ one) that says something the machine no longer does is a bug.
   runtime, [#39](https://github.com/abendy/dotfiles/issues/39) auto-converge).
 - Apps on the mini should be brew-cask-managed wherever possible — GUI
   update prompts don't get clicked on a headless machine; `brew upgrade`
-  over SSH does. Exception: Google Chrome stays unmanaged deliberately
-  (kept for Computer Use; Keystone self-updates it).
+  over SSH does. Google Chrome is kept on the mini for Computer Use —
+  don't propose removing it to save space.
 - The interactive shell aliases `du` to `du -h -d 2` (`aliases:24`), which
   breaks `du -s`. Scripts must call `/usr/bin/du` or `command du` (#38).
   *Temporary note: #38's fix includes deleting this bullet.*
