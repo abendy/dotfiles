@@ -133,7 +133,7 @@ function v() {
 # With a name, create or attach exactly that session. With no name, return to
 # the most recently active session instead of inventing another default.
 function t() {
-  local name=$1
+  local name=$1 sessions_error sessions_status
 
   if [[ -z $name ]]; then
     if [[ -n $TMUX ]]; then
@@ -144,11 +144,20 @@ function t() {
       return 0
     fi
 
-    if tmux attach 2>/dev/null; then
-      return
+    sessions_error=$(tmux list-sessions 2>&1)
+    sessions_status=$?
+    if (( sessions_status )); then
+      if [[ $sessions_error == "no server running on "* \
+            || $sessions_error == "no sessions" ]]; then
+        echo "t: no sessions; use: t <name>" >&2
+      else
+        echo "$sessions_error" >&2
+      fi
+      return $sessions_status
     fi
-    echo "t: no sessions; use: t <name>" >&2
-    return 1
+
+    tmux attach
+    return
   fi
 
   if [[ -n $TMUX ]]; then

@@ -49,8 +49,8 @@ actual persistence layer.
 Basic loop, using this repo's `tmux.conf` (mouse on, vi copy-mode, hostname
 shown in the status bar so it's obvious which machine you're in):
 
-- Start or reattach in one step: `tmux new-session -A -s main` - creates
-  `main` if it doesn't exist yet, attaches to it if it does. This is the
+- Start or reattach in one step: `tmux new-session -A -s api` - creates
+  `api` if it doesn't exist yet, attaches to it if it does. This is the
   one command worth actually remembering.
 - Detach without killing anything: `prefix d` (prefix is tmux's default,
   `Ctrl-b`, unchanged in this config).

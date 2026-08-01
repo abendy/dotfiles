@@ -44,7 +44,8 @@ switches the current client to it.
 
 With no session outside tmux, attach to the most recently active session. If no
 sessions exist, print `t: no sessions; use: t <name>` and return an error rather
-than creating an implicit default.
+than creating an implicit default. Other session-discovery or attachment
+failures preserve tmux's diagnostic and exit status.
 
 With no session inside tmux, switch to the last session, like `cd -`. If there
 is no last session, keep the current session, print `t: no last session`, and
