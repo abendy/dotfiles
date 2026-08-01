@@ -12,9 +12,9 @@ Several old topic bundles were uninstallable as written.
 ## Decision
 
 - The root `Brewfile` stays lean: the genuinely shared foundation only.
-- Everything else lives in `Brewfiles/<name>.Brewfile` as per-machine
+- Everything else lives in `other-brews/<name>.Brewfile` as per-machine
   **opt-ins**, installed interactively via `bin/brewfile` (fzf multi-select
-  picker). Stale bundles move to `Brewfiles/archive/` rather than being
+  picker). Stale bundles move to `other-brews/archive/` rather than being
   deleted.
 - Language tooling gets focused bundles (node, python, …) instead of
   kitchen-sink ones; language *versions* are pinned per project, not here.
