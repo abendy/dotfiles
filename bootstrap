@@ -301,6 +301,19 @@ function install_dotfiles {
     fi
   fi
 
+  # Builds from source, so it needs the Command Line Tools installed earlier
+  # in this script. Guarded on swift rather than failing: a machine without a
+  # Swift toolchain still gets a working dotfiles install, just no pruner.
+  if [ -x ${current_path}/disk-prune/install.sh ]; then
+    if ! hash swift 2> /dev/null; then
+      echo "Swift not found; skipping disk-prune install"
+    elif ${current_path}/disk-prune/install.sh; then
+      success "Installed disk-prune (monthly cache pruning + menu bar app)"
+    else
+      fail "Failed to install disk-prune - see output above"
+    fi
+  fi
+
   success "Completed dotfiles bootstrapping"
 
   # Bundle ZSH plugins using antidote plugin manager

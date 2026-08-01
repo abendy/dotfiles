@@ -61,6 +61,11 @@ defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 # Empty Trash securely by default
 defaults write com.apple.finder EmptyTrashSecurely -bool true
 
+# Remove Trash items automatically after 30 days - the deliberate Trash story
+# for this machine: disk-prune only *reports* Trash size and Finder does the
+# emptying (see disk-prune/README.md for the phase-2 alternatives considered)
+defaults write com.apple.finder FXRemoveOldTrashItems -bool true
+
 # Finder: allow text selection in Quick Look
 defaults write com.apple.finder QLEnableTextSelection -bool true
 

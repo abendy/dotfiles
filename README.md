@@ -239,6 +239,15 @@ if you ever want something out of it:
 brew bundle install --verbose --file=Brewfiles/archive/Brewfile.PHP
 ```
 
+## Disk pruning
+
+[`disk-prune/`](disk-prune/) is a small Swift package that reclaims cache
+space (Homebrew, npm, Brave, Codex; Docker once issue #37 settles) on a
+monthly launchd schedule, with a menu bar app showing what's prunable and a
+`disk-prune dry-run` CLI. `bootstrap` builds and installs it; targets are
+toggled in `~/.config/disk-prune/config.json`. See
+[disk-prune/README.md](disk-prune/README.md).
+
 ## Upgrade
 
 To update to the latest version:

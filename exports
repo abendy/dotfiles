@@ -7,6 +7,11 @@ export LC_ALL="en_US.UTF-8"
 # Link Homebrew casks in `/Applications` rather than `~/Applications`
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
+# Let `brew cleanup` (including the auto-cleanup brew runs periodically and
+# disk-prune's monthly run) drop cached downloads older than 30 days instead
+# of the default 120 - the cache was ~2 GB of a 256 GB disk
+export HOMEBREW_CLEANUP_MAX_AGE_DAYS=30
+
 # PATH
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"

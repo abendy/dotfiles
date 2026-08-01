@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.abendy.disk-prune-menubar</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__HOME__/bin/disk-prune-menubar</string>
+  </array>
+  <!-- RunAtLoad without KeepAlive: starts at login, and quitting it from its
+       own menu makes it stay quit until next login instead of respawning. -->
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <false/>
+  <key>LimitLoadToSessionType</key>
+  <string>Aqua</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/Library/Logs/disk-prune-menubar.launchd.log</string>
+</dict>
+</plist>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.abendy.disk-prune</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__HOME__/bin/disk-prune</string>
+    <string>run</string>
+  </array>
+  <!-- Noon on the 1st: the laptop is likelier to be awake than at midnight,
+       and launchd runs a calendar job missed during sleep as soon as the
+       machine wakes, so a closed lid only delays the prune, never skips it. -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Day</key>
+    <integer>1</integer>
+    <key>Hour</key>
+    <integer>12</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>__HOME__/Library/Logs/disk-prune.launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/Library/Logs/disk-prune.launchd.log</string>
+</dict>
+</plist>

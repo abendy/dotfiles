@@ -1,0 +1,13 @@
+{
+  "notify": true,
+  "targets": {
+    "brew": "prune",
+    "npm": "prune",
+    "brave": "prune",
+    "codex": "prune",
+    "docker": "off",
+    "chrome_ai": "report",
+    "trash": "report",
+    "node_modules": "report"
+  }
+}
