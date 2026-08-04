@@ -29,9 +29,11 @@ one) that says something the machine no longer does is a bug.
 
 ## Conventions
 
-- Decisions and defects become GitHub issues on `abendy/dotfiles`
-  (e.g. [#37](https://github.com/abendy/dotfiles/issues/37) container
-  runtime, [#39](https://github.com/abendy/dotfiles/issues/39) auto-converge).
+- Work is tracked in Linear — workspace `lone-space`, project "dotfiles",
+  `LON-nn` ids. GitHub issues on `abendy/dotfiles` are a closed, read-only
+  archive with "Migrated → LON-nn" pointers; don't file new ones. PRs and
+  code stay on GitHub. Issue numbers cited elsewhere in this file (#38, #39)
+  refer to that archive.
 - Apps on the mini should be brew-cask-managed wherever possible — GUI
   update prompts don't get clicked on a headless machine; `brew upgrade`
   over SSH does. Google Chrome is kept on the mini for Computer Use —
