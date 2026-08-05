@@ -1,7 +1,8 @@
 # Docker
 #
-# CLI only - this bundle deliberately installs no container runtime, because
-# that's a choice rather than a default. Pick one and uncomment it below.
+# Installs Docker Desktop as the runtime — the laptop's daily driver, brew-cask
+# managed since 2026-08. Alternatives stay listed at the bottom; a machine that
+# wants a different runtime (the mini runs colima, LON-41) swaps there.
 #
 # Removed as part of the 2026-07 cleanup, all gone from Homebrew entirely so
 # `brew bundle install` on the old file failed outright:
@@ -26,10 +27,11 @@ brew "docker-ls"
 # the k8s tooling ever grows past this one entry
 cask "kubernetic"
 
-# Container runtime - pick one:
-#
-#   cask "docker-desktop"   the official app. Note the cask was renamed from
-#                           "docker", so the old name now resolves via an alias
+# Container runtime. The cask was renamed from "docker", so the old name now
+# resolves via an alias.
+cask "docker-desktop"
+
+# Alternatives:
 #   cask "orbstack"         faster and lighter on macOS, drop-in Docker API
 #   brew "colima"           CLI-only runtime on Lima, no GUI, no licence question
 #

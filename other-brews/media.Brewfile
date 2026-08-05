@@ -9,6 +9,8 @@ cask "losslesscut"
 cask "soundcast"
 cask "soundflower"
 cask "soundflowerbed"
+cask "spotify"
 cask "spotify-notifications"
 cask "spotify-now-playing"
+cask "vlc"
 mas "Helium", id: 1054607607

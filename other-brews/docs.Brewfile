@@ -1,3 +1,4 @@
 brew "anki"
-brew "obsidian"
+cask "logseq"
+cask "obsidian"
 brew "zotero"
