@@ -239,6 +239,15 @@ if you ever want something out of it:
 brew bundle install --verbose --file=other-brews/archive/Brewfile.PHP
 ```
 
+## Disk pruning
+
+[`disk-prune/`](disk-prune/) schedules [mole](https://github.com/tw93/Mole)
+(`brew "mole"`, the cleaning engine) monthly via launchd and layers on a run
+log, a notification, a menu bar app showing what's prunable, and the tracked
+mole whitelist that keeps `mo clean` away from the Trash. Docker pruning is
+gated off until issue #37 settles. `bootstrap` builds and installs it. See
+[disk-prune/README.md](disk-prune/README.md).
+
 ## Upgrade
 
 To update to the latest version:

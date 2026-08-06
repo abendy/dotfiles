@@ -1,0 +1,10 @@
+# mole whitelist - paths `mo clean` must never touch on this machine.
+#
+# Managed by dotfiles (disk-prune/config/mole-whitelist.template) and
+# overwritten by disk-prune/install.sh: this file is policy, so edit it in
+# the repo, not here. Blank lines and # comments are ignored by mole.
+
+# The Trash is user data. mole would otherwise empty it entirely; instead
+# Finder's "Remove items after 30 days" owns it (enabled in the osx script)
+# and disk-prune just reports its size.
+__HOME__/.Trash
