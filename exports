@@ -60,6 +60,12 @@ fi
 # Grep
 export PATH="$(brew --prefix grep)/libexec/gnubin:$PATH"
 
+# Litestream
+# The CLI defaults to /etc/litestream.yml, but Homebrew keeps the config under
+# its prefix (the launchd replication service already passes -config
+# explicitly). This points ad hoc invocations at the same file.
+export LITESTREAM_CONFIG="$(brew --prefix)/etc/litestream.yml"
+
 # OpenSSL
 if [ -n "$(brew --prefix openssl@3)" ]; then
   export PATH="$(brew --prefix openssl@3)/bin:$PATH"
