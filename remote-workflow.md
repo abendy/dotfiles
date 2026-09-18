@@ -84,125 +84,25 @@ fzf-picks, `tt` uses a session per repository, `tb` uses one per branch, `td`
 detaches, `tn` renames, and `tk` kills with confirmation. See
 [REMOTE-COMMANDS(1)](remote-commands.md) for complete syntax and behavior.
 
-## Codex Desktop SSH alongside ChatGPT Remote Control
+## Codex Desktop SSH
 
-The MacBook can open Mini-hosted projects through Codex Desktop's SSH
-connection without taking the Mini offline in ChatGPT Remote. This was
-verified on 2026-07-29, including quitting and relaunching ChatGPT on the
-Mini: iOS went offline when the app quit and came back when it relaunched.
+Codex Desktop starts its remote app server over SSH and connects through
+`codex app-server proxy`. Keep `codex` available in the remote login shell's
+PATH. No manual daemon start or shell startup override is required.
 
-The working arrangement deliberately has two app servers with different
-jobs:
+The July 29 shell workaround was removed on September 18. It called a
+missing `~/.local/bin/codex`, hid the failure, and still disabled normal
+startup with `CODEX_SSH_SKIP_APP_SERVER_BOOT=true`. That left the connection
+proxy with no server after a reboot.
 
-- Mini ChatGPT owns its bundled, stdio app server and is the only process
-  that enables ChatGPT Remote Control.
-- A managed standalone app-server daemon owns
-  `~/.codex/app-server-control/app-server-control.sock`, with
-  `remoteControlEnabled` set to `false`.
-- MacBook Codex Desktop connects over SSH, starts `codex app-server proxy`,
-  and talks to that Unix socket. A proxy exists only while the SSH
-  connection is active.
+Do not restore that override or start Codex servers from shell profiles.
+For connection failures, inspect the MacBook's SSH startup logs and the
+Mini's `~/.codex/app-server-control/app-server.log` before changing startup
+behavior. A missing socket alone does not explain why startup failed.
 
-### What was going wrong
-
-Codex Desktop's SSH bootstrap normally launches a second ad-hoc process:
-
-```
-codex -c features.code_mode_host=true app-server --listen unix://
-```
-
-That process read the Mini's empty-client Remote enrollment and also tried
-to become the Remote app server. The service rejected the loser with HTTP
-409 and `Remote app server already online`. ChatGPT translated that into
-the misleading UI message `Please ensure only one instance of ChatGPT is
-running`; there was only one GUI process.
-
-The same bootstrap could leave its non-interactive SSH channel open for
-about a minute because the background app server inherited stdin. That was
-the cause of the long `Connecting...` delay seen during this investigation.
-
-`CODEX_SSH_SKIP_APP_SERVER_BOOT=true` skips only that ad-hoc bootstrap.
-Desktop still runs `codex app-server proxy`, so the variable is useful only
-when the control socket is already owned by a managed daemon. It cannot
-attach to ChatGPT's bundled app server because that server uses stdio and
-does not expose the SSH control socket.
-
-### Current fix
-
-The daemon was bootstrapped once with Remote disabled:
-
-```
-codex app-server daemon bootstrap
-```
-
-The SSH-only hook in `zprofile` now starts it idempotently before Codex
-Desktop's bootstrap and exports the skip variable:
-
-```
-if [[ -n ${SSH_CONNECTION:-} && ${CODEX_REMOTE_PAYLOAD:-} == *"app-server"* ]]; then
-  "$HOME/.local/bin/codex" app-server daemon start >/dev/null 2>&1
-  export CODEX_SSH_SKIP_APP_SERVER_BOOT=true
-fi
-```
-
-The `CODEX_REMOTE_PAYLOAD` guard keeps this out of normal SSH, mosh, Git,
-and interactive shell sessions. The empty-client enrollment scope was
-disabled with a one-row SQLite update after a timestamped backup; the
-`Codex Desktop` enrollment remains enabled. The backup is at
-`~/.codex/backups/ssh-remote-stabilization-20260729-141310/`.
-
-### Future checks
-
-Check the daemon, socket, process layout, and enrollment scopes without
-changing anything:
-
-```
-codex app-server daemon version
-ls -l ~/.codex/app-server-control/app-server-control.sock
-pgrep -alf 'codex.*(app-server|pid-update-loop)'
-sqlite3 ~/.codex/state_5.sqlite \
-  "SELECT quote(app_server_client_name), remote_control_enabled
-   FROM remote_control_enrollments ORDER BY app_server_client_name;"
-```
-
-Expected enrollment rows are `''|0` and `'Codex Desktop'|1`. Expected
-long-lived processes are ChatGPT's bundled app server, the standalone
-`app-server --listen unix://`, and its `pid-update-loop`; `app-server proxy`
-appears while the MacBook is connected. There should not be an additional
-ad-hoc `codex -c features.code_mode_host=true app-server --listen unix://`.
-
-Useful logs are:
-
-- `~/.codex/app-server-daemon/app-server.stderr.log`
-- `~/.codex/app-server-daemon/app-server-updater.stderr.log`
-- `~/.codex/app-server-control/app-server.log`
-- `~/.codex/logs_2.sqlite` for ChatGPT and Remote Control events
-
-If the desktop SSH path misbehaves, first turn off its SSH connection on
-the MacBook and inspect the PIDs. Terminate only an unexpected ad-hoc
-socket app server; do not use the old broad `pkill` recipe because the
-managed socket daemon is now intentional. `codex app-server daemon restart`
-is the narrow recovery for the managed daemon. Leave ChatGPT's bundled
-app-server, Remote pairings, installation IDs, and the state database
-alone unless fresh evidence identifies one of them as the fault.
-
-### Related upstream issues
-
-No issue found on 2026-07-29 describes this exact two-Mac combination and
-the misleading singleton error. These are the closest upstream reports:
-
-- [#23699 — Codex Desktop SSH restart disables mobile remote control](https://github.com/openai/codex/issues/23699)
-  covers Desktop SSH replacing a Remote-capable app server with a plain
-  socket app server.
-- [#20636 — SSH remote bootstrap silently fails on macOS-to-macOS](https://github.com/openai/codex/issues/20636)
-  covers the brittle background bootstrap and missing socket readiness
-  checks.
-- [#23527 — Codex mobile does not show SSH remote projects](https://github.com/openai/codex/issues/23527)
-  covers the related distinction between Desktop SSH projects and mobile
-  Remote visibility.
-- [#28862 — Remote-control 409 stale enrollment needs a repair path](https://github.com/openai/codex/issues/28862)
-  is a related 409-conflict report and argues for a supported ownership
-  repair mechanism.
+The override removal passed shell syntax and SSH-environment checks.
+MacBook reconnection and current iOS Remote Control behavior still need
+end-to-end verification.
 
 ## Putting it together
 

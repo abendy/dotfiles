@@ -144,6 +144,13 @@ MacBook keeps the shared display; the Mini never has one attached.
       test), confirm `autorestartatconnect` still reads `1`, then
       close out #24's autorestart item
 
+## 2026-09-18: remove Codex SSH startup override
+
+Removed the July 29 Codex hook from `zprofile` and the Mini's active
+`~/.zprofile`. Its executable path no longer existed, but it still disabled
+Codex Desktop's normal SSH bootstrap. New SSH login shells now leave
+`CODEX_SSH_SKIP_APP_SERVER_BOOT` unset. See [remote workflow](remote-workflow.md#codex-desktop-ssh).
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be
