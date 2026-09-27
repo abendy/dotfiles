@@ -111,11 +111,21 @@ fi
 # not already in tmux, and not the Codex Desktop SSH app-server path
 # (CODEX_REMOTE_PAYLOAD). The raw transport helpers set
 # DOTFILES_SKIP_TMUX_AUTOATTACH in the server environment.
+# The Claude desktop app's Terminal panel also logs in over SSH but sets
+# TERM_PROGRAM=claude-desktop and starts in the session's project directory;
+# those shells get a session named after that directory instead of sharing
+# `phone` (tmux rejects `.` and `:` in names, so they become `-`).
 if [[ ${HOST%%.*} == nigiri-san && -o interactive \
       && -t 0 \
       && -n ${SSH_CONNECTION:-} && -z ${TMUX:-} \
       && -z ${CODEX_REMOTE_PAYLOAD:-} \
       && -z ${DOTFILES_SKIP_TMUX_AUTOATTACH:-} ]] \
       && command -v tmux &>/dev/null; then
-  tmux new-session -A -s phone
+  () {
+    local session=phone
+    if [[ $TERM_PROGRAM == claude-desktop ]]; then
+      session=${${PWD:t}//[.:]/-}
+    fi
+    tmux new-session -A -s "${session:-phone}"
+  }
 fi

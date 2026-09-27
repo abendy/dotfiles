@@ -137,6 +137,12 @@ Mini's `phone` session when all of these conditions are true:
 - `DOTFILES_SKIP_TMUX_AUTOATTACH` is empty or unset; and
 - `tmux` is available.
 
+The Claude desktop app's Terminal panel also passes these checks, since it
+logs in over SSH. When `TERM_PROGRAM` is `claude-desktop`, the hook attaches a
+session named after the shell's starting directory instead of `phone`, so each
+project gets its own session. Dots and colons in the name become dashes because
+tmux rejects them.
+
 The hook lives in [`zshrc`](zshrc). It does not replace the login shell, so
 detaching from this automatically attached session returns to the underlying
 remote shell.
