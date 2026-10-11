@@ -127,5 +127,6 @@ needs no per-machine setup and survives a rebuild. Guarded to fire only on
 remote logins, never on the MacBook, and never for the Codex Desktop SSH path.
 The raw helpers set `DOTFILES_SKIP_TMUX_AUTOATTACH` in the server environment
 so their login shells bypass the hook explicitly. The Claude desktop app's Terminal
-panel is the one exception to `phone`: it gets a session named after its
-project directory (see [remote-commands.md](remote-commands.md#auto-attach)).
+panel is the one exception to `phone`: each tab gets its own session named after
+its project directory, numbered when a project has several (see
+[remote-commands.md](remote-commands.md#auto-attach)).

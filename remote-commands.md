@@ -143,6 +143,18 @@ session named after the shell's starting directory instead of `phone`, so each
 project gets its own session. Dots and colons in the name become dashes because
 tmux rejects them.
 
+Each tab gets its own session, so two tabs in one project don't mirror each
+other. The app sets no per-tab id, so the hook picks a session this way:
+
+1. Reuse the first detached session started in the same directory and named
+   after it (`dotfiles`, `dotfiles-2`, ...). A closed or restarted tab picks
+   up where one left off.
+2. Otherwise create the next free name: `dotfiles`, then `dotfiles-2`, and so
+   on.
+
+Two tabs opened at the same instant can still land in one session. Close one
+and open it again.
+
 The hook lives in [`zshrc`](zshrc). It does not replace the login shell, so
 detaching from this automatically attached session returns to the underlying
 remote shell.

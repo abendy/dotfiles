@@ -114,7 +114,10 @@ fi
 # The Claude desktop app's Terminal panel also logs in over SSH but sets
 # TERM_PROGRAM=claude-desktop and starts in the session's project directory;
 # those shells get a session named after that directory instead of sharing
-# `phone` (tmux rejects `.` and `:` in names, so they become `-`).
+# `phone` (tmux rejects `.` and `:` in names, so they become `-`). The app sets
+# no per-tab id, so a tab reuses a detached session started in the same
+# directory (`dotfiles`, `dotfiles-2`, ...) and otherwise creates the next free
+# name; two tabs never share one by default.
 if [[ ${HOST%%.*} == nigiri-san && -o interactive \
       && -t 0 \
       && -n ${SSH_CONNECTION:-} && -z ${TMUX:-} \
@@ -124,7 +127,21 @@ if [[ ${HOST%%.*} == nigiri-san && -o interactive \
   () {
     local session=phone
     if [[ $TERM_PROGRAM == claude-desktop ]]; then
-      session=${${PWD:t}//[.:]/-}
+      local base=${${PWD:t}//[.:]/-} attached name dir n=2
+      local -A taken
+      session=
+      while IFS=: read -r attached name dir; do
+        taken[$name]=1
+        if [[ -z $session && $attached == 0 && $dir == $PWD \
+              && ( $name == "$base" || $name == "$base"-<2-> ) ]]; then
+          session=$name
+        fi
+      done < <(tmux list-sessions \
+        -F '#{session_attached}:#{session_name}:#{session_path}' 2>/dev/null)
+      if [[ -z $session ]]; then
+        session=$base
+        while (( ${+taken[$session]} )); do session=$base-$((n++)); done
+      fi
     fi
     tmux new-session -A -s "${session:-phone}"
   }
