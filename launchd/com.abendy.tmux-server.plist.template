@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.abendy.tmux-server</string>
+  <!-- Starts the tmux server at GUI login so it lives in the Aqua security
+       session and its panes can use the login keychain. See bin/tmux-aqua. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>__HOME__/bin/tmux-aqua</string>
+    <string>start</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <false/>
+  <key>LimitLoadToSessionType</key>
+  <string>Aqua</string>
+  <!-- The tmux server outlives this one-shot job; don't let launchd reap it -->
+  <key>AbandonProcessGroup</key>
+  <true/>
+  <!-- Lands in the server's global environment, which marks a server this
+       agent started (tmux-aqua status, and the warning in zshrc) -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>DOTFILES_TMUX_AQUA</key>
+    <string>1</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>__HOME__/Library/Logs/tmux-aqua.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/Library/Logs/tmux-aqua.log</string>
+</dict>
+</plist>

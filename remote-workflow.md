@@ -67,14 +67,13 @@ shown in the status bar so it's obvious which machine you're in):
   vi and Vim by default, and uses contains-matches for Codex and Claude so
   commands launched with flags remain eligible for restoration.
 
-On macOS, continuum's automatic-start LaunchAgent runs after GUI login and is
-configured here to open iTerm2. It does not provide pre-login boot recovery. If
-the first post-reboot touch is SSH or mosh, that connection can create the
-`phone` or `laptop` session while continuum's asynchronous restore is starting;
-resurrect will not replace a pane that already exists. Do not assume those
-first-session contents were restored: check `tmux ls` and the snapshot linked
-by `~/.tmux/resurrect/last`. A real Mini reboot test is still required before
-treating this path as verified recovery.
+On the laptop, continuum's automatic-start LaunchAgent opens iTerm2 after GUI
+login. On the Mini it is off; a LaunchAgent of this repo starts the server
+instead (next section).
+
+**Resurrect is broken on tmux 3.8.** tmux 3.8 prints tabs in `-F` output as
+`_`, and resurrect splits its records on tabs. Saves hold no panes, so restores
+bring nothing back. Don't count on reboot recovery until that's fixed.
 
 Shorthands live in `functions` (so they work identically over SSH/mosh, which
 is the point for iOS Termius): `t [name]` creates or attaches an exact named
@@ -83,6 +82,31 @@ or toggles to the last session inside it. `tl` lists, `ta` attaches or
 fzf-picks, `tt` uses a session per repository, `tb` uses one per branch, `td`
 detaches, `tn` renames, and `tk` kills with confirmation. See
 [REMOTE-COMMANDS(1)](remote-commands.md) for complete syntax and behavior.
+
+### Keychain: start the server from the GUI login
+
+macOS ties the login keychain to the security session a process starts in. The
+tmux server and every pane it spawns keep the session of whatever started the
+server, whoever attaches later. A server started by an SSH or mosh login can't
+use the keychain: `security show-keychain-info` exits 36 and Xcode codesign
+fails with `errSecInternalComponent`.
+
+On the Mini, the `com.abendy.tmux-server` LaunchAgent (installed by
+`bootstrap`) runs [`tmux-aqua start`](bin/tmux-aqua) at GUI login. The server
+then exists before an SSH or mosh login needs one, so those logins attach to it
+and their panes can use the keychain. The agent also turns `exit-empty` off, so
+killing the last session doesn't hand the next login a new server.
+
+- `tmux-aqua status` checks the running server. A shell inside a server the
+  agent didn't start prints a one-line warning.
+- `tmux-aqua migrate` moves a wrong server: save, stop, start from the GUI
+  login, restore. See [REMOTE-COMMANDS(1)](remote-commands.md#tmux-aqua-migrate---discard).
+- After a reboot there's no GUI session until someone logs in on the screen.
+  An SSH login before that creates its own server, and the keychain stays
+  locked whatever tmux does. Log in over Screen Sharing, then run
+  `tmux-aqua migrate`.
+- `launchctl managername` in a pane says `Background` even in the agent's
+  server. Trust `tmux-aqua status`, which runs the keychain check itself.
 
 ## Codex Desktop SSH
 

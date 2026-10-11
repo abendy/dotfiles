@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+#
+# Keep the Mini's tmux server in the GUI login (Aqua) security session.
+#
+# macOS ties the login keychain to the security session a process starts in.
+# A tmux server started by an SSH/mosh login lives in that SSH session, so
+# every pane it spawns - including ones attached later from the GUI - gets
+# "User interaction is not allowed" from the keychain (codesign fails with
+# errSecInternalComponent). A server started by a GUI LaunchAgent can use it.
+#
+# The com.abendy.tmux-server LaunchAgent runs `tmux-aqua start` at GUI login,
+# so the server exists before an SSH/mosh login needs one. `tmux-aqua migrate`
+# moves a server that an SSH login started anyway. See remote-workflow.md.
+
+set -uo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+LABEL="${TMUX_AQUA_LABEL:-com.abendy.tmux-server}"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/tmux-aqua"
+REQUEST="$STATE_DIR/migrate-requested"
+RESURRECT_SAVE="$HOME/.tmux/plugins/tmux-resurrect/scripts/save.sh"
+RESURRECT_RESTORE="$HOME/.tmux/plugins/tmux-resurrect/scripts/restore.sh"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  tmux-aqua status    show whether the tmux server can use the login keychain
+  tmux-aqua migrate [--discard]
+                      save sessions, then restart the server from the GUI login;
+                      --discard restarts without saving (every session closes)
+  tmux-aqua start     what the login agent runs; starts a server if none exists
+EOF
+}
+
+log() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') tmux-aqua: $*"
+}
+
+die() {
+  echo "tmux-aqua: $*" >&2
+  exit 1
+}
+
+# list-sessions succeeds on a live server even with no sessions (the agent
+# turns exit-empty off), and fails when no server answers on the socket
+server_running() {
+  tmux list-sessions > /dev/null 2>&1
+}
+
+# The agent's EnvironmentVariables put this in the server's global
+# environment; a server some other client started doesn't have it
+started_by_agent() {
+  tmux show-environment -g DOTFILES_TMUX_AQUA 2> /dev/null | grep -qx 'DOTFILES_TMUX_AQUA=1'
+}
+
+# Exit status of `security show-keychain-info` run by the server itself, the
+# same context every new pane gets. 0 means the keychain is reachable.
+server_keychain_status() {
+  tmux run-shell 'security show-keychain-info > /dev/null 2>&1; echo $?' 2> /dev/null
+}
+
+start_server() {
+  # exit-empty off keeps this server alive with no sessions, so killing the
+  # last session doesn't hand the next SSH login a fresh server in its own
+  # security session. continuum restores the last resurrect save on startup.
+  tmux start-server \; set -s exit-empty off
+  local _
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    if server_running; then
+      log "started server (pid $(tmux display -p '#{pid}' 2> /dev/null)); keychain status $(server_keychain_status)"
+      restore_if_empty
+      return 0
+    fi
+    sleep 1
+  done
+  log "server did not come up"
+  return 1
+}
+
+# continuum skips its startup restore whenever any other tmux process is
+# running (a client, or a server on another socket), which would leave the
+# new server empty. Give it a few seconds, then restore the last save here.
+restore_if_empty() {
+  local _
+  for _ in 1 2 3 4 5; do
+    sleep 1
+    [ -n "$(tmux list-sessions -F x 2> /dev/null)" ] && return 0
+  done
+  if [ -x "$RESURRECT_RESTORE" ]; then
+    log "no sessions after startup; running resurrect restore"
+    "$RESURRECT_RESTORE" > /dev/null 2>&1 || log "resurrect restore failed"
+  fi
+}
+
+# Save with resurrect and confirm the snapshot holds at least one pane.
+# tmux 3.8 prints tabs in -F output as `_`, and resurrect splits its records
+# on tabs, so a save can "succeed" while writing only an empty state line.
+save_sessions() {
+  [ -x "$RESURRECT_SAVE" ] || return 1
+  "$RESURRECT_SAVE" quiet || return 1
+  local last
+  last="$(
+    # shellcheck source=/dev/null
+    source "$(dirname "$RESURRECT_SAVE")/helpers.sh" && last_resurrect_file
+  )"
+  grep -q $'^pane\t' "$last" 2> /dev/null
+}
+
+# Runs inside the agent, so killing the server doesn't kill this script.
+# cmd_migrate has already saved (or been told to discard) the sessions.
+move_server() {
+  if server_running; then
+    log "stopping server"
+    tmux kill-server
+    local _
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+      server_running || break
+      sleep 1
+    done
+    if server_running; then
+      log "server did not stop"
+      return 1
+    fi
+  fi
+  start_server
+}
+
+cmd_start() {
+  if [ -f "$REQUEST" ]; then
+    rm -f "$REQUEST"
+    log "migration requested"
+    move_server
+  elif server_running; then
+    if started_by_agent; then
+      log "server already running from the login agent"
+    else
+      log "a server some other client started is already running; run tmux-aqua migrate to move it"
+    fi
+  else
+    start_server
+  fi
+}
+
+cmd_status() {
+  if ! server_running; then
+    echo "No tmux server is running."
+    return 1
+  fi
+  local keychain
+  keychain="$(server_keychain_status)"
+  echo "server pid:       $(tmux display -p '#{pid}' 2> /dev/null)"
+  if started_by_agent; then
+    echo "started by:       the login agent ($LABEL)"
+  else
+    echo "started by:       some other client (not the login agent)"
+  fi
+  if [ "$keychain" = 0 ]; then
+    echo "login keychain:   reachable"
+  else
+    echo "login keychain:   locked (security exit ${keychain:-?}); run tmux-aqua migrate"
+    return 1
+  fi
+}
+
+cmd_migrate() {
+  if ! launchctl print "gui/$(id -u)/$LABEL" > /dev/null 2>&1; then
+    die "$LABEL isn't loaded. Log in on the Mini's screen (Screen Sharing) first, or run bootstrap."
+  fi
+  if server_running && started_by_agent && [ "$(server_keychain_status)" = 0 ]; then
+    echo "The tmux server already runs from the GUI login. Nothing to do."
+    return 0
+  fi
+  if [ "${1:-}" = --discard ]; then
+    echo "Restarting tmux from the GUI login without saving. Every session closes."
+  elif server_running; then
+    if ! save_sessions; then
+      echo "tmux-aqua: resurrect could not save your sessions, so nothing was stopped." >&2
+      echo "  Is tmux-resurrect installed (~/.tmux/plugins/tpm/bin/install_plugins)? On tmux 3.8" >&2
+      echo "  its snapshots come out empty. To restart anyway and lose every session, run:" >&2
+      echo "  tmux-aqua migrate --discard" >&2
+      exit 1
+    fi
+    echo "Saved sessions. Restarting tmux from the GUI login."
+  fi
+  mkdir -p "$STATE_DIR"
+  touch "$REQUEST"
+  launchctl kickstart "gui/$(id -u)/$LABEL" > /dev/null || die "launchctl kickstart failed"
+  echo "Every tmux client disconnects now. Wait about 10 seconds, then reattach with t."
+  echo "Log: ~/Library/Logs/tmux-aqua.log"
+}
+
+case "${1:-}" in
+  start) cmd_start ;;
+  status) cmd_status ;;
+  migrate) cmd_migrate "${2:-}" ;;
+  -h | --help | help) usage ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac

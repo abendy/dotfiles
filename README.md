@@ -24,8 +24,11 @@ See the [remote workflow](remote-workflow.md) for setup and troubleshooting and
 new machine, start tmux and press `prefix I` once to install resurrect and
 continuum. Its 15-minute autosave check runs through the status line, so a
 fully detached server keeps its last completed snapshot rather than continuing
-to save. Use `prefix Ctrl-s` before a planned restart. On macOS, automatic start
-opens iTerm2 only after GUI login; see the remote workflow for reboot caveats.
+to save. Use `prefix Ctrl-s` before a planned restart. On the laptop, automatic
+start opens iTerm2 only after GUI login. On the Mini, `bootstrap` instead loads
+a LaunchAgent that starts the tmux server at GUI login, so panes can use the
+login keychain. See the remote workflow for that and for reboot caveats
+(resurrect saves are empty on tmux 3.8).
 
 `~/.localrc` holds local runtime configuration and is not tracked by this repo.
 `bootstrap` copies the `localrc` template there if the file doesn't already

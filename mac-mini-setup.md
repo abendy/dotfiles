@@ -151,6 +151,23 @@ Removed the July 29 Codex hook from `zprofile` and the Mini's active
 Codex Desktop's normal SSH bootstrap. New SSH login shells now leave
 `CODEX_SSH_SKIP_APP_SERVER_BOOT` unset. See [remote workflow](remote-workflow.md#codex-desktop-ssh).
 
+## 2026-10-11: start the tmux server from the GUI login
+
+The tmux server (pid 3034) came up two minutes after the Oct 3 reboot, started
+by a Claude desktop Terminal over SSH. Its panes couldn't use the login
+keychain (`security show-keychain-info` exit 36).
+
+- Cloned tmux-resurrect and tmux-continuum with
+  `~/.tmux/plugins/tpm/bin/install_plugins`. Only TPM had been installed;
+  `prefix I` was never run. Not yet loaded into the running server.
+- Found that resurrect saves are empty on tmux 3.8, which prints tabs in `-F`
+  output as `_`.
+- Added the `com.abendy.tmux-server` LaunchAgent and `bin/tmux-aqua`
+  (`bootstrap` installs both on `nigiri-san`). Turned continuum's iTerm2 boot
+  off on the Mini. See [remote workflow](remote-workflow.md#keychain-start-the-server-from-the-gui-login).
+- The running server still needs `tmux-aqua migrate --discard` (run by hand,
+  since it closes every session).
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be

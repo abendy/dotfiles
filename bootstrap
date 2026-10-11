@@ -179,6 +179,45 @@ function install_tmux_plugin_manager {
   fi
 }
 
+# The Mini only: start the tmux server at GUI login so its panes can use the
+# login keychain (bin/tmux-aqua, remote-workflow.md). Needs ~/bin/tmux-aqua,
+# which install_dotfiles copies before calling this.
+function install_tmux_server_agent {
+  local label="com.abendy.tmux-server"
+  local plist="$HOME/Library/LaunchAgents/$label.plist"
+  local uid
+  uid="$(id -u)"
+
+  if [ "$(hostname -s)" != "nigiri-san" ]; then
+    return
+  fi
+
+  mkdir -p "$(dirname "$plist")"
+  sed "s|__HOME__|$HOME|g" "${current_path}/launchd/$label.plist.template" > "$plist"
+
+  # With no GUI login there's no gui domain to load into; launchd loads the
+  # plist from ~/Library/LaunchAgents at the next login anyway
+  if ! launchctl print "gui/$uid" > /dev/null 2>&1; then
+    success "Installed $label; it loads at the next GUI login"
+    return
+  fi
+
+  # bootout first so re-installs pick up plist changes; ignore "not loaded".
+  # The server outlives bootout, and loading again runs `tmux-aqua start`,
+  # which leaves a running server alone.
+  launchctl bootout "gui/$uid/$label" 2> /dev/null || true
+  # bootstrap can race the teardown of the old instance and fail with EIO
+  # ("Bootstrap failed: 5"), so give launchd a few tries
+  for _ in 1 2 3 4 5; do
+    if launchctl bootstrap "gui/$uid" "$plist" 2> /dev/null; then
+      success "Loaded $label (starts the tmux server at GUI login)"
+      return
+    fi
+    sleep 1
+  done
+  fail "Failed to load $label"
+}
+
 function install_dotfiles {
   git_user_name="$(git config --get user.name | tr -d '\n')"
   git_user_email="$(git config --get user.email | tr -d '\n')"
@@ -279,6 +318,7 @@ function install_dotfiles {
     install_tmux_plugin_manager
     cp -f ${current_path}/tmux.conf $HOME/.tmux.conf
     success "Done copying tmux config"
+    install_tmux_server_agent
   fi
 
   if [ -f ${current_path}/atuin/config.toml ]; then

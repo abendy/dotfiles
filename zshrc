@@ -146,3 +146,14 @@ if [[ ${HOST%%.*} == nigiri-san && -o interactive \
     tmux new-session -A -s "${session:-phone}"
   }
 fi
+
+# Inside tmux on the Mini, warn when the server isn't the one the login agent
+# (com.abendy.tmux-server) started. Such a server lives in an SSH security
+# session, so its panes can't use the login keychain (codesign fails with
+# errSecInternalComponent). The agent puts DOTFILES_TMUX_AQUA in the server's
+# environment, so this check costs a variable test, not a subprocess.
+if [[ ${HOST%%.*} == nigiri-san && -o interactive && -n ${TMUX:-} \
+      && -z ${DOTFILES_TMUX_AQUA:-} ]]; then
+  print -u2 "tmux: this server wasn't started from the GUI login, so the" \
+    "login keychain is locked here. Fix: tmux-aqua migrate"
+fi

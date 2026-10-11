@@ -2,7 +2,7 @@
 
 ## NAME
 
-`t`, `tl`, `ta`, `tt`, `tb`, `td`, `tn`, `tk`, `mini`, `mini-ssh`,
+`t`, `tl`, `ta`, `tt`, `tb`, `td`, `tn`, `tk`, `tmux-aqua`, `mini`, `mini-ssh`,
 `mini-mosh` — manage tmux sessions and connect to the Mini
 
 ## SYNOPSIS
@@ -16,6 +16,8 @@ tb
 td [tmux-option ...]
 tn name
 tk [session]
+tmux-aqua status
+tmux-aqua migrate [--discard]
 
 mini [session]
 mini-ssh [ssh-argument ...]
@@ -90,6 +92,23 @@ Rename the current tmux session to `name`.
 Ask for confirmation, then kill the exact session. With no name, target the
 current session. Print `tk: no session` and return an error when no current
 session can be determined.
+
+### `tmux-aqua status`
+
+Mini only. Show whether the tmux server was started by the login agent and
+whether its panes can reach the login keychain. Returns `1` when the keychain
+is locked or no server is running. See
+[remote-workflow.md](remote-workflow.md#keychain-start-the-server-from-the-gui-login).
+
+### `tmux-aqua migrate [--discard]`
+
+Mini only. Move a server that an SSH/mosh login started into the GUI login
+session. It saves with resurrect, then asks the `com.abendy.tmux-server` agent
+to stop the server, start a new one, and restore. Every client disconnects;
+reattach with `t` after about 10 seconds. It stops without changing anything
+when the save holds no panes. `--discard` skips the save and closes every
+session. Needs a GUI login (Screen Sharing). It's a script in [`bin/`](bin/tmux-aqua),
+not a function.
 
 ## CONNECTION COMMANDS
 
@@ -172,6 +191,9 @@ remote shell.
   interfering with the Codex Desktop SSH path.
 - **`DOTFILES_SKIP_TMUX_AUTOATTACH`** — explicitly disables automatic
   attachment for raw transport helpers.
+- **`DOTFILES_TMUX_AQUA`** — set in the environment of a tmux server the login
+  agent started. A shell inside tmux on the Mini without it prints a keychain
+  warning.
 
 ## EXIT STATUS
 
@@ -189,6 +211,9 @@ session; declining its confirmation returns success.
 - [`functions`](functions) — function implementations.
 - [`zshrc`](zshrc) — interactive loading and Mini auto-attach guard.
 - [`tmux.conf`](tmux.conf) — shared tmux behavior and key bindings.
+- [`bin/tmux-aqua`](bin/tmux-aqua) and
+  [`launchd/com.abendy.tmux-server.plist.template`](launchd/com.abendy.tmux-server.plist.template)
+  — the Mini's login-time tmux server agent.
 - [`remote-workflow.md`](remote-workflow.md) — Tailscale, mosh, tmux, and Codex
   Desktop topology and troubleshooting.
 
