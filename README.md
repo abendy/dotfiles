@@ -28,7 +28,7 @@ to save. Use `prefix Ctrl-s` before a planned restart. On the laptop, automatic
 start opens iTerm2 only after GUI login. On the Mini, `bootstrap` instead loads
 a LaunchAgent that starts the tmux server at GUI login, so panes can use the
 login keychain. See the remote workflow for that and for reboot caveats
-(resurrect saves are empty on tmux 3.8).
+(resurrect saves come out empty without a UTF-8 locale).
 
 `~/.localrc` holds local runtime configuration and is not tracked by this repo.
 `bootstrap` copies the `localrc` template there if the file doesn't already

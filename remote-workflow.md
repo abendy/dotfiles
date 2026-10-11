@@ -71,9 +71,12 @@ On the laptop, continuum's automatic-start LaunchAgent opens iTerm2 after GUI
 login. On the Mini it is off; a LaunchAgent of this repo starts the server
 instead (next section).
 
-**Resurrect is broken on tmux 3.8.** tmux 3.8 prints tabs in `-F` output as
-`_`, and resurrect splits its records on tabs. Saves hold no panes, so restores
-bring nothing back. Don't count on reboot recovery until that's fixed.
+**Resurrect needs a UTF-8 locale.** Without one, tmux prints tabs in `-F`
+output as `_`, and resurrect splits its records on tabs. Its save then holds no
+panes, and the next restore brings nothing back. continuum's autosave runs in
+the server's environment, so the server needs `LANG`/`LC_ALL`. Shells get them
+from `exports`, and the Mini's login agent sets them for its server. A server
+started from a shell with no locale (launchd, cron) saves nothing.
 
 Shorthands live in `functions` (so they work identically over SSH/mosh, which
 is the point for iOS Termius): `t [name]` creates or attaches an exact named

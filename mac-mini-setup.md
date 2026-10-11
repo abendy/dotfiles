@@ -160,8 +160,10 @@ keychain (`security show-keychain-info` exit 36).
 - Cloned tmux-resurrect and tmux-continuum with
   `~/.tmux/plugins/tpm/bin/install_plugins`. Only TPM had been installed;
   `prefix I` was never run. Not yet loaded into the running server.
-- Found that resurrect saves are empty on tmux 3.8, which prints tabs in `-F`
-  output as `_`.
+- Found that resurrect saves came out empty: tmux prints tabs in `-F` output
+  as `_` when the caller has no UTF-8 locale. First blamed on tmux 3.8; the
+  real cause is the locale (LON-176). The agent now sets `LANG`/`LC_ALL`, and
+  they were set by hand on the running server.
 - Added the `com.abendy.tmux-server` LaunchAgent and `bin/tmux-aqua`
   (`bootstrap` installs both on `nigiri-san`). Turned continuum's iTerm2 boot
   off on the Mini. See [remote workflow](remote-workflow.md#keychain-start-the-server-from-the-gui-login).

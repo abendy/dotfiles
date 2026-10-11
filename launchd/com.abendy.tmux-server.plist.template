@@ -22,10 +22,18 @@
   <true/>
   <!-- Lands in the server's global environment, which marks a server this
        agent started (tmux-aqua status, and the warning in zshrc) -->
+  <!-- launchd sets no locale, and without a UTF-8 one tmux prints tabs in
+       -F output as `_`. resurrect splits its records on tabs, so continuum's
+       autosaves (run from this server's environment) would come out empty.
+       These match exports. -->
   <key>EnvironmentVariables</key>
   <dict>
     <key>DOTFILES_TMUX_AQUA</key>
     <string>1</string>
+    <key>LANG</key>
+    <string>en_US.UTF-8</string>
+    <key>LC_ALL</key>
+    <string>en_US.UTF-8</string>
   </dict>
   <key>StandardOutPath</key>
   <string>__HOME__/Library/Logs/tmux-aqua.log</string>

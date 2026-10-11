@@ -16,6 +16,13 @@ set -uo pipefail
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
+# Without a UTF-8 locale, tmux prints tabs in -F output as `_`, and resurrect
+# splits its records on tabs, so its saves come out empty. launchd and some
+# non-login shells set no locale; fall back to the one exports sets.
+if [ -z "${LC_ALL:-}${LC_CTYPE:-}${LANG:-}" ]; then
+  export LANG="en_US.UTF-8"
+fi
+
 LABEL="${TMUX_AQUA_LABEL:-com.abendy.tmux-server}"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/tmux-aqua"
 REQUEST="$STATE_DIR/migrate-requested"
@@ -89,13 +96,16 @@ restore_if_empty() {
   done
   if [ -x "$RESURRECT_RESTORE" ]; then
     log "no sessions after startup; running resurrect restore"
-    "$RESURRECT_RESTORE" > /dev/null 2>&1 || log "resurrect restore failed"
+    # Through run-shell, as continuum does: restore finds the server's socket
+    # from $TMUX, which only tmux's own jobs have
+    tmux run-shell "$RESURRECT_RESTORE" > /dev/null 2>&1 || log "resurrect restore failed"
+    log "restored $(tmux list-sessions -F x 2> /dev/null | wc -l | tr -d ' ') sessions"
   fi
 }
 
 # Save with resurrect and confirm the snapshot holds at least one pane.
-# tmux 3.8 prints tabs in -F output as `_`, and resurrect splits its records
-# on tabs, so a save can "succeed" while writing only an empty state line.
+# A save run without a UTF-8 locale (see the top of this file) "succeeds"
+# while writing only an empty state line.
 save_sessions() {
   [ -x "$RESURRECT_SAVE" ] || return 1
   "$RESURRECT_SAVE" quiet || return 1
@@ -176,8 +186,8 @@ cmd_migrate() {
   elif server_running; then
     if ! save_sessions; then
       echo "tmux-aqua: resurrect could not save your sessions, so nothing was stopped." >&2
-      echo "  Is tmux-resurrect installed (~/.tmux/plugins/tpm/bin/install_plugins)? On tmux 3.8" >&2
-      echo "  its snapshots come out empty. To restart anyway and lose every session, run:" >&2
+      echo "  Is tmux-resurrect installed (~/.tmux/plugins/tpm/bin/install_plugins)?" >&2
+      echo "  To restart anyway and lose every session, run:" >&2
       echo "  tmux-aqua migrate --discard" >&2
       exit 1
     fi
