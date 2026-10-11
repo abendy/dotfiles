@@ -165,8 +165,9 @@ keychain (`security show-keychain-info` exit 36).
 - Added the `com.abendy.tmux-server` LaunchAgent and `bin/tmux-aqua`
   (`bootstrap` installs both on `nigiri-san`). Turned continuum's iTerm2 boot
   off on the Mini. See [remote workflow](remote-workflow.md#keychain-start-the-server-from-the-gui-login).
-- The running server still needs `tmux-aqua migrate --discard` (run by hand,
-  since it closes every session).
+- Ran `tmux-aqua migrate --discard` by hand (it closes every session). The new
+  server (pid 18029) came from the agent, and panes reach the keychain. Fixing
+  resurrect is LON-176.
 
 ## TODO
 
