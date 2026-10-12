@@ -15,3 +15,10 @@ fi
 if [ -d "$HOME/.local/share/fnm/aliases/default/bin" ]; then
   export PATH="$HOME/.local/share/fnm/aliases/default/bin:$PATH"
 fi
+
+# pnpm installs its standalone binary under ~/Library/pnpm. Git hooks run from
+# non-interactive shells (husky pre-commit calling pnpm), so it belongs here.
+if [ -d "$HOME/Library/pnpm" ]; then
+  export PNPM_HOME="$HOME/Library/pnpm"
+  export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
+fi
