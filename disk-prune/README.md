@@ -140,3 +140,10 @@ keeping mole out. Ideas considered and parked:
 [mole]: https://github.com/tw93/Mole
 [37]: https://github.com/abendy/dotfiles/issues/37
 [38]: https://github.com/abendy/dotfiles/issues/38
+
+## Logs under ~/Library/Logs
+
+`mo clean` deletes loose files in `~/Library/Logs` (it removed a LaunchAgent log on
+2026-10-01). Put any tool's log under `~/.local/state/<tool>/`, or whitelist its path in
+[config/mole-whitelist.template](config/mole-whitelist.template). When a file under
+`~/Library` disappears, grep `~/Library/Logs/mole/operations.log` first.
