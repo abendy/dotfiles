@@ -21,9 +21,11 @@
     <key>Minute</key>
     <integer>0</integer>
   </dict>
+  <!-- Not ~/Library/Logs: mo clean empties loose files there. install.sh
+       creates the directory, since launchd won't create parents. -->
   <key>StandardOutPath</key>
-  <string>__HOME__/Library/Logs/disk-prune.launchd.log</string>
+  <string>__HOME__/.local/state/disk-prune/disk-prune.launchd.log</string>
   <key>StandardErrorPath</key>
-  <string>__HOME__/Library/Logs/disk-prune.launchd.log</string>
+  <string>__HOME__/.local/state/disk-prune/disk-prune.launchd.log</string>
 </dict>
 </plist>

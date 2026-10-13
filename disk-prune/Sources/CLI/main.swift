@@ -22,7 +22,7 @@ func printUsage() {
       dry-run     mole's cleanup preview plus the watch list; deletes
                   nothing (default)
       run         mo clean (and docker, if enabled), log to
-                  ~/Library/Logs/disk-prune.log, notify
+                  \(Log.path.replacingOccurrences(of: NSHomeDirectory(), with: "~")), notify
       version     print the version
       help        this text
 

@@ -152,7 +152,9 @@ public enum Text {
 }
 
 public enum Log {
-    public static let path = NSHomeDirectory() + "/Library/Logs/disk-prune.log"
+    /// Not ~/Library/Logs: `mo clean` empties loose files there (it ate this
+    /// tool's own log on 2026-10-01), so the log lives in XDG state instead.
+    public static let path = NSHomeDirectory() + "/.local/state/disk-prune/disk-prune.log"
 
     private static let stamp: DateFormatter = {
         let formatter = DateFormatter()
@@ -166,6 +168,8 @@ public enum Log {
         guard let data = line.data(using: .utf8) else { return }
         let fm = FileManager.default
         if !fm.fileExists(atPath: path) {
+            try? fm.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
+                                    withIntermediateDirectories: true)
             fm.createFile(atPath: path, contents: nil)
         }
         guard let handle = FileHandle(forWritingAtPath: path) else { return }

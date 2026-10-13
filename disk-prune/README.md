@@ -13,8 +13,9 @@ doesn't have:
 
 - **Scheduling** - a LaunchAgent runs `disk-prune run` monthly (1st, 12:00)
 - **Run report + notification** - a summary line per run in
-  `~/Library/Logs/disk-prune.log` and a macOS notification with the freed
-  total (mole's own detailed logs live in `~/Library/Logs/mole/`)
+  `~/.local/state/disk-prune/disk-prune.log` and a macOS notification with
+  the freed total (mole's own detailed logs live in `~/Library/Logs/mole/`;
+  ours can't, see [Logs under ~/Library/Logs](#logs-under-librarylogs))
 - **Policy** - mole's whitelist is tracked here
   ([config/mole-whitelist.template](config/mole-whitelist.template)) and
   installed to `~/.config/mole/whitelist`; it keeps `mo clean` away from the

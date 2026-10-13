@@ -16,7 +16,8 @@
   <false/>
   <key>LimitLoadToSessionType</key>
   <string>Aqua</string>
+  <!-- Not ~/Library/Logs: mo clean empties loose files there. -->
   <key>StandardErrorPath</key>
-  <string>__HOME__/Library/Logs/disk-prune-menubar.launchd.log</string>
+  <string>__HOME__/.local/state/disk-prune/disk-prune-menubar.launchd.log</string>
 </dict>
 </plist>

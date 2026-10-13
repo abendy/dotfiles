@@ -50,6 +50,19 @@ mkdir -p "$mole_config_dir"
 sed "s|__HOME__|$HOME|g" "$here/config/mole-whitelist.template" > "$mole_config_dir/whitelist"
 echo "Installed mole whitelist (protects the Trash from mo clean)"
 
+# Logs live in XDG state, not ~/Library/Logs, which mo clean empties.
+# launchd won't create parent directories for StandardOutPath, so make it
+# here; migrate a log from the pre-October location if one survived.
+state_dir="$HOME/.local/state/disk-prune"
+mkdir -p "$state_dir"
+old_log="$HOME/Library/Logs/disk-prune.log"
+if [ -f "$old_log" ]; then
+  cat "$old_log" >> "$state_dir/disk-prune.log"
+  /bin/rm -f "$old_log"
+  echo "Migrated run log to $state_dir/disk-prune.log"
+fi
+/bin/rm -f "$HOME/Library/Logs/disk-prune.launchd.log" "$HOME/Library/Logs/disk-prune-menubar.launchd.log"
+
 agents_dir="$HOME/Library/LaunchAgents"
 mkdir -p "$agents_dir"
 uid="$(id -u)"
