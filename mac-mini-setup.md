@@ -196,6 +196,11 @@ Ran each new `langs/` script, then ran it again to check it changed nothing.
   v24.18.1 stays fnm's default. Added a `dotfiles: node` block to
   `~/.localrc` that runs `fnm env --use-on-cd`, replacing the guard that
   was in `zshrc`.
+- `langs/python`: installed uv 0.13.0 from Homebrew and Python 3.15.0 as
+  uv's default, which links `python`, `python3` and `python3.15` into
+  `~/.local/bin`. Interactive shells now get that `python3` before
+  `/usr/bin/python3`. No `~/.localrc` block: `exports` already puts
+  `~/.local/bin` on PATH.
 
 ## TODO
 

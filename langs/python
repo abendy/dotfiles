@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+#
+# Python via uv, which covers both runtime versions and packaging, so
+# pyenv/pyenv-virtualenv aren't needed (other-brews/archive/Brewfile.Py has
+# the old setup).
+#
+# Usage:
+#   langs/python           install uv; install the latest Python as the
+#                          default `python3` only if uv has no default yet
+#   langs/python 3.13      install Python 3.13 and make it the default
+#
+# See langs/swift for the pattern: plain packages come from the Brewfile
+# beside this script (langs/python.Brewfile).
+#
+# uv comes from Homebrew, not astral.sh's installer. The formula tracks uv
+# releases within days, and brew builds disable `uv self update`, so brew is
+# its one updater instead of two tools owning one binary. Brew never edits
+# shell profiles, which covers what the installer's --no-modify-path is for.
+#
+# No localrc block: uv puts `python3` and the tools it installs in
+# ~/.local/bin, which the tracked exports file already puts on PATH.
+#
+# With no version argument an existing default is left alone, so re-running
+# never upgrades Python as a side effect.
+#
+# Idempotent and sudo-free: Pythons live in uv's own directory
+# (~/.local/share/uv/python), and nothing writes a .python-version anywhere.
+
+set -uo pipefail
+
+LANGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=langs/lib.sh
+. "$LANGS_DIR/lib.sh"
+
+VERSION="${1:-}"
+
+function install_packages {
+  brew_bundle "$LANGS_DIR/python.Brewfile"
+  success "Python packages installed"
+}
+
+# The `python3` uv installed as the default, if any - a link from uv's bin dir
+# into its own Python directory. Anything else there isn't uv's to replace.
+function uv_default_python {
+  local link
+  link="$(uv python dir --bin)/python3"
+  if [ -L "$link" ] && [[ "$(readlink "$link")" == "$(uv python dir)"/* ]]; then
+    echo "$link"
+  fi
+}
+
+function install_toolchain {
+  local current
+  current="$(uv_default_python)"
+
+  if [ -z "$VERSION" ] && [ -n "$current" ]; then
+    success "Keeping uv's default $("$current" --version) (pass a version to change it)"
+    return
+  fi
+
+  # Always pass an explicit version: a bare `uv python install` reads
+  # .python-version from the current directory. `3` means the latest 3.x.
+  echo "Installing Python ${VERSION:-3}..."
+  # --default is still a uv preview feature; naming it opts in explicitly
+  if ! uv python install --default --preview-features python-install-default \
+    "${VERSION:-3}"; then
+    fail "uv could not install Python ${VERSION:-3}"
+  fi
+
+  current="$(uv_default_python)"
+  [ -n "$current" ] || fail "uv installed Python but no default python3 link"
+  success "$("$current" --version) installed as the default python3"
+}
+
+function verify {
+  # By path, not `python3` from PATH - PATH may still find the system Python
+  # until a new shell starts
+  if ! "$(uv_default_python)" --version; then
+    fail "python3 --version failed via uv's default"
+  fi
+  success "Python ready - open a new shell to pick it up"
+}
+
+function main {
+  install_packages
+  install_toolchain
+  verify
+}
+
+# Run only when executed, so tests can source the functions above
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main
+fi

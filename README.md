@@ -223,7 +223,7 @@ good native story now:
 | --- | --- | --- | --- |
 | Swift | `langs/swift` | `swiftly` | `.swift-version` |
 | Node | `langs/node` | `fnm` | `.node-version`, `.nvmrc` |
-| Python | `brewfile install python` | `uv` | `.python-version`, `pyproject.toml` |
+| Python | `langs/python` | `uv` | `.python-version`, `pyproject.toml` |
 | Rust | `brewfile install rust` | `rustup` | `rust-toolchain.toml` |
 | Go | `brewfile install go` | stock `go` | `go.mod` — no version manager needed |
 
