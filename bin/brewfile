@@ -3,9 +3,9 @@
 # Install optional Brewfile bundles on demand.
 #
 # The shared Brewfile at the repo root is what `bootstrap` installs on every
-# machine. Everything in other-brews/ is opt-in: language ecosystems and topic
-# bundles you pull in per machine, so the Mini doesn't get design tools and the
-# laptop doesn't get things it never needs.
+# machine. Everything in other-brews/ is opt-in: topic bundles you pull in per
+# machine (languages are langs/ scripts), so the Mini doesn't get design tools
+# and the laptop doesn't get things it never needs.
 #
 # other-brews/archive/ is deliberately excluded - those are kept as notes, not
 # as installable bundles.

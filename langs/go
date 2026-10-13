@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+# Go, with no version manager: since Go 1.21 the default GOTOOLCHAIN=auto
+# makes the go command read the `go`/`toolchain` lines in go.mod and download
+# the matching toolchain on demand. Install one Go; per-project versions
+# handle themselves.
+#
+# Usage:
+#   langs/go               install Go and put `go install` binaries on PATH
+#
+# See langs/swift for the pattern: Go itself is a plain package in the
+# Brewfile beside this script (langs/go.Brewfile), and the shell wiring lands
+# in a managed `dotfiles: go` block in ~/.localrc.
+#
+# Go comes from Homebrew, not go.dev: the go.dev macOS installer is a pkg
+# that writes to /usr/local/go and needs sudo, which agent sessions on the
+# Mini can't answer. Brew needs none, and Go has no self-updater to fight it.
+#
+# Idempotent and sudo-free. It never runs `go env -w`, which would write a
+# config file the repo doesn't track.
+
+set -uo pipefail
+
+LANGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=langs/lib.sh
+. "$LANGS_DIR/lib.sh"
+
+function install_packages {
+  brew_bundle "$LANGS_DIR/go.Brewfile"
+  success "Go installed"
+}
+
+function wire_shell {
+  localrc_put_block go <<'EOF'
+# Managed by ~/.dotfiles/langs/go - edits inside these markers are
+# overwritten when that script re-runs.
+# Binaries from `go install` land in $GOPATH/bin. The case guard keeps a
+# re-sourced localrc from adding it twice.
+case ":$PATH:" in
+  *":${GOPATH:-$HOME/go}/bin:"*) ;;
+  *) export PATH="${GOPATH:-$HOME/go}/bin:$PATH" ;;
+esac
+EOF
+  success "Wired Go's bin dir into $LOCALRC (dotfiles: go block)"
+}
+
+function verify {
+  if ! "$(brew --prefix)/bin/go" version; then
+    fail "go version failed via $(brew --prefix)/bin/go"
+  fi
+  success "Go ready - open a new shell (or 'source ~/.localrc') to pick it up"
+}
+
+function main {
+  if [ "$#" -gt 0 ]; then
+    fail "langs/go takes no version: go.mod picks the toolchain (GOTOOLCHAIN=auto)"
+  fi
+
+  install_packages
+  wire_shell
+  verify
+}
+
+# Run only when executed, so tests can source the functions above
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

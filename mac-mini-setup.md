@@ -206,6 +206,8 @@ Ran each new `langs/` script, then ran it again to check it changed nothing.
   that sources `~/.cargo/env`, and removed the hand-written
   `. "$HOME/.cargo/env"` line it replaces from `~/.localrc`. The same line
   in `~/.profile`, from an earlier rustup install, is still there.
+- `langs/go`: installed Go 1.27.2 from Homebrew and added a `dotfiles: go`
+  block that puts `~/go/bin` on PATH.
 
 ## TODO
 

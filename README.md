@@ -225,7 +225,7 @@ good native story now:
 | Node | `langs/node` | `fnm` | `.node-version`, `.nvmrc` |
 | Python | `langs/python` | `uv` | `.python-version`, `pyproject.toml` |
 | Rust | `langs/rust` | `rustup` | `rust-toolchain.toml` |
-| Go | `brewfile install go` | stock `go` | `go.mod` — no version manager needed |
+| Go | `langs/go` | stock `go` | `go.mod` — no version manager needed |
 
 Go needs no version manager because since Go 1.21 the default `GOTOOLCHAIN=auto`
 makes the `go` command read the `go`/`toolchain` lines in `go.mod` and download
