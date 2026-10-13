@@ -29,72 +29,13 @@
 set -uo pipefail
 
 LANGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCALRC="${LOCALRC:-$HOME/.localrc}"
+# shellcheck source=langs/lib.sh
+. "$LANGS_DIR/lib.sh"
+
 SWIFTLY_HOME="${SWIFTLY_HOME_DIR:-$HOME/.swiftly}"
 SWIFTLY_PKG_URL="https://download.swift.org/swiftly/darwin/swiftly.pkg"
 
 VERSION="${1:-latest}"
-
-function success () {
-  echo -e "[ \033[00;32mOK\033[0m ] $1\n"
-}
-
-function fail () {
-  echo -e "[\033[0;31mFAIL\033[0m] $1\n"
-  exit 1
-}
-
-# Replace or append the marker-delimited block named $1 in $LOCALRC, body on
-# stdin. Markers follow the localrc template's existing convention
-# (`# >>> dotfiles: <name> >>>`), so the editor block bootstrap seeds and the
-# blocks these scripts manage look the same. Content between the markers is
-# script-owned; everything else in localrc stays machine-owned. Graduates to
-# a shared langs/lib.sh when a second language script lands.
-function localrc_put_block {
-  local name="$1" body tmp
-  local open_m="# >>> dotfiles: ${name} >>>"
-  local close_m="# <<< dotfiles: ${name} <<<"
-  body="$(cat)"
-
-  # bootstrap seeds ~/.localrc from the repo template; a machine that hasn't
-  # run it yet gets a minimal file rather than a failure
-  if [ ! -f "$LOCALRC" ]; then
-    printf '#!/usr/bin/env zsh\n' > "$LOCALRC"
-  fi
-
-  # An opening marker with no closing marker would make the rewrite below
-  # swallow everything after it - refuse instead of guessing
-  if grep -qxF "$open_m" "$LOCALRC" && ! grep -qxF "$close_m" "$LOCALRC"; then
-    fail "$LOCALRC has an unterminated 'dotfiles: ${name}' block - fix it by hand"
-  fi
-
-  tmp="$(mktemp)"
-  # Body travels via ENVIRON because awk -v mangles backslash escapes
-  BLOCK_BODY="$body" awk -v open_m="$open_m" -v close_m="$close_m" '
-    $0 == open_m && !replaced {
-      print open_m
-      print ENVIRON["BLOCK_BODY"]
-      print close_m
-      replaced = 1
-      skipping = 1
-      next
-    }
-    skipping {
-      if ($0 == close_m) skipping = 0
-      next
-    }
-    { print }
-    END {
-      if (!replaced) {
-        print ""
-        print open_m
-        print ENVIRON["BLOCK_BODY"]
-        print close_m
-      }
-    }
-  ' "$LOCALRC" > "$tmp" || fail "Could not rewrite $LOCALRC"
-  mv -f "$tmp" "$LOCALRC"
-}
 
 function install_swiftly {
   if [ -x "$SWIFTLY_HOME/bin/swiftly" ]; then
@@ -157,14 +98,10 @@ function install_packages {
   # headless Mini that means signing in once over Screen Sharing; after that
   # this is a no-op once Xcode is installed.
   #
-  # --no-upgrade because brew bundle otherwise runs `mas upgrade` on an
-  # outdated Xcode, and the MacBook stays on Xcode 26.x on purpose (see
-  # mac-mini-setup.md). Upgrades stay a deliberate `brew upgrade`/`mas
-  # upgrade`, not a side effect of re-running this script.
-  echo "Installing packages from $brewfile..."
-  if ! brew bundle install --no-upgrade --verbose --file="$brewfile"; then
-    fail "brew bundle failed for $brewfile"
-  fi
+  # brew_bundle's --no-upgrade matters most here: the MacBook stays on Xcode
+  # 26.x on purpose (see mac-mini-setup.md), and a plain bundle install would
+  # run `mas upgrade` on it.
+  brew_bundle "$brewfile"
 
   success "Swift packages installed"
 }
