@@ -187,6 +187,16 @@ default, and added a `dotfiles: swift` block to `~/.localrc` that sources
 `langs/swift.Brewfile` step changed nothing. Xcode moved out of
 `other-brews/dev.Brewfile` into that file.
 
+## 2026-10-13: Node, Python, Rust and Go through `langs/`
+
+Ran each new `langs/` script, then ran it again to check it changed nothing.
+`~/.localrc` was backed up first to `~/.localrc.bak-langs-20261013`.
+
+- `langs/node`: fnm 1.39.0 was already installed from Homebrew, and Node
+  v24.18.1 stays fnm's default. Added a `dotfiles: node` block to
+  `~/.localrc` that runs `fnm env --use-on-cd`, replacing the guard that
+  was in `zshrc`.
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be

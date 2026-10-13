@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+#
+# Node via fnm (replaces nvm: same job, Rust binary, reads .node-version and
+# .nvmrc).
+#
+# Usage:
+#   langs/node             install fnm; install the latest LTS only if fnm
+#                          has no default yet
+#   langs/node 22          install Node 22 and make it fnm's default
+#
+# See langs/swift for the pattern: plain packages come from the Brewfile
+# beside this script (langs/node.Brewfile), and the shell wiring lands in a
+# managed `dotfiles: node` block in ~/.localrc.
+#
+# fnm itself comes from Homebrew, not fnm's install script: on macOS that
+# script just runs `brew install fnm` when brew is present, and fnm doesn't
+# update itself, so `brew upgrade` is its only updater. Brew never edits shell
+# profiles, which covers what the install script's --skip-shell is for.
+#
+# With no version argument an existing default is left alone. `fnm install
+# --lts` fetches whatever LTS is newest, so running it on every pass would
+# upgrade Node as a side effect.
+#
+# Idempotent and sudo-free: Node versions live in fnm's own directory
+# (~/.local/share/fnm), and nothing writes a .node-version anywhere.
+
+set -uo pipefail
+
+LANGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=langs/lib.sh
+. "$LANGS_DIR/lib.sh"
+
+VERSION="${1:-}"
+
+function install_packages {
+  brew_bundle "$LANGS_DIR/node.Brewfile"
+  success "Node packages installed"
+}
+
+function install_toolchain {
+  local current
+  current="$(fnm default 2>/dev/null)"
+
+  if [ -z "$VERSION" ] && [ -n "$current" ]; then
+    success "Keeping fnm's default Node ${current} (pass a version to change it)"
+    return
+  fi
+
+  # Always pass an explicit version: a bare `fnm install` reads
+  # .node-version/.nvmrc from the current directory.
+  if [ -z "$VERSION" ]; then
+    echo "Installing the latest Node LTS..."
+    fnm install --lts || fail "fnm could not install the latest LTS"
+    VERSION="lts-latest"
+  else
+    echo "Installing Node ${VERSION}..."
+    fnm install "$VERSION" || fail "fnm could not install ${VERSION}"
+  fi
+
+  # `fnm default` sets fnm's own alias, not a per-directory file
+  fnm default "$VERSION" || fail "fnm could not make ${VERSION} the default"
+  success "Node $(fnm default) installed and set as fnm's default"
+}
+
+function wire_shell {
+  localrc_put_block node <<'EOF'
+# Managed by ~/.dotfiles/langs/node - edits inside these markers are
+# overwritten when that script re-runs.
+# --use-on-cd installs a chpwd hook that switches Node from .node-version and
+# .nvmrc - the part nvm spent ~300ms per shell doing eagerly.
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+EOF
+  success "Wired fnm env into $LOCALRC (dotfiles: node block)"
+}
+
+function verify {
+  # Through fnm, not `node` from PATH - this shell hasn't sourced the new
+  # localrc block
+  if ! fnm exec --using=default node --version; then
+    fail "node --version failed via fnm's default"
+  fi
+  success "Node ready - open a new shell (or 'source ~/.localrc') to pick it up"
+}
+
+function main {
+  install_packages
+  install_toolchain
+  wire_shell
+  verify
+}
+
+# Run only when executed, so tests can source the functions above
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main
+fi

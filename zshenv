@@ -10,7 +10,8 @@ elif [ -x /usr/local/bin/brew ]; then
 fi
 
 # Keep fnm's default Node available to non-interactive consumers such as MCP
-# servers. Interactive shells still use `fnm env --use-on-cd` from zshrc for
+# servers. Interactive shells still use `fnm env --use-on-cd` from the
+# `dotfiles: node` block that langs/node writes into ~/.localrc, for
 # per-project .node-version and .nvmrc switching.
 if [ -d "$HOME/.local/share/fnm/aliases/default/bin" ]; then
   export PATH="$HOME/.local/share/fnm/aliases/default/bin:$PATH"

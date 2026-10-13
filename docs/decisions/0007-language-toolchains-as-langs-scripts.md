@@ -69,5 +69,5 @@ a profile may decide which `langs/` scripts a machine runs.
 ## References
 
 - `langs/lib.sh` (`localrc_put_block`, `brew_bundle`), `langs/swift` (`install_toolchain`), `langs/swift.Brewfile`
-- The fnm block in `zshrc`
+- The fnm guard `zshrc` carried until `langs/node` replaced it
 - ADR 0005 (machine-owned `~/.localrc`), ADR 0006 (opt-in bundles)

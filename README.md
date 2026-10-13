@@ -209,9 +209,9 @@ doesn't get things it never needs. Languages are moving to scripts in
 ```sh
 brewfile                    # pick interactively (fzf), then install
 brewfile ls                 # list bundles and entry counts
-brewfile install node go    # install by name
-brewfile check node         # report what's missing
-brewfile cat go             # print a bundle
+brewfile install docker git # install by name
+brewfile check docker       # report what's missing
+brewfile cat git            # print a bundle
 ```
 
 ### Language ecosystems
@@ -222,7 +222,7 @@ good native story now:
 | Language | Install | Tool | Version pinning |
 | --- | --- | --- | --- |
 | Swift | `langs/swift` | `swiftly` | `.swift-version` |
-| Node | `brewfile install node` | `fnm` | `.node-version`, `.nvmrc` |
+| Node | `langs/node` | `fnm` | `.node-version`, `.nvmrc` |
 | Python | `brewfile install python` | `uv` | `.python-version`, `pyproject.toml` |
 | Rust | `brewfile install rust` | `rustup` | `rust-toolchain.toml` |
 | Go | `brewfile install go` | stock `go` | `go.mod` — no version manager needed |
