@@ -38,6 +38,10 @@ one) that says something the machine no longer does is a bug.
   update prompts don't get clicked on a headless machine; `brew upgrade`
   over SSH does. Google Chrome is kept on the mini for Computer Use —
   don't propose removing it to save space.
+- `sudo` on the mini always asks for a password, so agent sessions cannot run root
+  commands. Hand the user paste-ready commands instead.
+- Non-interactive `gh issue view N` prints nothing. Use
+  `gh issue view N --json title,body,comments`.
 - The interactive shell aliases `du` to `du -h -d 2` (`aliases:24`), which
   breaks `du -s`. Scripts must call `/usr/bin/du` or `command du` (#38).
   *Temporary note: #38's fix includes deleting this bullet.*

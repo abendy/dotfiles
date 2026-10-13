@@ -171,6 +171,12 @@ keychain (`security show-keychain-info` exit 36).
   server (pid 18029) came from the agent, and panes reach the keychain. Fixing
   resurrect is LON-176.
 
+## 2026-10-03: Xcode 27 on the mini only
+
+The mini runs macOS 26.7.1 and Xcode 27, which the iPhone 18 Pro's developer disk image
+needs. The MacBook stays on Xcode 26.x on purpose, so device builds for that phone run on
+the mini.
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be
