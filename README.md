@@ -202,9 +202,9 @@ The `Brewfile` at the repo root is the shared set, installed on every machine by
 `bootstrap`. Keep it lean.
 
 Everything else is opt-in, so the Mini doesn't get design tools and the laptop
-doesn't get things it never needs. Languages are moving to scripts in
-[`langs/`](#langs). Topic bundles, and the languages not moved yet, live in
-`other-brews/<name>.Brewfile`. Install those with `brewfile`:
+doesn't get things it never needs. Languages install with scripts in
+[`langs/`](#langs). Topic bundles live in `other-brews/<name>.Brewfile`.
+Install those with `brewfile`:
 
 ```sh
 brewfile                    # pick interactively (fzf), then install
@@ -231,44 +231,52 @@ Go needs no version manager because since Go 1.21 the default `GOTOOLCHAIN=auto`
 makes the `go` command read the `go`/`toolchain` lines in `go.mod` and download
 the matching toolchain on demand.
 
-Shell integration for the bundles is guarded on the tool being present, so a
-machine that skips a bundle doesn't pay for it or error at startup.
-
 ### `langs/`
 
-Languages are moving from bundles to scripts, one per language
-([ADR 0007](docs/decisions/0007-language-toolchains-as-langs-scripts.md)). Swift
-is the first. A script installs the language's plain packages from the Brewfile
-beside it, sets up the language's own toolchain manager, and writes any
-exports into a marked block in `~/.localrc`:
+Each language has one script
+([ADR 0007](docs/decisions/0007-language-toolchains-as-langs-scripts.md)). A
+script installs the language's plain packages from the Brewfile beside it,
+sets up the language's own toolchain manager, and writes any shell wiring into
+a marked block in `~/.localrc`:
 
 ```sh
 ~/.dotfiles/langs/swift        # latest stable Swift
-~/.dotfiles/langs/swift 6.4    # a specific version
+~/.dotfiles/langs/node 22      # Node 22, as fnm's default
 ```
 
 Re-running a script is safe. It installs what's missing and rewrites only its
-own block (`# >>> dotfiles: swift >>>` … `# <<< dotfiles: swift <<<`), so
-don't hand-edit inside the markers. It never upgrades anything; use
-`brew upgrade` or `mas upgrade` for that.
+own block (`# >>> dotfiles: node >>>` … `# <<< dotfiles: node <<<`), so
+don't hand-edit inside the markers. It never upgrades a package; use
+`brew upgrade`, `mas upgrade` or the language's manager for that.
 
-`langs/swift` installs:
+| Script | Packages (Brewfile) | Manager, from | Default toolchain | `~/.localrc` block |
+| --- | --- | --- | --- | --- |
+| `langs/swift` | `xcodegen`, Xcode | swiftly, swift.org | latest stable, or the version passed | sources `~/.swiftly/env.sh` |
+| `langs/node` | `fnm` | fnm, Homebrew | latest LTS if none set, or the version passed | `fnm env --use-on-cd` |
+| `langs/python` | `uv` | uv, Homebrew | latest Python if none set, or the version passed | none: `~/.local/bin` is already on PATH |
+| `langs/rust` | none | rustup, rustup.rs | stable if none set, or the version passed | sources `~/.cargo/env` |
+| `langs/go` | `go` | none | none: `go.mod` picks it | puts `~/go/bin` on PATH |
 
-* `xcodegen` and Xcode, from `langs/swift.Brewfile`. Xcode comes from the Mac
-  App Store through `mas`, so sign in to the App Store first.
-* [swiftly](https://www.swift.org/swiftly/), from swift.org rather than
-  Homebrew, into `~/.swiftly` with no sudo.
-* A Swift toolchain, set as swiftly's global default.
+Each script's header says why its manager comes from where it does. None of
+them needs sudo.
 
-Terminal `swift` then resolves to swiftly's toolchain, while Xcode and
-`xcodebuild` keep using Xcode's own. Keep swiftly's Swift at least as new as
-Xcode's: an older compiler can't read a newer SDK. Re-running the script
-brings it up to date.
+Swift notes:
+
+* Xcode comes from the Mac App Store through `mas`, so sign in to the App
+  Store first.
+* Terminal `swift` resolves to swiftly's toolchain, while Xcode and
+  `xcodebuild` keep using Xcode's own. Keep swiftly's Swift at least as new as
+  Xcode's: an older compiler can't read a newer SDK. Unlike the other scripts,
+  re-running `langs/swift` brings Swift up to date.
+
+Python note: `langs/python` makes uv's Python the `python` and `python3` in
+`~/.local/bin`, so new shells use it instead of `/usr/bin/python3`.
 
 ### `other-brews/archive/`
 
-Old bundles kept as notes — PHP, MySQL, nginx, WordPress, Ruby, and the previous
-Node/Python setups. `brewfile` ignores this directory; use `brew bundle` directly
+Old bundles kept as notes — PHP, MySQL, nginx, WordPress, Ruby, the previous
+Node/Python setups, and the Node, Python, Rust and Go bundles that `langs/`
+replaced. `brewfile` ignores this directory; use `brew bundle` directly
 if you ever want something out of it:
 
 ```sh

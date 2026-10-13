@@ -1,7 +1,7 @@
 # ADR 0007 — Language toolchains are `langs/` scripts, with a Brewfile only for plain packages
 
-- **Status:** accepted — Swift is migrated; Node, Python, Rust and Go are
-  still `other-brews/` bundles
+- **Status:** accepted — Swift, Node, Python, Rust and Go are all `langs/`
+  scripts
 - **Date:** 2026-10-13
 
 ## Context
@@ -24,8 +24,9 @@ appends to `~/.zprofile`), outside anything the repo tracks.
 - Shell wiring goes in a marked block (`# >>> dotfiles: <lang> >>>`) in
   `~/.localrc`, which the script rewrites in place on every run. Outside
   the markers, `~/.localrc` stays machine-owned (ADR 0005).
-- Managers are told not to edit profiles themselves (swiftly's
-  `--no-modify-profile`, rustup's and uv's `--no-modify-path`).
+- Managers never edit profiles themselves: either they're told not to
+  (swiftly's `--no-modify-profile`, rustup's `--no-modify-path`), or they
+  come from Homebrew, which never does (fnm, uv).
 - Scripts never upgrade or pin as a side effect. `--no-upgrade` keeps the
   MacBook on Xcode 26.x, and defaults are set with global options, never
   per-directory ones: `swiftly install --use` wrote a `.swift-version` into
@@ -54,8 +55,8 @@ appends to `~/.zprofile`), outside anything the repo tracks.
   re-running it converges instead of piling up edits.
 - `~/.localrc` now has script-owned sections inside a machine-owned file.
   Hand edits inside the markers are lost on the next run.
-- There are two install paths until the other languages move:
-  `brewfile` for topic bundles, `langs/` for languages.
+- There are two install paths: `brewfile` for topic bundles, `langs/` for
+  languages.
 - As with bundles (ADR 0006), nothing records which languages a machine
   chose.
 - Xcode comes through `mas`, which needs an App Store sign-in. On the
