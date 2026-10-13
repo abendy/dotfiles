@@ -224,7 +224,7 @@ good native story now:
 | Swift | `langs/swift` | `swiftly` | `.swift-version` |
 | Node | `langs/node` | `fnm` | `.node-version`, `.nvmrc` |
 | Python | `langs/python` | `uv` | `.python-version`, `pyproject.toml` |
-| Rust | `brewfile install rust` | `rustup` | `rust-toolchain.toml` |
+| Rust | `langs/rust` | `rustup` | `rust-toolchain.toml` |
 | Go | `brewfile install go` | stock `go` | `go.mod` — no version manager needed |
 
 Go needs no version manager because since Go 1.21 the default `GOTOOLCHAIN=auto`

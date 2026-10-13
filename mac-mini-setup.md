@@ -201,6 +201,11 @@ Ran each new `langs/` script, then ran it again to check it changed nothing.
   `~/.local/bin`. Interactive shells now get that `python3` before
   `/usr/bin/python3`. No `~/.localrc` block: `exports` already puts
   `~/.local/bin` on PATH.
+- `langs/rust`: rustup 1.29.0 was already installed from rustup.rs, and
+  stable (rustc 1.97.1) stays the default. Added a `dotfiles: rust` block
+  that sources `~/.cargo/env`, and removed the hand-written
+  `. "$HOME/.cargo/env"` line it replaces from `~/.localrc`. The same line
+  in `~/.profile`, from an earlier rustup install, is still there.
 
 ## TODO
 

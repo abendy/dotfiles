@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+#
+# Rust via rustup, which manages toolchains itself (stable/beta/nightly,
+# rust-toolchain.toml).
+#
+# Usage:
+#   langs/rust             install rustup; install stable only if rustup has
+#                          no default toolchain yet
+#   langs/rust 1.90        install a toolchain and make it rustup's default
+#
+# See langs/swift for the pattern: the shell wiring lands in a managed
+# `dotfiles: rust` block in ~/.localrc. Rust has no plain packages, so there
+# is no langs/rust.Brewfile.
+#
+# rustup comes from rustup.rs, not Homebrew: `rustup self update` replaces
+# its own binary, which would fight brew over it, and Homebrew's formula is
+# keg-only and conflicts with the `rust` formula. --no-modify-path stops the
+# installer appending `. "$HOME/.cargo/env"` to ~/.profile, ~/.zshenv and
+# friends; the localrc block below does that instead.
+#
+# With no version argument an existing default is left alone: `rustup
+# toolchain install stable` updates an installed stable, which would be an
+# upgrade as a side effect. Upgrades stay a deliberate `rustup update`.
+#
+# Idempotent and sudo-free: everything lives in ~/.rustup and ~/.cargo, and
+# `rustup default` is a global setting - nothing writes a rust-toolchain.toml
+# or a directory override.
+
+set -uo pipefail
+
+LANGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=langs/lib.sh
+. "$LANGS_DIR/lib.sh"
+
+CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
+RUSTUP="$CARGO_HOME/bin/rustup"
+RUSTUP_INIT_URL="https://sh.rustup.rs"
+
+VERSION="${1:-}"
+
+function install_rustup {
+  if [ -x "$RUSTUP" ]; then
+    success "rustup already installed"
+    return
+  fi
+
+  echo "Installing rustup..."
+  local tmpdir
+  tmpdir="$(mktemp -d)"
+
+  if ! curl --proto '=https' --tlsv1.2 -fsSL -o "$tmpdir/rustup-init.sh" "$RUSTUP_INIT_URL"; then
+    fail "Could not download $RUSTUP_INIT_URL"
+  fi
+
+  # --default-toolchain none because the toolchain install happens explicitly
+  # below, with the version argument applied
+  if ! sh "$tmpdir/rustup-init.sh" -y --no-modify-path --default-toolchain none; then
+    fail "rustup-init failed"
+  fi
+  rm -rf "$tmpdir"
+
+  success "Installed rustup"
+}
+
+function install_toolchain {
+  local current
+  # Prints e.g. "stable-aarch64-apple-darwin (default)"; errors with none set
+  current="$("$RUSTUP" default 2>/dev/null)"
+
+  if [ -z "$VERSION" ] && [ -n "$current" ]; then
+    success "Keeping rustup's default ${current%% *} (pass a version to change it)"
+    return
+  fi
+
+  # Always pass an explicit toolchain: a bare `rustup toolchain install`
+  # reads rust-toolchain.toml from the current directory.
+  local toolchain="${VERSION:-stable}"
+  echo "Installing Rust ${toolchain}..."
+  if ! "$RUSTUP" toolchain install --no-self-update "$toolchain"; then
+    fail "rustup could not install ${toolchain}"
+  fi
+
+  if ! "$RUSTUP" default "$toolchain"; then
+    fail "rustup could not make ${toolchain} the default"
+  fi
+
+  success "Rust ${toolchain} installed and set as rustup's default"
+}
+
+function wire_shell {
+  localrc_put_block rust <<'EOF'
+# Managed by ~/.dotfiles/langs/rust - edits inside these markers are
+# overwritten when that script re-runs.
+if [ -f "${CARGO_HOME:-$HOME/.cargo}/env" ]; then
+  . "${CARGO_HOME:-$HOME/.cargo}/env"
+fi
+EOF
+  success "Wired cargo env into $LOCALRC (dotfiles: rust block)"
+}
+
+function verify {
+  # By path, not `rustc` from PATH - this shell hasn't sourced the new
+  # localrc block
+  if ! "$CARGO_HOME/bin/rustc" --version; then
+    fail "rustc --version failed via $CARGO_HOME/bin/rustc"
+  fi
+  success "Rust ready - open a new shell (or 'source ~/.localrc') to pick it up"
+}
+
+function main {
+  install_rustup
+  install_toolchain
+  wire_shell
+  verify
+}
+
+# Run only when executed, so tests can source the functions above
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main
+fi
