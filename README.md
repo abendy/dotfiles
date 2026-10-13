@@ -201,9 +201,10 @@ a forwarded agent isn't clobbered.
 The `Brewfile` at the repo root is the shared set, installed on every machine by
 `bootstrap`. Keep it lean.
 
-Everything else is opt-in, as `other-brews/<name>.Brewfile` — language ecosystems
-and topic bundles you pull in per machine, so the Mini doesn't get design tools
-and the laptop doesn't get things it never needs. Install them with `brewfile`:
+Everything else is opt-in, so the Mini doesn't get design tools and the laptop
+doesn't get things it never needs. Languages are moving to scripts in
+[`langs/`](#langs). Topic bundles, and the languages not moved yet, live in
+`other-brews/<name>.Brewfile`. Install those with `brewfile`:
 
 ```sh
 brewfile                    # pick interactively (fzf), then install
@@ -218,19 +219,51 @@ brewfile cat go             # print a bundle
 One tool per language rather than a polyglot version manager, since each has a
 good native story now:
 
-| Language | Bundle | Tool | Version pinning |
+| Language | Install | Tool | Version pinning |
 | --- | --- | --- | --- |
-| Node | `node` | `fnm` | `.node-version`, `.nvmrc` |
-| Python | `python` | `uv` | `.python-version`, `pyproject.toml` |
-| Rust | `rust` | `rustup` | `rust-toolchain.toml` |
-| Go | `go` | stock `go` | `go.mod` — no version manager needed |
+| Swift | `langs/swift` | `swiftly` | `.swift-version` |
+| Node | `brewfile install node` | `fnm` | `.node-version`, `.nvmrc` |
+| Python | `brewfile install python` | `uv` | `.python-version`, `pyproject.toml` |
+| Rust | `brewfile install rust` | `rustup` | `rust-toolchain.toml` |
+| Go | `brewfile install go` | stock `go` | `go.mod` — no version manager needed |
 
 Go needs no version manager because since Go 1.21 the default `GOTOOLCHAIN=auto`
 makes the `go` command read the `go`/`toolchain` lines in `go.mod` and download
 the matching toolchain on demand.
 
-Shell integration for these is guarded on the tool being present, so a machine
-that skips a bundle doesn't pay for it or error at startup.
+Shell integration for the bundles is guarded on the tool being present, so a
+machine that skips a bundle doesn't pay for it or error at startup.
+
+### `langs/`
+
+Languages are moving from bundles to scripts, one per language
+([ADR 0007](docs/decisions/0007-language-toolchains-as-langs-scripts.md)). Swift
+is the first. A script installs the language's plain packages from the Brewfile
+beside it, sets up the language's own toolchain manager, and writes any
+exports into a marked block in `~/.localrc`:
+
+```sh
+~/.dotfiles/langs/swift        # latest stable Swift
+~/.dotfiles/langs/swift 6.4    # a specific version
+```
+
+Re-running a script is safe. It installs what's missing and rewrites only its
+own block (`# >>> dotfiles: swift >>>` … `# <<< dotfiles: swift <<<`), so
+don't hand-edit inside the markers. It never upgrades anything; use
+`brew upgrade` or `mas upgrade` for that.
+
+`langs/swift` installs:
+
+* `xcodegen` and Xcode, from `langs/swift.Brewfile`. Xcode comes from the Mac
+  App Store through `mas`, so sign in to the App Store first.
+* [swiftly](https://www.swift.org/swiftly/), from swift.org rather than
+  Homebrew, into `~/.swiftly` with no sudo.
+* A Swift toolchain, set as swiftly's global default.
+
+Terminal `swift` then resolves to swiftly's toolchain, while Xcode and
+`xcodebuild` keep using Xcode's own. Keep swiftly's Swift at least as new as
+Xcode's: an older compiler can't read a newer SDK. Re-running the script
+brings it up to date.
 
 ### `other-brews/archive/`
 

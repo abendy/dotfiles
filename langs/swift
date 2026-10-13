@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+#
+# Swift toolchain via swiftly, swift.org's official toolchain manager.
+#
+# Usage:
+#   langs/swift            install swiftly + latest stable toolchain
+#   langs/swift 6.1        install + use a specific toolchain version
+#
+# Each language is a script plus, when it has plain packages, a Brewfile
+# beside it (langs/swift.Brewfile here). The Brewfile says what to install;
+# the script does what a Brewfile can't: the language's own manager
+# (swiftly here, rustup for Rust, ...) owns toolchain versions, and any
+# export/source the toolchain needs lands in a managed marker block in
+# ~/.localrc. That wiring is reproduced by re-running a tracked script
+# instead of living as untracked hand-edits - the failure mode that ADR 0006
+# and the fnm move into zshrc were both reacting to.
+#
+# swiftly itself comes from swift.org, not Homebrew: the brew formula lags
+# upstream, and swiftly updates itself, which would fight brew over the
+# binary.
+#
+# Idempotent: safe to re-run; it installs whatever is missing and rewrites
+# the managed localrc block in place.
+#
+# No sudo anywhere: the pkg installs into the user domain (~/.swiftly),
+# which matters on the Mini where agent sessions can't answer a password
+# prompt.
+
+set -uo pipefail
+
+LANGS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCALRC="${LOCALRC:-$HOME/.localrc}"
+SWIFTLY_HOME="${SWIFTLY_HOME_DIR:-$HOME/.swiftly}"
+SWIFTLY_PKG_URL="https://download.swift.org/swiftly/darwin/swiftly.pkg"
+
+VERSION="${1:-latest}"
+
+function success () {
+  echo -e "[ \033[00;32mOK\033[0m ] $1\n"
+}
+
+function fail () {
+  echo -e "[\033[0;31mFAIL\033[0m] $1\n"
+  exit 1
+}
+
+# Replace or append the marker-delimited block named $1 in $LOCALRC, body on
+# stdin. Markers follow the localrc template's existing convention
+# (`# >>> dotfiles: <name> >>>`), so the editor block bootstrap seeds and the
+# blocks these scripts manage look the same. Content between the markers is
+# script-owned; everything else in localrc stays machine-owned. Graduates to
+# a shared langs/lib.sh when a second language script lands.
+function localrc_put_block {
+  local name="$1" body tmp
+  local open_m="# >>> dotfiles: ${name} >>>"
+  local close_m="# <<< dotfiles: ${name} <<<"
+  body="$(cat)"
+
+  # bootstrap seeds ~/.localrc from the repo template; a machine that hasn't
+  # run it yet gets a minimal file rather than a failure
+  if [ ! -f "$LOCALRC" ]; then
+    printf '#!/usr/bin/env zsh\n' > "$LOCALRC"
+  fi
+
+  # An opening marker with no closing marker would make the rewrite below
+  # swallow everything after it - refuse instead of guessing
+  if grep -qxF "$open_m" "$LOCALRC" && ! grep -qxF "$close_m" "$LOCALRC"; then
+    fail "$LOCALRC has an unterminated 'dotfiles: ${name}' block - fix it by hand"
+  fi
+
+  tmp="$(mktemp)"
+  # Body travels via ENVIRON because awk -v mangles backslash escapes
+  BLOCK_BODY="$body" awk -v open_m="$open_m" -v close_m="$close_m" '
+    $0 == open_m && !replaced {
+      print open_m
+      print ENVIRON["BLOCK_BODY"]
+      print close_m
+      replaced = 1
+      skipping = 1
+      next
+    }
+    skipping {
+      if ($0 == close_m) skipping = 0
+      next
+    }
+    { print }
+    END {
+      if (!replaced) {
+        print ""
+        print open_m
+        print ENVIRON["BLOCK_BODY"]
+        print close_m
+      }
+    }
+  ' "$LOCALRC" > "$tmp" || fail "Could not rewrite $LOCALRC"
+  mv -f "$tmp" "$LOCALRC"
+}
+
+function install_swiftly {
+  if [ -x "$SWIFTLY_HOME/bin/swiftly" ]; then
+    success "swiftly already installed"
+    return
+  fi
+
+  echo "Installing swiftly..."
+  local tmpdir
+  tmpdir="$(mktemp -d)"
+
+  if ! curl -fsSL -o "$tmpdir/swiftly.pkg" "$SWIFTLY_PKG_URL"; then
+    fail "Could not download $SWIFTLY_PKG_URL"
+  fi
+
+  # User-domain install: unpacks into ~/.swiftly, no sudo
+  if ! installer -pkg "$tmpdir/swiftly.pkg" -target CurrentUserHomeDirectory; then
+    fail "swiftly.pkg install failed"
+  fi
+  rm -rf "$tmpdir"
+
+  # --no-modify-profile is the point of this script: swiftly would otherwise
+  # append its source line to ~/.zprofile, outside the managed block that
+  # wire_shell owns. --skip-install because the toolchain install happens
+  # explicitly below, with the version argument applied.
+  if ! "$SWIFTLY_HOME/bin/swiftly" init --assume-yes --no-modify-profile --skip-install; then
+    fail "swiftly init failed"
+  fi
+
+  success "Installed swiftly"
+}
+
+function install_toolchain {
+  if [ ! -f "$SWIFTLY_HOME/env.sh" ]; then
+    fail "Missing $SWIFTLY_HOME/env.sh - swiftly init did not complete"
+  fi
+  # Sets SWIFTLY_HOME_DIR/SWIFTLY_BIN_DIR for the swiftly calls below
+  # shellcheck disable=SC1091
+  . "$SWIFTLY_HOME/env.sh"
+
+  echo "Installing Swift ${VERSION}..."
+  if ! "$SWIFTLY_HOME/bin/swiftly" install --assume-yes "$VERSION"; then
+    fail "swiftly could not install ${VERSION}"
+  fi
+
+  # Not `install --use`: that writes a .swift-version into the current
+  # directory, silently pinning whatever project the script was run from.
+  # --global-default only changes swiftly's own config.
+  if ! "$SWIFTLY_HOME/bin/swiftly" use --assume-yes --global-default "$VERSION"; then
+    fail "swiftly could not make ${VERSION} the global default"
+  fi
+
+  success "Swift ${VERSION} installed and set as the global default"
+}
+
+function install_packages {
+  local brewfile="$LANGS_DIR/swift.Brewfile"
+
+  # Xcode comes through mas, which needs an App Store sign-in. On the
+  # headless Mini that means signing in once over Screen Sharing; after that
+  # this is a no-op once Xcode is installed.
+  #
+  # --no-upgrade because brew bundle otherwise runs `mas upgrade` on an
+  # outdated Xcode, and the MacBook stays on Xcode 26.x on purpose (see
+  # mac-mini-setup.md). Upgrades stay a deliberate `brew upgrade`/`mas
+  # upgrade`, not a side effect of re-running this script.
+  echo "Installing packages from $brewfile..."
+  if ! brew bundle install --no-upgrade --verbose --file="$brewfile"; then
+    fail "brew bundle failed for $brewfile"
+  fi
+
+  success "Swift packages installed"
+}
+
+function wire_shell {
+  localrc_put_block swift <<'EOF'
+# Managed by ~/.dotfiles/langs/swift - edits inside these markers are
+# overwritten when that script re-runs.
+if [ -f "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh" ]; then
+  . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh"
+fi
+EOF
+  success "Wired swiftly env into $LOCALRC (dotfiles: swift block)"
+}
+
+function verify {
+  # The proxy in swiftly's bin dir, not `swift` from PATH - the current
+  # shell hasn't sourced the new localrc block, and PATH would find the
+  # Xcode CLT swift instead
+  if ! "$SWIFTLY_HOME/bin/swift" --version; then
+    fail "swift --version failed via $SWIFTLY_HOME/bin/swift"
+  fi
+  success "Swift ready - open a new shell (or 'source ~/.localrc') to pick it up"
+}
+
+function main {
+  if [ "$(uname)" != "Darwin" ]; then
+    fail "This script only handles macOS (the pkg URL is darwin-specific)"
+  fi
+
+  install_packages
+  install_swiftly
+  install_toolchain
+  wire_shell
+  verify
+}
+
+# Run only when executed, so tests can source the functions above
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main
+fi

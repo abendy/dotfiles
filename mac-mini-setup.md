@@ -177,6 +177,16 @@ The mini runs macOS 26.7.1 and Xcode 27, which the iPhone 18 Pro's developer dis
 needs. The MacBook stays on Xcode 26.x on purpose, so device builds for that phone run on
 the mini.
 
+## 2026-10-13: Swift through `langs/swift`
+
+Ran `langs/swift`, the first `langs/` script
+([ADR 0007](docs/decisions/0007-language-toolchains-as-langs-scripts.md)). It
+installed swiftly 1.2.0 into `~/.swiftly` with Swift 6.4.1 as the global
+default, and added a `dotfiles: swift` block to `~/.localrc` that sources
+`~/.swiftly/env.sh`. xcodegen and Xcode 27 were already installed, so the
+`langs/swift.Brewfile` step changed nothing. Xcode moved out of
+`other-brews/dev.Brewfile` into that file.
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be

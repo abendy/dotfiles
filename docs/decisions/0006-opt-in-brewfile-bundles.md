@@ -1,6 +1,8 @@
 # ADR 0006 — Lean root Brewfile plus opt-in bundles
 
-- **Status:** accepted — expected to evolve into machine profiles
+- **Status:** accepted — expected to evolve into machine profiles;
+  superseded in part by [ADR 0007](0007-language-toolchains-as-langs-scripts.md)
+  for language toolchains
 - **Date:** 2026-07-27 (recorded 2026-08-01)
 
 ## Context
