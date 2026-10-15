@@ -45,55 +45,30 @@ public enum Mole {
     /// safe under launchd. nil when mole is not installed.
     public static func clean() -> Clean? {
         guard let mo = binary() else { return nil }
-        let started = Date()
         let result = Shell.run(mo, ["clean"])
-        // Freed totals come from `mo history --json` - a stable interface -
-        // rather than scraping colored output. Only a session that started
-        // with this invocation counts: a failed or aborted run must not
-        // report an older run's total as its own.
-        let session = cleanSession(mo, startedAfter: started.addingTimeInterval(-2))
+        // The freed total is read from this invocation's own output. mole's
+        // history (`mo history --json`) was tried first, but its sessions
+        // carry nothing that ties one to a given process, and a concurrent
+        // `--dry-run` (the menu bar's refresh) writes `clean` sessions too -
+        // so any history lookup can hand back another run's total. A
+        // failed or aborted run prints no summary and reports nothing.
+        let summary = parseCleanSummary(result.stdout)
         return Clean(
-            freedBytes: session?.sizeBytes,
-            items: session?.items,
+            freedBytes: summary.bytes,
+            items: summary.items,
             output: result.stdout,
             succeeded: result.succeeded
         )
     }
 
-    struct Session {
-        let items: Int?
-        let sizeBytes: Int64?
-    }
-
-    static func cleanSession(_ mo: String, startedAfter threshold: Date) -> Session? {
-        let result = Shell.run(mo, ["history", "--json"])
-        guard result.succeeded, let data = result.stdout.data(using: .utf8) else { return nil }
-
-        struct History: Decodable {
-            struct Entry: Decodable {
-                let command: String
-                let started_at: String?
-                let items: Int?
-                let size: String?
-            }
-            let sessions: [Entry]
-        }
-
-        // mole stamps sessions in local time: "2026-10-01 13:50:12"
-        let stamp = DateFormatter()
-        stamp.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        stamp.locale = Locale(identifier: "en_US_POSIX")
-        stamp.timeZone = .current
-
-        guard let history = try? JSONDecoder().decode(History.self, from: data) else { return nil }
-        let session = history.sessions.first { entry in
-            guard entry.command == "clean",
-                  let raw = entry.started_at,
-                  let startedAt = stamp.date(from: raw)
-            else { return false }
-            return startedAt >= threshold
-        }
-        guard let session else { return nil }
-        return Session(items: session.items, sizeBytes: session.size.flatMap(Disk.parseHumanSize))
+    /// Summary line of a real run (bin/clean.sh, perform_cleanup):
+    /// "Tracked cleanup: 4.26GB | Items cleaned: 271 | Categories: 12".
+    /// The items segment is omitted when nothing was cleaned.
+    static func parseCleanSummary(_ output: String) -> (bytes: Int64?, items: Int?) {
+        let plain = Text.stripANSI(output)
+        let bytes = Text.capture(#"Tracked cleanup: ([0-9.]+[kKMGT]?i?B)"#, in: plain)
+            .flatMap(Disk.parseHumanSize)
+        let items = Text.capture(#"Items cleaned: ([0-9]+)"#, in: plain).flatMap { Int($0) }
+        return (bytes, items)
     }
 }
