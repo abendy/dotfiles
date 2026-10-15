@@ -16,9 +16,12 @@ public enum Watch {
 
         // Chrome's on-device AI models held 4 GB on the 2026-07-31 audit
         // (cleared by hand that day); surface a re-download without ever
-        // deleting under Application Support.
+        // deleting under Application Support. mole would clean these when
+        // Chrome is closed, so the whitelist template protects the same three
+        // paths - keep both lists in step.
         let chromeDirs = [
             NSHomeDirectory() + "/Library/Application Support/Google/Chrome/OptGuideOnDeviceModel",
+            NSHomeDirectory() + "/Library/Application Support/Google/Chrome/OptGuideOnDeviceClassifierModel",
             NSHomeDirectory() + "/Library/Application Support/Google/Chrome/optimization_guide_model_store",
         ]
         let chromeSizes = Disk.sizesInBytes(chromeDirs)

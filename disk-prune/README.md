@@ -67,15 +67,19 @@ template currently protects:
 - **`~/.Trash`** - user data. mole would otherwise empty it entirely;
   Finder's "Remove items after 30 days" owns it instead (enabled in the
   `osx` script), and disk-prune reports its size.
+- **Chrome's three on-device AI model dirs** under App Support - mole cleans
+  them whenever Chrome is closed; the watch list below promises they are
+  only reported, so the whitelist has to back that up.
 
 `install.sh` overwrites `~/.config/mole/whitelist` from the template: edit
 policy in the repo, not in place.
 
 ## Watch list (reported, never pruned)
 
-- **Chrome on-device AI models** (`OptGuideOnDeviceModel` +
-  `optimization_guide_model_store` under App Support) - 4 GB on the audit,
-  cleared by hand; this surfaces a re-download
+- **Chrome on-device AI models** (`OptGuideOnDeviceModel`,
+  `OptGuideOnDeviceClassifierModel`, `optimization_guide_model_store` under
+  App Support) - 4 GB on the audit, cleared by hand; this surfaces a
+  re-download. Whitelisted, since mole would otherwise clean them.
 - **Trash** - see above
 - **node_modules under `~/projects`** - project-owned; genuinely abandoned
   artifacts are `mo purge` territory

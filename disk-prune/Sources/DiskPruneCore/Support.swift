@@ -40,10 +40,18 @@ public enum Shell {
             return Result(status: 127, stdout: "", stderr: String(describing: error))
         }
 
-        // Drain the pipes before waiting, or a chatty child fills the pipe
-        // buffer and both processes deadlock.
+        // Drain both pipes concurrently before waiting. Reading them in
+        // sequence deadlocks once the child fills the unread pipe's 64 KB
+        // buffer while the parent blocks on the other one.
+        var errData = Data()
+        let drained = DispatchGroup()
+        drained.enter()
+        DispatchQueue.global(qos: .utility).async {
+            errData = err.fileHandleForReading.readDataToEndOfFile()
+            drained.leave()
+        }
         let outData = out.fileHandleForReading.readDataToEndOfFile()
-        let errData = err.fileHandleForReading.readDataToEndOfFile()
+        drained.wait()
         process.waitUntilExit()
 
         return Result(

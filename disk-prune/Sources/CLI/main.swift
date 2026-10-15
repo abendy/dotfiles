@@ -122,7 +122,7 @@ case "run":
 
     let seconds = Int(summary.finished.timeIntervalSince(summary.started).rounded())
     print("\nFreed \(Disk.format(summary.totalFreed)) in \(seconds)s. Log: \(Log.path.replacingOccurrences(of: NSHomeDirectory(), with: "~"))")
-    if summary.mole == nil {
+    if !summary.succeeded {
         exit(1)
     }
 

@@ -8,3 +8,10 @@
 # Finder's "Remove items after 30 days" owns it (enabled in the osx script)
 # and disk-prune just reports its size.
 __HOME__/.Trash
+
+# Chrome's on-device AI models. The disk-prune watch list promises these are
+# reported, never pruned; without these lines mole cleans all three whenever
+# Chrome is closed (lib/clean/user.sh, "Chrome on-device model cache").
+__HOME__/Library/Application Support/Google/Chrome/OptGuideOnDeviceModel
+__HOME__/Library/Application Support/Google/Chrome/OptGuideOnDeviceClassifierModel
+__HOME__/Library/Application Support/Google/Chrome/optimization_guide_model_store

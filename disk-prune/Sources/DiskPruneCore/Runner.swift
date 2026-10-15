@@ -74,9 +74,14 @@ public enum Runner {
         Log.append("run | done: total freed \(Disk.format(totalFreed))")
 
         if config.notify {
-            let message = clean == nil
-                ? "mole not found - nothing cleaned"
-                : "Freed \(Disk.format(totalFreed))"
+            let message: String
+            if let clean, !clean.succeeded {
+                message = "mo clean failed - see ~/Library/Logs/mole/"
+            } else if clean == nil {
+                message = "mole not found - nothing cleaned"
+            } else {
+                message = "Freed \(Disk.format(totalFreed))"
+            }
             Notifier.notify(title: "disk-prune", message: message)
         }
 

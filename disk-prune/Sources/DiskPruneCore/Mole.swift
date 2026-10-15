@@ -45,11 +45,13 @@ public enum Mole {
     /// safe under launchd. nil when mole is not installed.
     public static func clean() -> Clean? {
         guard let mo = binary() else { return nil }
+        let started = Date()
         let result = Shell.run(mo, ["clean"])
         // Freed totals come from `mo history --json` - a stable interface -
-        // rather than scraping colored output; the session this call just
-        // finished is the newest entry.
-        let session = latestCleanSession(mo)
+        // rather than scraping colored output. Only a session that started
+        // with this invocation counts: a failed or aborted run must not
+        // report an older run's total as its own.
+        let session = cleanSession(mo, startedAfter: started.addingTimeInterval(-2))
         return Clean(
             freedBytes: session?.sizeBytes,
             items: session?.items,
@@ -63,22 +65,35 @@ public enum Mole {
         let sizeBytes: Int64?
     }
 
-    static func latestCleanSession(_ mo: String) -> Session? {
+    static func cleanSession(_ mo: String, startedAfter threshold: Date) -> Session? {
         let result = Shell.run(mo, ["history", "--json"])
         guard result.succeeded, let data = result.stdout.data(using: .utf8) else { return nil }
 
         struct History: Decodable {
             struct Entry: Decodable {
                 let command: String
+                let started_at: String?
                 let items: Int?
                 let size: String?
             }
             let sessions: [Entry]
         }
 
-        guard let history = try? JSONDecoder().decode(History.self, from: data),
-              let session = history.sessions.first(where: { $0.command == "clean" })
-        else { return nil }
+        // mole stamps sessions in local time: "2026-10-01 13:50:12"
+        let stamp = DateFormatter()
+        stamp.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        stamp.locale = Locale(identifier: "en_US_POSIX")
+        stamp.timeZone = .current
+
+        guard let history = try? JSONDecoder().decode(History.self, from: data) else { return nil }
+        let session = history.sessions.first { entry in
+            guard entry.command == "clean",
+                  let raw = entry.started_at,
+                  let startedAt = stamp.date(from: raw)
+            else { return false }
+            return startedAt >= threshold
+        }
+        guard let session else { return nil }
         return Session(items: session.items, sizeBytes: session.size.flatMap(Disk.parseHumanSize))
     }
 }
