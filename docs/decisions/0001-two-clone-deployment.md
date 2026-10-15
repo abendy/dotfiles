@@ -17,7 +17,7 @@ Two clones with different contracts:
 
 - **`~/.dotfiles`** — the deploy clone. Disposable. `auto_update` may
   `reset --hard` it at any time; nothing hand-edited lives there.
-- **`~/projects/dotfiles`** — the working tree. Never targeted by automation.
+- **`~/projects/environment/dotfiles`** — the working tree. Never targeted by automation.
 
 `auto_update` now `cd`s to `$DOTFILES_DIR` and returns early if it isn't a
 repo. The reset behaviour itself is intentional and kept.

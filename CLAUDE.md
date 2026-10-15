@@ -50,7 +50,7 @@ one) that says something the machine no longer does is a bug.
   `abendy/skills` → `global/CLAUDE.md` (Shell section). When `aliases`,
   `functions`, or the gnubin PATH exports change semantics of standard tools,
   update that summary in the same change.
-- Two clones live on the mini: `~/projects/dotfiles` (working repo — commit
+- Two clones live on the mini: `~/projects/environment/dotfiles` (working repo — commit
   here) and `~/.dotfiles` (deployed clone that `bootstrap` runs from). After
   pushing changes, pull in `~/.dotfiles` and re-run `./bootstrap` there —
   automating this is [#39](https://github.com/abendy/dotfiles/issues/39).
