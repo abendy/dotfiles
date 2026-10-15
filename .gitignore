@@ -1,6 +1,12 @@
 dotfiles.log
 *.lock.json
 
+# Swift build products (disk-prune)
+.build/
+
+# Claude Code session worktrees live inside the repo
+.claude/worktrees/
+
 # Key material must never be committable from this repo. These patterns are
 # defence in depth, not a place to keep keys - anything matching here should be
 # living outside the repo entirely. git-allowed-signers is the deliberate
