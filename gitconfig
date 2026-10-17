@@ -288,6 +288,8 @@
   trustExitCode = true
 
 [pager]
+  # Don't set [log] date: diff-so-fancy 1.4.12 only parses Git's default date
+  # format and exits 255 on iso, iso-strict, or relative.
   diff = diff-so-fancy | less --tabs=1,5 -RFX
   show = diff-so-fancy | less --tabs=1,5 -RFX
 

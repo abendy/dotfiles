@@ -38,6 +38,15 @@ one) that says something the machine no longer does is a bug.
   update prompts don't get clicked on a headless machine; `brew upgrade`
   over SSH does. Google Chrome is kept on the mini for Computer Use —
   don't propose removing it to save space.
+- On the MacBook, agent shells lack macOS App Management permission and
+  can't answer `sudo`. Never run `brew install`, `upgrade`, or `reinstall`
+  there for a cask whose app is already in /Applications: hand the user the
+  command. If a cask install fails after its app step, brew's rollback
+  deletes the app and its own backup. `--adopt` compares bundle versions
+  only, so a self-updated app missing a file the cask links can fail the
+  same way, even run by hand. Rollback also leaves dangling binary symlinks
+  that block the reinstall. Cask uninstalls that remove login items stall
+  about two minutes per item on AppleEvents, so run them in the background.
 - `sudo` on the mini always asks for a password, so agent sessions cannot run root
   commands. Hand the user paste-ready commands instead.
 - Non-interactive `gh issue view N` prints nothing. Use
