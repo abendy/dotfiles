@@ -209,6 +209,17 @@ Ran each new `langs/` script, then ran it again to check it changed nothing.
 - `langs/go`: installed Go 1.27.2 from Homebrew and added a `dotfiles: go`
   block that puts `~/go/bin` on PATH.
 
+## 2026-10-17: tmux copies reach the laptop over SSH
+
+Claude Code's terminal panel ignores OSC 52, so tmux copies made there never
+reached the laptop. Universal Clipboard didn't carry them either.
+
+- tmux's `copy-command` is now `bin/tmux-copy`. See
+  [remote workflow](remote-workflow.md#clipboard-copy-to-the-laptop).
+- Ran `tmux-copy setup abendy@m5-max`. It uses `~/.ssh/tmux-clipboard`, an
+  ed25519 key with no passphrase that the laptop restricts to `pbcopy` from
+  this Mini's Tailscale address.
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be

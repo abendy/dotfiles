@@ -58,7 +58,12 @@ shown in the status bar so it's obvious which machine you're in):
 - Reload `tmux.conf` without restarting the session: `prefix r` (bound in
   this config specifically).
 - Scroll/select with the mouse - this config turns that on, unlike tmux's
-  default.
+  default. Releasing the drag copies the text and clears the highlight;
+  don't press Cmd-C after it, which copies the terminal's own (empty)
+  selection over it.
+- Copies reach the Mac's clipboard two ways: OSC 52 through the terminal,
+  and SSH to the laptop's `pbcopy` (see
+  [Clipboard: copy to the laptop](#clipboard-copy-to-the-laptop)).
 - Install the configured TPM plugins with `prefix I` after the first
   bootstrap. Continuum checks for a save every 15 minutes while an attached
   client's status line is refreshing. With every client detached, the last
@@ -110,6 +115,44 @@ killing the last session doesn't hand the next login a new server.
   `tmux-aqua migrate`.
 - `launchctl managername` in a pane says `Background` even in the agent's
   server. Trust `tmux-aqua status`, which runs the keychain check itself.
+
+### Clipboard: copy to the laptop
+
+A copy in tmux (mouse drag, `Enter` or `Y` in copy mode) takes two routes to
+the laptop's clipboard:
+
+1. **OSC 52**, an escape code asking the terminal to set its clipboard.
+   iTerm2 accepts it when "Applications in terminal may access clipboard" is
+   on (Settings → General → Selection). mosh passes it from 1.4.0 on both
+   ends. Claude Code's terminal panel ignores it.
+2. **SSH.** `copy-command` runs [`bin/tmux-copy`](bin/tmux-copy), which pipes
+   the text to `pbcopy` on the laptop. Universal Clipboard can't stand in:
+   it doesn't carry copies tmux makes.
+
+The laptop accepts one key, only from the Mini's Tailscale address, and that
+key can only run `pbcopy`. One-time setup, after `bootstrap` on both machines:
+
+1. **Laptop:** turn on System Settings → General → Sharing → Remote Login.
+   Under its ⓘ, allow only your user, and leave full disk access off.
+2. **Mini:** `tmux-copy setup <laptop-user>@<laptop-tailscale-name>`. It
+   creates `~/.ssh/tmux-clipboard`, records the destination in
+   `~/.config/tmux-copy/destination`, and prints a `tmux-copy authorize`
+   command.
+3. **Laptop:** run that command. It writes
+   `/etc/ssh/sshd_config.d/010-tmux-copy.conf` (keys only; this user only, from
+   the Mini) and adds the key to `~/.ssh/authorized_keys` as
+   `restrict,from="<Mini IP>",command="… pbcopy"`. Re-running replaces the old
+   key.
+4. **Mini:** `echo hello | tmux-copy`, then paste on the laptop.
+
+Limits:
+
+- The laptop must be awake and on Tailscale. A failed copy logs to
+  `~/Library/Logs/tmux-copy.log` on the Mini; OSC 52 still works in iTerm2.
+- `AllowUsers` also refuses every other SSH login to the laptop. Widen it
+  there if you ever need one.
+- Without the destination file (the laptop itself), `tmux-copy` runs
+  `pbcopy` locally.
 
 ## Codex Desktop SSH
 

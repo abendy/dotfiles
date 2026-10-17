@@ -2,8 +2,8 @@
 
 ## NAME
 
-`t`, `tl`, `ta`, `tt`, `tb`, `td`, `tn`, `tk`, `tmux-aqua`, `mini`, `mini-ssh`,
-`mini-mosh` — manage tmux sessions and connect to the Mini
+`t`, `tl`, `ta`, `tt`, `tb`, `td`, `tn`, `tk`, `tmux-aqua`, `tmux-copy`, `mini`,
+`mini-ssh`, `mini-mosh` — manage tmux sessions and connect to the Mini
 
 ## SYNOPSIS
 
@@ -18,6 +18,8 @@ tn name
 tk [session]
 tmux-aqua status
 tmux-aqua migrate [--discard]
+tmux-copy setup user@host
+tmux-copy authorize ip key
 
 mini [session]
 mini-ssh [ssh-argument ...]
@@ -109,6 +111,20 @@ reattach with `t` after about 10 seconds. It stops without changing anything
 when the save holds no panes. `--discard` skips the save and closes every
 session. Needs a GUI login (Screen Sharing). It's a script in [`bin/`](bin/tmux-aqua),
 not a function.
+
+### `tmux-copy setup user@host`
+
+Mini only. Send tmux copies over SSH to `pbcopy` on that laptop, for terminals
+that ignore OSC 52. Creates `~/.ssh/tmux-clipboard` if missing, records the
+destination, and prints the `tmux-copy authorize` command to run on the
+laptop. tmux's `copy-command` runs bare `tmux-copy`, which copies stdin. See
+[remote-workflow.md](remote-workflow.md#clipboard-copy-to-the-laptop).
+
+### `tmux-copy authorize ip key`
+
+Laptop only. Accept `key` from `ip` and let it run nothing but `pbcopy`. Writes
+an sshd drop-in that turns off passwords and allows only this user from `ip`,
+so it refuses every other SSH login. Uses `sudo`. Remote Login must be on.
 
 ## CONNECTION COMMANDS
 
@@ -214,6 +230,8 @@ session; declining its confirmation returns success.
 - [`bin/tmux-aqua`](bin/tmux-aqua) and
   [`launchd/com.abendy.tmux-server.plist.template`](launchd/com.abendy.tmux-server.plist.template)
   — the Mini's login-time tmux server agent.
+- [`bin/tmux-copy`](bin/tmux-copy) — tmux's `copy-command`, plus its SSH
+  setup on both machines.
 - [`remote-workflow.md`](remote-workflow.md) — Tailscale, mosh, tmux, and Codex
   Desktop topology and troubleshooting.
 

@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+#
+# Put tmux copies on the clipboard of the Mac you're driving from.
+#
+# tmux also sends each copy through OSC 52, which iTerm2 accepts. Claude
+# Code's terminal panel ignores OSC 52, and Universal Clipboard doesn't carry
+# copies tmux makes, so on the Mini this script pipes the text over SSH to
+# pbcopy on the laptop. The laptop locks the key to pbcopy, from the Mini's
+# Tailscale address only. See remote-workflow.md.
+
+set -uo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+DEST_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-copy/destination"
+KEY="$HOME/.ssh/tmux-clipboard"
+LOG="$HOME/Library/Logs/tmux-copy.log"
+SSHD_DROPIN="/etc/ssh/sshd_config.d/010-tmux-copy.conf"
+KEY_COMMENT="tmux-copy"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  tmux-copy                    copy stdin (tmux's copy-command runs this)
+  tmux-copy setup USER@HOST    on the Mini: send copies to that laptop; creates
+                               the key and prints the command to run there
+  tmux-copy authorize IP KEY   on the laptop: accept KEY from IP, for pbcopy only
+EOF
+}
+
+# Copy stdin. With no destination configured (the laptop itself), use the
+# local clipboard.
+copy() {
+  local dest=""
+  if [ -r "$DEST_FILE" ]; then
+    read -r dest <"$DEST_FILE"
+  fi
+
+  if [ -z "$dest" ] || [ ! -r "$KEY" ]; then
+    exec pbcopy
+  fi
+
+  ssh -T -i "$KEY" \
+    -o IdentitiesOnly=yes \
+    -o BatchMode=yes \
+    -o ConnectTimeout=5 \
+    -o StrictHostKeyChecking=accept-new \
+    "$dest" 2>>"$LOG"
+}
+
+setup() {
+  local dest="${1:-}"
+  local ip pubkey
+
+  if [[ ! $dest =~ ^[^@[:space:]]+@[^@[:space:]]+$ ]]; then
+    usage >&2
+    return 2
+  fi
+
+  ip="$(tailscale ip -4 2>/dev/null | head -n 1)"
+  if [ -z "$ip" ]; then
+    echo "tmux-copy: can't read this machine's Tailscale address" >&2
+    return 1
+  fi
+
+  mkdir -p "$HOME/.ssh" "$(dirname "$DEST_FILE")"
+  chmod 700 "$HOME/.ssh"
+  if [ ! -f "$KEY" ]; then
+    # No passphrase: tmux runs this unattended. The laptop limits the key to
+    # pbcopy from this address, so it can't open a shell there.
+    ssh-keygen -q -t ed25519 -N "" -C "$KEY_COMMENT $(hostname -s)" -f "$KEY" || return 1
+  fi
+  printf '%s\n' "$dest" >"$DEST_FILE"
+
+  pubkey="$(cat "$KEY.pub")"
+  echo "Copies now go to $dest. On that laptop, run:"
+  echo
+  printf "  tmux-copy authorize %s '%s'\n" "$ip" "$pubkey"
+  echo
+  echo "Then test from here: echo hello | tmux-copy"
+}
+
+authorize() {
+  local ip="${1:-}" pubkey="${2:-}"
+  local keys="$HOME/.ssh/authorized_keys"
+  local entry tmp
+
+  if [ -z "$ip" ] || [[ $pubkey != ssh-* ]]; then
+    usage >&2
+    return 2
+  fi
+
+  entry="restrict,from=\"$ip\",command=\"LANG=en_US.UTF-8 /usr/bin/pbcopy\" $pubkey"
+
+  # Keys only, and only this user from the Mini. This also refuses every
+  # other SSH login to the laptop; widen AllowUsers if you need one.
+  printf 'PasswordAuthentication no\nKbdInteractiveAuthentication no\nAllowUsers %s@%s\n' \
+    "$(id -un)" "$ip" | sudo tee "$SSHD_DROPIN" >/dev/null || return 1
+  # macOS makes host keys on the first SSH connection; sshd -t needs them now
+  sudo ssh-keygen -A || return 1
+  sudo sshd -t || return 1
+
+  # Replace any earlier tmux-copy key, so re-running stays idempotent
+  mkdir -p "$HOME/.ssh"
+  chmod 700 "$HOME/.ssh"
+  touch "$keys"
+  tmp="$(mktemp "$keys.XXXXXX")" || return 1
+  grep -v " $KEY_COMMENT" "$keys" >"$tmp"
+  printf '%s\n' "$entry" >>"$tmp"
+  mv -f "$tmp" "$keys"
+  chmod 600 "$keys"
+
+  echo "Accepting the tmux-copy key from $ip, for pbcopy only."
+  if ! launchctl print-disabled system | grep -q '"com.openssh.sshd" => enabled'; then
+    echo "Remote Login is off: turn it on in System Settings > General > Sharing."
+  fi
+}
+
+case "${1:-}" in
+  "") copy ;;
+  setup) setup "${2:-}" ;;
+  authorize) authorize "${2:-}" "${3:-}" ;;
+  -h | --help | help) usage ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac

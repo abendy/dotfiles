@@ -448,6 +448,24 @@ function configure_git_signing {
   fi
 }
 
+# The Mini only: tmux copies reach the laptop's clipboard over SSH
+# (bin/tmux-copy, remote-workflow.md). The laptop's user and host change
+# between machines, so this only says what to run.
+function configure_tmux_copy {
+  local dest_file="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-copy/destination"
+
+  if [ "$(hostname -s)" != "nigiri-san" ]; then
+    return
+  fi
+
+  if [ -s "$dest_file" ]; then
+    success "tmux copies go to $(cat "$dest_file")"
+  else
+    echo "tmux copies only reach the laptop through OSC 52. To send them over SSH, run:"
+    echo "  tmux-copy setup <laptop-user>@<laptop-tailscale-name>"
+  fi
+}
+
 function fix_insecure_directories {
   # zsh's compinit refuses to load completions from any directory in its
   # search path that's group- or world-writable (mainly under Homebrew's
@@ -517,6 +535,7 @@ fi
 
 configure_editor
 configure_git_signing
+configure_tmux_copy
 
 echo "Reloading shell..."
 exec zsh
