@@ -259,6 +259,22 @@ Apple's pip 21.2.4 ships its own old bundle and still accepts the chains;
 `pip3` on PATH is Homebrew's. fnm 1.39.0 also accepts them for its own
 downloads, so check new Node versions against the signed checksums.
 
+The colima VM (Ubuntu 24.04) had the same roots, and dockerd pulls images
+through its bundle. Upgraded only its `ca-certificates`, from 20240203 to
+20260816ubuntu0.24.04.1:
+
+```sh
+colima ssh -- sudo apt-get update
+colima ssh -- sudo apt-get install --only-upgrade ca-certificates
+```
+
+dockerd rejected the bad chains without a restart. That matters because
+the running containers have restart policy `no`, so a daemon restart
+leaves them stopped. `colima delete` rebuilds the VM from its base image,
+so run the upgrade again after one. The nginx (Alpine 3.21) and mysql
+(Oracle Linux 9.7) images still carry the roots; their projects own the
+fix.
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be
