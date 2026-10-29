@@ -220,6 +220,29 @@ reached the laptop. Universal Clipboard didn't carry them either.
   ed25519 key with no passphrase that the laptop restricts to `pbcopy` from
   this Mini's Tailscale address.
 
+## 2026-10-29: eMudhra CA compromise, user-level fixes (LON-179)
+
+Eight eMudhra intermediate CA keys leaked, so clients that still trust
+their chains accept forged certificates. Homebrew's curl, Python, pip, uv,
+Go and Claude Code were already on fixed versions. This pass fixed the
+rest that needs no `sudo`:
+
+- Node: installed v24.22.2 through fnm and made it the default, then
+  removed v24.18.1. fnm 1.39.0 accepts the bad chains for its own
+  downloads, so the binary was checked against the signed
+  `SHASUMS256.txt` fetched with Homebrew curl.
+- rustup: `rustup self update` to 1.29.2. The binary matches the
+  checksum fetched with Homebrew curl.
+- AWS CLI: `brew upgrade awscli` to 2.39.1.
+- uv's Pythons: `uv python upgrade` to 3.15.2 and 3.13.18, which carry
+  pip 26.2.2 and reject the bad chains; removed 3.15.0 and 3.13.16. Ran
+  `uv cache clean certifi` to drop a cached certifi 2026.7.22.
+
+Apple's `/usr/bin/curl` and `/usr/bin/python3`, and Homebrew git (which
+links Apple's libcurl), still accept the chains until `/etc/ssl/cert.pem`
+is fixed, which needs `sudo`. Apple's pip 21.2.4 ships its own old bundle
+and still accepts them; `pip3` on PATH is Homebrew's.
+
 ## TODO
 
 - Prioritize Ethernet over Wi-Fi on the Mini once networking gear can be
