@@ -238,10 +238,26 @@ rest that needs no `sudo`:
   pip 26.2.2 and reject the bad chains; removed 3.15.0 and 3.13.16. Ran
   `uv cache clean certifi` to drop a cached certifi 2026.7.22.
 
-Apple's `/usr/bin/curl` and `/usr/bin/python3`, and Homebrew git (which
-links Apple's libcurl), still accept the chains until `/etc/ssl/cert.pem`
-is fixed, which needs `sudo`. Apple's pip 21.2.4 ships its own old bundle
-and still accepts them; `pip3` on PATH is Homebrew's.
+Apple's command-line tools (curl, python3, git, perl, ruby, openssl) and
+Homebrew git, which links Apple's libcurl, read `/etc/ssl/cert.pem`. That
+file now omits the four roots that Mozilla's current bundle also dropped:
+emSign ECC Root CA - G3, emSign ECC Root CA - C3, emSign Root CA - C1 and
+AAA Certificate Services. The original is at `/etc/ssl/cert.pem.orig`. A
+macOS update can restore the file, so check it after each one. If the
+check prints a number above 0, rebuild the file:
+
+```sh
+grep -cE '^=== .*/CN=(emSign ECC Root CA - [GC]3|emSign Root CA - C1|AAA Certificate Services)$' /etc/ssl/cert.pem
+awk '/^=== / && /\/CN=(emSign ECC Root CA - [GC]3|emSign Root CA - C1|AAA Certificate Services)$/ {skip=1}
+     !skip {print}
+     skip && /^-----END CERTIFICATE-----$/ {skip=0}' /etc/ssl/cert.pem > ~/cert.pem
+sudo /bin/cp -p /etc/ssl/cert.pem /etc/ssl/cert.pem.orig
+sudo /usr/bin/install -m 644 -o root -g wheel ~/cert.pem /etc/ssl/cert.pem
+```
+
+Apple's pip 21.2.4 ships its own old bundle and still accepts the chains;
+`pip3` on PATH is Homebrew's. fnm 1.39.0 also accepts them for its own
+downloads, so check new Node versions against the signed checksums.
 
 ## TODO
 
