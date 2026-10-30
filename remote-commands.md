@@ -119,7 +119,8 @@ Mini only. Close tmux terminals with no typing for 24 hours (4 in a temporary
 folder), and remove unattached sessions idle for 7 days (1 in a temporary
 folder, at once when the folder is gone). Never removes a session with a
 running program, or `phone`. The `com.abendy.tmux-reap` agent runs it every
-15 minutes; `--dry-run` prints what it would do. See
+15 minutes; `--dry-run` prints what it would do, and for everything it
+keeps, why and when it would go. See
 [remote-workflow.md](remote-workflow.md#idle-terminals-and-sessions). It's a
 script in [`bin/`](bin/tmux-reap), not a function.
 

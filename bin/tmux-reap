@@ -42,7 +42,8 @@ usage() {
   cat <<'EOF'
 Usage:
   tmux-reap             close idle terminals and remove idle sessions
-  tmux-reap --dry-run   print what it would do, change nothing
+  tmux-reap --dry-run   print what it would do and why the rest stays,
+                        change nothing
 EOF
 }
 
@@ -60,6 +61,11 @@ act() {
   fi
 }
 
+# Dry run only: say why something stays
+keep() {
+  [ "$DRY_RUN" -eq 1 ] && echo "keep $*"
+}
+
 is_temporary() {
   [ -d "$1" ] || return 0
   case "$1" in
@@ -69,15 +75,17 @@ is_temporary() {
   return 1
 }
 
-# Succeeds when every pane in the session runs a bare shell
-all_panes_idle() {
+# Prints the first program running in the session and succeeds; fails when
+# every pane sits at a bare shell prompt
+running_program() {
   local cmd
   while IFS= read -r cmd; do
     case "${cmd#-}" in
       zsh|bash|sh|fish) ;;
-      *) return 1 ;;
+      *) echo "$cmd"; return 0 ;;
     esac
   done < <(tmux list-panes -s -t "=$1" -F '#{pane_current_command}' 2> /dev/null)
+  return 1
 }
 
 # Newest activity across the session and its windows, as epoch seconds
@@ -99,16 +107,27 @@ reap_terminals() {
       # terminal and its SSH channel
       act "close terminal $tty (session $session, ${idle}h without typing)" \
         tmux detach-client -P -t "$tty"
+    else
+      keep "terminal $tty (session $session): ${idle}h without typing, closes at ${limit}h"
     fi
   done < <(tmux list-clients -F '#{client_tty}	#{client_activity}	#{session_name}	#{session_path}' 2> /dev/null)
 }
 
 reap_sessions() {
-  local name attached activity dir limit idle why
+  local name attached activity dir limit idle why program
   while IFS=$'\t' read -r name attached activity dir; do
-    [ "$name" = "$KEEP_SESSION" ] && continue
-    [ "$attached" -eq 0 ] || continue
-    all_panes_idle "$name" || continue
+    if [ "$name" = "$KEEP_SESSION" ]; then
+      keep "session $name: always kept"
+      continue
+    fi
+    if [ "$attached" -gt 0 ]; then
+      keep "session $name: terminal attached"
+      continue
+    fi
+    if program=$(running_program "$name"); then
+      keep "session $name: running $program"
+      continue
+    fi
     idle=$(( (NOW - $(last_activity "$name" "$activity")) / 3600 ))
     if [ ! -d "$dir" ]; then
       limit=0 why="folder gone"
@@ -119,6 +138,8 @@ reap_sessions() {
     fi
     if [ "$idle" -ge "$limit" ]; then
       act "remove session $name ($why: $dir)" tmux kill-session -t "=$name"
+    else
+      keep "session $name: $why, removed at ${limit}h ($dir)"
     fi
   done < <(tmux list-sessions -F '#{session_name}	#{session_attached}	#{session_activity}	#{session_path}' 2> /dev/null)
 }

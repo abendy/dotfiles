@@ -138,7 +138,8 @@ minutes:
   session stays, and reopening the tab reattaches.
 - A session is removed only when every pane sits at a shell prompt. One
   running `claude`, a server, or anything else stays. `phone` always stays.
-- `tmux-reap --dry-run` prints what it would do. Actions are logged to
+- `tmux-reap --dry-run` prints what it would do, and for everything it keeps,
+  why and when it would go. Actions are logged to
   `~/Library/Logs/tmux-reap.log`. The timeouts are at the top of the script.
 
 ### Clipboard: copy to the laptop
