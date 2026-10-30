@@ -2,8 +2,8 @@
 
 ## NAME
 
-`t`, `tl`, `ta`, `tt`, `tb`, `td`, `tn`, `tk`, `tmux-aqua`, `tmux-copy`, `mini`,
-`mini-ssh`, `mini-mosh` — manage tmux sessions and connect to the Mini
+`t`, `tl`, `ta`, `tt`, `tb`, `td`, `tn`, `tk`, `tmux-aqua`, `tmux-reap`,
+`tmux-copy`, `mini`, `mini-ssh`, `mini-mosh` — manage tmux sessions and connect to the Mini
 
 ## SYNOPSIS
 
@@ -18,6 +18,7 @@ tn name
 tk [session]
 tmux-aqua status
 tmux-aqua migrate [--discard]
+tmux-reap [--dry-run]
 tmux-copy setup user@host
 tmux-copy authorize ip key
 
@@ -111,6 +112,16 @@ reattach with `t` after about 10 seconds. It stops without changing anything
 when the save holds no panes. `--discard` skips the save and closes every
 session. Needs a GUI login (Screen Sharing). It's a script in [`bin/`](bin/tmux-aqua),
 not a function.
+
+### `tmux-reap [--dry-run]`
+
+Mini only. Close tmux terminals with no typing for 24 hours (4 in a temporary
+folder), and remove unattached sessions idle for 7 days (1 in a temporary
+folder, at once when the folder is gone). Never removes a session with a
+running program, or `phone`. The `com.abendy.tmux-reap` agent runs it every
+15 minutes; `--dry-run` prints what it would do. See
+[remote-workflow.md](remote-workflow.md#idle-terminals-and-sessions). It's a
+script in [`bin/`](bin/tmux-reap), not a function.
 
 ### `tmux-copy setup user@host`
 
@@ -230,6 +241,9 @@ session; declining its confirmation returns success.
 - [`bin/tmux-aqua`](bin/tmux-aqua) and
   [`launchd/com.abendy.tmux-server.plist.template`](launchd/com.abendy.tmux-server.plist.template)
   — the Mini's login-time tmux server agent.
+- [`bin/tmux-reap`](bin/tmux-reap) and
+  [`launchd/com.abendy.tmux-reap.plist.template`](launchd/com.abendy.tmux-reap.plist.template)
+  — the Mini's idle terminal and session cleanup.
 - [`bin/tmux-copy`](bin/tmux-copy) — tmux's `copy-command`, plus its SSH
   setup on both machines.
 - [`remote-workflow.md`](remote-workflow.md) — Tailscale, mosh, tmux, and Codex
