@@ -91,6 +91,13 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 # on recent macOS.
 sudo systemsetup -setremotelogin on
 
+# Allow 50 sessions per SSH connection instead of sshd's default 10. The
+# Claude desktop app runs every Terminal tab over one connection, so ten
+# open tabs refuse the next one ("Too many terminals are open"). bin/tmux-reap
+# closes idle tabs; this leaves headroom. New connections read the drop-in;
+# sshd needs no restart.
+echo "MaxSessions 50" | sudo tee /etc/ssh/sshd_config.d/030-max-sessions.conf > /dev/null
+
 # Enable Screen Sharing as a GUI fallback for the rare case something
 # needs to be seen rather than SSH'd into. The first connection may still
 # prompt for Screen Recording / Accessibility permission locally - that's

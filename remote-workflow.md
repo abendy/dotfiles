@@ -116,6 +116,31 @@ killing the last session doesn't hand the next login a new server.
 - `launchctl managername` in a pane says `Background` even in the agent's
   server. Trust `tmux-aqua status`, which runs the keychain check itself.
 
+### Idle terminals and sessions
+
+The Claude desktop app runs every Terminal tab over one SSH connection, and
+each tab gets a tmux session named after its folder. Tabs stay attached after
+the app closes their session, and sshd allows only so many sessions per
+connection. `osx-devbox` raises that to 50 (`MaxSessions`, in
+`/etc/ssh/sshd_config.d/030-max-sessions.conf`), and the
+`com.abendy.tmux-reap` LaunchAgent runs [`tmux-reap`](bin/tmux-reap) every 15
+minutes:
+
+| | Temporary folder | Any other folder |
+| --- | --- | --- |
+| Attached terminal, no typing | closed after 4 hours | closed after 24 hours |
+| Session with nothing attached, idle | removed after 1 day | removed after 7 days |
+| Session whose folder is gone | removed at once | — |
+
+- Temporary folders are worktrees (`.claude/worktrees/`, `.codex/worktrees/`)
+  and `/tmp`.
+- Closing a terminal hangs up its login shell, which frees its SSH slot. The
+  session stays, and reopening the tab reattaches.
+- A session is removed only when every pane sits at a shell prompt. One
+  running `claude`, a server, or anything else stays. `phone` always stays.
+- `tmux-reap --dry-run` prints what it would do. Actions are logged to
+  `~/Library/Logs/tmux-reap.log`. The timeouts are at the top of the script.
+
 ### Clipboard: copy to the laptop
 
 A copy in tmux (mouse drag, `Enter` or `Y` in copy mode) takes two routes to

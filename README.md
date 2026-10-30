@@ -27,7 +27,8 @@ fully detached server keeps its last completed snapshot rather than continuing
 to save. Use `prefix Ctrl-s` before a planned restart. On the laptop, automatic
 start opens iTerm2 only after GUI login. On the Mini, `bootstrap` instead loads
 a LaunchAgent that starts the tmux server at GUI login, so panes can use the
-login keychain. See the remote workflow for that and for reboot caveats
+login keychain, and a second one that closes idle tmux terminals and removes
+idle sessions. See the remote workflow for those and for reboot caveats
 (resurrect saves come out empty without a UTF-8 locale).
 
 `~/.localrc` holds local runtime configuration and is not tracked by this repo.

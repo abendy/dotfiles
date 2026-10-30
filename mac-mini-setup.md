@@ -309,3 +309,17 @@ keychain locked there, Claude Code fell back to a dead September
   `~/.terminfo`, aliased to `xterm-256color`. Without it, tmux refused to
   start over SSH from Ghostty and zsh garbled typed input. Rebuild with:
   `printf 'xterm-ghostty|ghostty,\n\tuse=xterm-256color,\n' | /usr/bin/tic -x -o ~/.terminfo -`
+
+## 2026-10-30: idle tmux terminals fill the app's SSH connection
+
+The Claude desktop app's Terminal tabs refused to open: "Too many terminals
+are open … for one connection." Seven tabs from sessions the app had already
+closed were still attached to tmux on one SSH connection, against sshd's
+default of 10 sessions per connection.
+
+- Hung up those seven login shells by hand; their tmux sessions survived.
+- Wrote `MaxSessions 50` to `/etc/ssh/sshd_config.d/030-max-sessions.conf`.
+  `osx-devbox` now writes it.
+- Added `bin/tmux-reap` and the `com.abendy.tmux-reap` LaunchAgent
+  (`bootstrap` installs both on `nigiri-san`). See
+  [remote workflow](remote-workflow.md#idle-terminals-and-sessions).
