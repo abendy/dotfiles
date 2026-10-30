@@ -105,12 +105,6 @@ then exists before an SSH or mosh login needs one, so those logins attach to it
 and their panes can use the keychain. The agent also turns `exit-empty` off, so
 killing the last session doesn't hand the next login a new server.
 
-- An SSH or mosh shell outside tmux asks once whether to unlock the login
-  keychain (`zshrc`). Answer `y` and type the Mac password. Nothing is
-  stored. Claude Code then reads
-  its `/login` from the keychain instead of falling back to
-  `~/.claude/.credentials.json`. Shells without a tty never ask;
-  `DOTFILES_NO_KEYCHAIN_UNLOCK=1` turns it off.
 - `tmux-aqua status` checks the running server. A shell inside a server the
   agent didn't start prints a one-line warning.
 - `tmux-aqua migrate` moves a wrong server: save, stop, start from the GUI

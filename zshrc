@@ -144,20 +144,3 @@ if [[ ${HOST%%.*} == nigiri-san && -o interactive && -n ${TMUX:-} \
   print -u2 "tmux: this server wasn't started from the GUI login, so the" \
     "login keychain is locked here. Fix: tmux-aqua migrate"
 fi
-
-# Outside tmux on the Mini, an SSH or mosh login can't use the login keychain
-# either. Claude Code then falls back to ~/.claude/.credentials.json, and a
-# /login there splits the login across two stores. Offer to unlock it once
-# per login: security asks for the Mac password and nothing is stored. Agent
-# and app shells have no tty, so they never see the prompt.
-# DOTFILES_NO_KEYCHAIN_UNLOCK=1 turns it off.
-if [[ ${HOST%%.*} == nigiri-san && -o interactive && -t 0 && -z ${TMUX:-} \
-      && -z ${DOTFILES_NO_KEYCHAIN_UNLOCK:-} ]] \
-   && ! security show-keychain-info > /dev/null 2>&1; then
-  if read -q "?login keychain is locked in this shell. Unlock it for Claude Code and codesign? [y/N] "; then
-    print
-    security unlock-keychain "$HOME/Library/Keychains/login.keychain-db"
-  else
-    print
-  fi
-fi
