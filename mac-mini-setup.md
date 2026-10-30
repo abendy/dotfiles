@@ -294,3 +294,18 @@ fix.
 - Resolve [#37](https://github.com/abendy/dotfiles/issues/37) (Docker
   Desktop vs colima), remove the loser, and flip disk-prune's `docker`
   target to `"prune"`.
+
+## 2026-10-30: Claude Code login and Ghostty terminal type
+
+SSH shells outside tmux kept reporting Claude Code signed out. With the
+keychain locked there, Claude Code fell back to a dead September
+`~/.claude/.credentials.json`.
+
+- Renamed that file to `~/.claude/.credentials.json.stale-20261030`. The live
+  login stays in the keychain, which tmux panes can read.
+- Stored a one-year Claude Code token in the login keychain for headless
+  `claude -p`. Rotation is LON-180.
+- Added a terminal description for Ghostty's `xterm-ghostty` to
+  `~/.terminfo`, aliased to `xterm-256color`. Without it, tmux refused to
+  start over SSH from Ghostty and zsh garbled typed input. Rebuild with:
+  `printf 'xterm-ghostty|ghostty,\n\tuse=xterm-256color,\n' | /usr/bin/tic -x -o ~/.terminfo -`
