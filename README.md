@@ -17,6 +17,11 @@ On the headless Mini, run `./osx-devbox` instead of `./osx`. It applies the
 Mini-specific power and remote-access policy and permanently converges its
 ComputerName, LocalHostName, and HostName to `nigiri-san`.
 
+Both scripts label the machine in `~/.config/machine.toml` (`machine_type`
+`devbox` or `client`, plus `machine_name`); `zshenv` exports the label as
+`MACHINE_TYPE` and `MACHINE_NAME` for agents and shared rules. `osx` keeps
+an existing label.
+
 See the [remote workflow](remote-workflow.md) for setup and troubleshooting and
 [REMOTE-COMMANDS(1)](remote-commands.md) for the tmux/mosh helper reference.
 

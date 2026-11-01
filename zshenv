@@ -23,3 +23,16 @@ if [ -d "$HOME/Library/pnpm" ]; then
   export PNPM_HOME="$HOME/Library/pnpm"
   export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 fi
+
+# The machine's label from osx or osx-devbox: MACHINE_TYPE is "devbox" or
+# "client", MACHINE_NAME its short name. Shared rules and agents read these
+# instead of hostnames. Unset when the machine has no label yet.
+if [ -r "$HOME/.config/machine.toml" ]; then
+  for line in "${(@f)$(<"$HOME/.config/machine.toml")}"; do
+    case $line in
+      machine_type*) export MACHINE_TYPE=${${line#*\"}%\"} ;;
+      machine_name*) export MACHINE_NAME=${${line#*\"}%\"} ;;
+    esac
+  done
+  unset line
+fi

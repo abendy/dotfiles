@@ -10,6 +10,7 @@
 # someone physically at the keyboard; no script can change that.
 
 readonly DEVBOX_NAME="nigiri-san"
+readonly MACHINE_NAME="nigiri"
 
 # Ask for the administrator password upfront
 sudo -v
@@ -28,6 +29,11 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 sudo scutil --set ComputerName "$DEVBOX_NAME"
 sudo scutil --set LocalHostName "$DEVBOX_NAME"
 sudo scutil --set HostName "$DEVBOX_NAME"
+
+# Label the machine for agents and shared rules, which say "devbox" rather
+# than a machine name. zshenv exports it as MACHINE_TYPE and MACHINE_NAME.
+mkdir -p "$HOME/.config"
+printf 'machine_type = "devbox"\nmachine_name = "%s"\n' "$MACHINE_NAME" > "$HOME/.config/machine.toml"
 
 #/
  # Sleep

@@ -10,6 +10,12 @@ Declarative setup for two machines:
   don't assume its state from what's visible here (e.g. Docker Desktop is
   daily-driven on the laptop but unused on the mini).
 
+Each machine carries a label in `~/.config/machine.toml`: `machine_type` is
+`devbox` (nigiri) or `client` (the MacBook), and `machine_name` its short
+name. `osx-devbox` and `osx` write it, and `zshenv` exports it as
+`MACHINE_TYPE` and `MACHINE_NAME`. Shared rules (the skills repo's global
+`CLAUDE.md`) say "devbox" and "client"; only this repo names the machines.
+
 ## Docs and their contract
 
 | Doc | Covers |

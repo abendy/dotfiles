@@ -323,3 +323,14 @@ default of 10 sessions per connection.
 - Added `bin/tmux-reap` and the `com.abendy.tmux-reap` LaunchAgent
   (`bootstrap` installs both on `nigiri-san`). See
   [remote workflow](remote-workflow.md#idle-terminals-and-sessions).
+
+## 2026-10-31: machine label for shared rules
+
+Shared agent rules now say "devbox" and "client" instead of naming machines,
+so each machine says which it is.
+
+- Wrote `~/.config/machine.toml` (`machine_type = "devbox"`,
+  `machine_name = "nigiri"`). `osx-devbox` now writes it; `osx` writes a
+  `client` label on a machine that has none.
+- Copied the new `zshenv` to `~/.zshenv`, which exports the label as
+  `MACHINE_TYPE` and `MACHINE_NAME`.
