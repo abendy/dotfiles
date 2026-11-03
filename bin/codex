@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Use the daemon's package for the CLI too, so both follow the same update.
+set -euo pipefail
+
+managed="${CODEX_HOME:-$HOME/.codex}/packages/app-server-daemon/current/bin/codex"
+if [ -x "$managed" ]; then
+  if [ "${1:-}" = update ]; then
+    shift
+    exec "$managed" app-server daemon update "$@"
+  fi
+  exec "$managed" "$@"
+fi
+
+# Before opting into the managed package, keep the existing Homebrew install.
+for executable in /opt/homebrew/bin/codex /usr/local/bin/codex; do
+  if [ -x "$executable" ]; then
+    exec "$executable" "$@"
+  fi
+done
+echo 'codex: run codex-daemon-repair to install the managed package' >&2
+exit 1

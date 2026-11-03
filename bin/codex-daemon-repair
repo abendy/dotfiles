@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# Replace a verified unmanaged server, then enable Codex's native updater.
+# Run from a human's terminal: never stop an ancestor of this command.
+set -euo pipefail
+
+fail() { echo "codex-daemon-repair: $*" >&2; exit 1; }
+
+case "${1:-}" in
+  '') check_only=false ;;
+  --check) check_only=true ;;
+  *) fail 'usage: codex-daemon-repair [--check]' ;;
+esac
+[ "$#" -le 1 ] || fail 'usage: codex-daemon-repair [--check]'
+
+for tool in codex jq lsof realpath curl; do
+  command -v "$tool" >/dev/null || fail "missing command: $tool"
+done
+codex_home="${CODEX_HOME:-$HOME/.codex}"
+managed="$codex_home/packages/app-server-daemon/current/bin/codex"
+if ! before="$(codex app-server daemon version 2>&1)"; then
+  socket="$codex_home/app-server-control/app-server-control.sock"
+  [ ! -S "$socket" ] || fail "cannot probe the existing server: $before"
+  before="$(jq -n --arg socketPath "$socket" '{status: "notRunning", socketPath: $socketPath}')"
+fi
+echo "$before" | jq .
+socket="$(echo "$before" | jq -er '.socketPath')"
+server_pid=
+server_identity=
+
+if [ "$(echo "$before" | jq -r '.status')" = running ]; then
+  socket="$(realpath "$socket")"
+  # lsof needs the resolved socket, not the control socket's symlink.
+  server_pid="$(lsof -nP -t -a -U "$socket" | sort -u)"
+  [[ "$server_pid" =~ ^[0-9]+$ ]] || fail 'expected exactly one socket owner'
+  server_uid="$(ps -p "$server_pid" -o uid= | tr -d ' ')"
+  [ "$server_uid" = "$(id -u)" ] || fail 'socket owner belongs to another user'
+  server_command="$(ps -p "$server_pid" -o comm=)"
+  [ "${server_command##*/}" = codex ] || fail 'socket owner is not Codex'
+  server_args="$(ps -p "$server_pid" -o command=)"
+  [[ "$server_args" == *' app-server '* && "$server_args" == *'--listen unix://'* ]] \
+    || fail 'socket owner is not a local Codex app server'
+  server_identity="$(ps -p "$server_pid" -o lstart=)"
+  printf 'Socket owner: PID %s, started %s\n' "$server_pid" "$server_identity"
+
+  if ! "$check_only"; then
+    ancestor=$$
+    while [ "$ancestor" -gt 1 ]; do
+      [ "$ancestor" != "$server_pid" ] \
+        || fail 'this server hosts the current task; run this command in an outside terminal'
+      ancestor="$(ps -p "$ancestor" -o ppid= | tr -d ' ')"
+      [[ "$ancestor" =~ ^[0-9]+$ ]] || fail 'could not verify process ancestry'
+    done
+  fi
+fi
+"$check_only" && exit 0
+
+# Prepare the complete official package before interrupting the old server.
+# Daemon-only installation leaves the CLI and the live server untouched.
+native_managed="$(echo "$before" | jq -r '.backend // "unmanaged"')"
+if [ ! -x "$managed" ] && [ "$native_managed" != pid ]; then
+  installer="$(curl --fail --silent --show-error --location --max-time 60 \
+    https://chatgpt.com/codex/install.sh)"
+  CODEX_INSTALL_DAEMON_ONLY=1 CODEX_NON_INTERACTIVE=1 /bin/sh -c "$installer"
+fi
+if [ "$native_managed" = pid ]; then
+  # Let the native updater migrate a legacy managed installation itself.
+  updated="$(codex app-server daemon update)"
+else
+  [ -x "$managed" ] || fail 'managed package was not installed'
+
+  if [ -n "$server_pid" ]; then
+    [ "$(ps -p "$server_pid" -o lstart=)" = "$server_identity" ] \
+      || fail 'socket owner changed during preparation; rerun to inspect it'
+    [ "$(lsof -nP -t -a -U "$socket" | sort -u)" = "$server_pid" ] \
+      || fail 'socket ownership changed during preparation'
+    # Only the verified unmanaged socket owner needs a direct signal.
+    kill -TERM "$server_pid"
+    for ((attempt=0; attempt<60; attempt++)); do
+      if ! ps -p "$server_pid" >/dev/null; then break; fi
+      sleep 1
+    done
+    ! ps -p "$server_pid" >/dev/null || fail 'old server did not exit; left it alone'
+  fi
+
+  updated="$("$managed" app-server daemon update)"
+fi
+# An explicit production update removes any --from-cli pin. Do not mistake
+# Codex's successful exit with status=unsupported for a completed migration.
+echo "$updated" | jq .
+echo "$updated" | jq -e '.status == "updated" or .status == "noUpdate"' >/dev/null \
+  || fail 'native production update did not complete'
+bootstrap_args=()
+if [ -f "$codex_home/app-server-daemon/settings.json" ] && \
+  jq -e '.remoteControlEnabled == true' "$codex_home/app-server-daemon/settings.json" >/dev/null; then
+  bootstrap_args+=(--remote-control)
+fi
+bootstrapped="$("$managed" app-server daemon bootstrap "${bootstrap_args[@]}")"
+echo "$bootstrapped" | jq .
+echo "$bootstrapped" | jq -e '.autoUpdateEnabled == true' >/dev/null \
+  || fail 'native updater is not running'
+after="$("$managed" app-server daemon version)"
+echo "$after" | jq .
+echo "$after" | jq -e \
+  '.status == "running" and .backend == "pid" and
+   .cliVersion == .appServerVersion and .cliVersion == .managedCodexVersion' >/dev/null \
+  || fail 'CLI, daemon package and running server still differ'
+echo 'Codex CLI and daemon match. Native automatic updates are running.'

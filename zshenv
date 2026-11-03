@@ -9,6 +9,10 @@ elif [ -x /usr/local/bin/brew ]; then
   eval "$(/usr/local/bin/brew shellenv zsh)"
 fi
 
+# Custom launchers must also win in non-interactive SSH commands. In particular,
+# bin/codex selects the same package as the managed background daemon.
+export PATH="$HOME/bin:$PATH"
+
 # Keep fnm's default Node available to non-interactive consumers such as MCP
 # servers. Interactive shells still use `fnm env --use-on-cd` from the
 # `dotfiles: node` block that langs/node writes into ~/.localrc, for

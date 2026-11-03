@@ -42,6 +42,30 @@ exist, then leaves it alone. Editor selection is not prompted on later runs;
 edit `EDITOR` (and optionally `VISUAL`) in `~/.localrc` directly. To seed it by
 hand: `cp localrc ~/.localrc`.
 
+## Codex CLI and daemon
+
+`bin/codex` uses the native daemon's selected package for the CLI as well.
+Both commands follow `~/.codex/packages/app-server-daemon/current`; the native
+updater advances that selection and restarts the managed daemon. `codex update`
+runs that updater instead of upgrading a separate CLI through Homebrew.
+Before a managed package is installed, the launcher uses the existing Homebrew CLI.
+
+For initial setup or an unmanaged server left behind by an older install, run
+`"$HOME/bin/codex-daemon-repair"` in a terminal outside a Codex task. This installs
+the official production package, replaces the verified server, starts native
+management, and checks that the CLI and daemon match and automatic updates run.
+It interrupts connected sessions. It refuses to stop its own ancestor or a socket
+owned by another user or program. `--check` only prints the versions and owner.
+
+`bootstrap` installs both commands through its normal `bin/` deployment. `zshenv`
+and `zprofile` keep `~/bin` ahead of Homebrew in SSH and login shells too. Shell
+profiles do not start servers. Homebrew may remain installed as a fallback; once
+the managed package exists, its upgrades no longer choose the CLI used by this launcher.
+See [Codex Desktop SSH](remote-workflow.md#codex-desktop-ssh) for remote limits.
+
+Check these commands with `bash -n`, `shellcheck`, and
+`python3 -B -m unittest discover -s "$HOME/.dotfiles/tests"`.
+
 ## ZSH plugins
 
 We're using [antidote][ab] as the plugin manager, across two lists.

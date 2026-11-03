@@ -334,3 +334,22 @@ so each machine says which it is.
   `client` label on a machine that has none.
 - Copied the new `zshenv` to `~/.zshenv`, which exports the label as
   `MACHINE_TYPE` and `MACHINE_NAME`.
+
+## 2026-11-03: Codex CLI and background daemon use one package
+
+Homebrew had advanced the CLI while an unmanaged October server kept running.
+The old standalone daemon package remained pinned, with no live updater.
+
+- Prepared the official production package in `~/.codex/packages/app-server-daemon`.
+- Added `~/bin/codex`, which selects that same package for the CLI and routes
+  `codex update` to its native daemon updater. Homebrew remains a fallback.
+- Kept `~/bin` ahead of Homebrew in non-interactive and login shells through
+  `zshenv` and `zprofile`, so remote starts use the same launcher.
+- Added `~/bin/codex-daemon-repair` for the takeover. It verifies the socket owner
+  and start time, refuses to stop an ancestor, preserves Remote Control, and
+  checks all three versions plus native updater readiness before reporting success.
+
+The existing unmanaged server remains until the repair runs from an outside
+terminal; it hosts the task that prepared this change. The repair passed against
+an isolated Codex home, including native updater startup. Desktop reconnection
+and the live server takeover still need verification.

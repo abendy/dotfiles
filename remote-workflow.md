@@ -186,6 +186,21 @@ Codex Desktop starts its remote app server over SSH and connects through
 `codex app-server proxy`. Keep `codex` available in the remote login shell's
 PATH. No manual daemon start or shell startup override is required.
 
+On the Mini, `~/bin/codex` selects the same native package as the managed daemon.
+`codex update` updates that package through Codex's own updater, so the CLI and
+server do not follow separate Homebrew and standalone versions. Automatic updates
+come from the native updater; this repo adds no polling service.
+
+To replace an unmanaged server or restore a pinned installation, run
+`"$HOME/bin/codex-daemon-repair"` from an outside terminal. It checks the socket
+owner and process ancestry before stopping anything, then verifies the matching
+versions and live updater. It interrupts connected sessions. Use `--check` to
+inspect without changes. It preserves the Remote Control setting.
+
+This controls the Mini's CLI and local daemon. A Desktop app that launches its
+own bundled server can still introduce another version; client reconnection needs
+its own check. Inspect `codex app-server daemon version` after reconnecting.
+
 The July 29 shell workaround was removed on September 18. It called a
 missing `~/.local/bin/codex`, hid the failure, and still disabled normal
 startup with `CODEX_SSH_SKIP_APP_SERVER_BOOT=true`. That left the connection
