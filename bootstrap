@@ -179,13 +179,16 @@ function install_tmux_plugin_manager {
   fi
 }
 
-# The Mini only: install and load one of its tmux LaunchAgents from
+# The Mini only: install and load one of its LaunchAgents from
 # launchd/<label>.plist.template. Each runs a script in ~/bin, which
 # install_dotfiles copies before calling this.
 #   com.abendy.tmux-server  start the tmux server at GUI login so its panes can
 #                           use the login keychain (bin/tmux-aqua)
 #   com.abendy.tmux-reap    close idle terminals, remove idle sessions
 #                           (bin/tmux-reap)
+#   com.abendy.chrome-bridge reconnect the Claude Chrome extension when its
+#                           link to the desktop app drops
+#                           (bin/chrome-bridge-watch)
 # See remote-workflow.md.
 function install_mini_agent {
   local label="$1"
@@ -327,6 +330,8 @@ function install_dotfiles {
     install_mini_agent com.abendy.tmux-server "starts the tmux server at GUI login"
     install_mini_agent com.abendy.tmux-reap "closes idle tmux terminals and sessions"
   fi
+
+  install_mini_agent com.abendy.chrome-bridge "reconnects the Claude Chrome extension"
 
   if [ -f ${current_path}/atuin/config.toml ]; then
     mkdir -p "$HOME/.config/atuin"

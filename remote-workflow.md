@@ -200,6 +200,29 @@ The override removal passed shell syntax and SSH-environment checks.
 MacBook reconnection and current iOS Remote Control behavior still need
 end-to-end verification.
 
+## Chrome tools — reaching the Mini's browser
+
+Agent sessions on the Mini drive Chrome through the Claude extension. The
+Claude desktop app lists every browser whose extension is on the account
+bridge, from both machines. While its desktop link is up, the Mini's Chrome
+lists under its hostname, `nigiri-san`; otherwise it lists as "Browser N",
+like the MacBook's. The MacBook's Chrome can carry `onThisComputer: true` even
+though it isn't on the Mini. Neither the name nor that flag proves which
+machine a browser is on. Serve a token file on
+`127.0.0.1` from the Mini and read it in the selected browser: only the
+Mini's Chrome can load it.
+
+The extension links to the desktop app through a `chrome-native-host`
+process. After a reboot it can drop that link within seconds, stay off the
+bridge, and never recover; reconnecting the extension by hand doesn't
+reliably bring it back. Opening `https://clau.de/chrome/reconnect`
+in Chrome does: the extension restarts both links and closes the tab.
+
+`bin/chrome-bridge-watch` does that whenever Chrome is running and no native
+host serves the extension. The `com.abendy.chrome-bridge` LaunchAgent runs it
+at login and every two minutes, logging to `~/Library/Logs/chrome-bridge.log`.
+To reconnect at once, run `chrome-bridge-watch --force`.
+
 ## Putting it together
 
 The actual day-to-day command, combining all three - roams across network

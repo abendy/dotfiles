@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.abendy.chrome-bridge</string>
+  <!-- Reconnects the Claude Chrome extension when its link to the desktop app
+       drops, so agents can reach the mini's Chrome. See bin/chrome-bridge-watch. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>__HOME__/bin/chrome-bridge-watch</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>120</integer>
+  <key>LimitLoadToSessionType</key>
+  <string>Aqua</string>
+  <key>StandardOutPath</key>
+  <string>__HOME__/Library/Logs/chrome-bridge.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/Library/Logs/chrome-bridge.log</string>
+</dict>
+</plist>

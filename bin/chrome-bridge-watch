@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Keeps the mini's Chrome reachable by Claude's Chrome tools.
+#
+# The Claude extension in Chrome links to the Claude desktop app through a
+# native host process (chrome-native-host), and agent sessions find the
+# browser on the account bridge. After a reboot the extension can drop the
+# native link within seconds, stay off the bridge, and never recover, and
+# reconnecting the extension by hand doesn't reliably bring it back. A missing
+# native host is the sign this script watches for.
+#
+# Opening https://clau.de/chrome/reconnect in Chrome makes the extension
+# restart both links and close the tab again. This script does that whenever
+# Chrome is running but no native host serves the extension.
+#
+# Usage: chrome-bridge-watch          reconnect only if the link is down
+#        chrome-bridge-watch --force  reconnect now
+# Run every two minutes by the com.abendy.chrome-bridge LaunchAgent.
+# See remote-workflow.md, "Chrome tools".
+
+set -u
+
+extension_id="fcoeoabgfenejglbffodgkkbkcdhcgfn"
+reconnect_url="https://clau.de/chrome/reconnect"
+
+log() {
+  printf '%s %s\n' "$(date '+%F %T')" "$*"
+}
+
+link_up() {
+  pgrep -f "chrome-native-host chrome-extension://${extension_id}/" > /dev/null
+}
+
+if ! pgrep -x "Google Chrome" > /dev/null; then
+  [ "${1:-}" = "--force" ] && log "Chrome isn't running; nothing to reconnect"
+  exit 0
+fi
+
+if [ "${1:-}" != "--force" ] && link_up; then
+  exit 0
+fi
+
+log "extension link down or --force; opening ${reconnect_url}"
+open -g -a "Google Chrome" "${reconnect_url}"
+
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+  sleep 2
+  if link_up; then
+    log "reconnected"
+    exit 0
+  fi
+done
+
+log "still down after 20s"
+exit 1
