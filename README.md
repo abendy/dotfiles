@@ -42,6 +42,12 @@ exist, then leaves it alone. Editor selection is not prompted on later runs;
 edit `EDITOR` (and optionally `VISUAL`) in `~/.localrc` directly. To seed it by
 hand: `cp localrc ~/.localrc`.
 
+`~/.zshenv.local` holds untracked secrets that every shell needs, interactive or
+not: `zshenv` sources it when it exists. Keep it mode 600. It is where
+`CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) lives, so `claude` and
+headless `claude -p` stay signed in over SSH, where the login keychain is
+locked.
+
 ## ZSH plugins
 
 We're using [antidote][ab] as the plugin manager, across two lists.

@@ -310,6 +310,19 @@ keychain locked there, Claude Code fell back to a dead September
   start over SSH from Ghostty and zsh garbled typed input. Rebuild with:
   `printf 'xterm-ghostty|ghostty,\n\tuse=xterm-256color,\n' | /usr/bin/tic -x -o ~/.terminfo -`
 
+## 2026-11-19: Claude Code token in `~/.zshenv.local`
+
+Claude Code still signed out every day or two in SSH sessions, and a
+`claude -p` launched from an agent shell failed with "Not logged in". The
+one-year token from 2026-10-30 sits in the login keychain, which only shells
+in the GUI-started tmux server can read.
+
+- `zshenv` now sources `~/.zshenv.local` (untracked, mode 600) in every zsh,
+  interactive or not.
+- The token from `claude setup-token` goes there as
+  `export CLAUDE_CODE_OAUTH_TOKEN=…`, not in `~/.localrc`, which only
+  interactive shells read. Rotation is still LON-180.
+
 ## 2026-10-30: idle tmux terminals fill the app's SSH connection
 
 The Claude desktop app's Terminal tabs refused to open: "Too many terminals

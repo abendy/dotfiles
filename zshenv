@@ -36,3 +36,11 @@ if [ -r "$HOME/.config/machine.toml" ]; then
   done
   unset line
 fi
+
+# Untracked per-machine secrets that non-interactive shells need too, such as
+# CLAUDE_CODE_OAUTH_TOKEN from `claude setup-token`: over SSH the login
+# keychain is locked, so Claude Code can't keep its login there. ~/.localrc
+# won't do, since only interactive shells read it. Keep the file mode 600.
+if [ -r "$HOME/.zshenv.local" ]; then
+  . "$HOME/.zshenv.local"
+fi
